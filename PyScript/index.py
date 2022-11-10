@@ -1,75 +1,70 @@
 import tweepy
 import configparser
 import pandas as pd 	# for save tweet in SVG
-import pyscript
-import js
-from js import document
 from pyodide import create_proxy
-from flask import Flask, render_template, Response, request, redirect, url_for
-app = Flask(__name__)
 
-class authentication(object):
-	def __init__(self):
-		pyscript.write("main", "Initialization...")
-		# read config from config.ini
-		config = configparser.ConfigParser()
-		config.read('../config.ini')
 
-		api_key = config['DAGEA']['api_key']
-		api_key_secret = config['DAGEA']['api_key_secret']
+# def __init__(self):
+write("main", "Initialization...")
+# read config from config.ini
+config = configparser.ConfigParser()
+config.read('../config.ini')
 
-		access_token = config['DAGEA']['access_token']
-		access_token_secret = config['DAGEA']['access_token_secret']
+api_key = config['DAGEA']['api_key']
+api_key_secret = config['DAGEA']['api_key_secret']
 
-		# TEST: verifica se prende i campi corretti
-		# 	print(api_key) 
+access_token = config['DAGEA']['access_token']
+access_token_secret = config['DAGEA']['access_token_secret']
 
-		# authentication
-		auth = tweepy.OAuthHandler(api_key, api_key_secret)
-		auth.set_access_token(access_token, access_token_secret)
+# TEST: verifica se prende i campi corretti
+# 	print(api_key) 
 
-		global api = tweepy.API(auth)	# api istant
+# authentication
+auth = tweepy.OAuthHandler(api_key, api_key_secret)
+auth.set_access_token(access_token, access_token_secret)
 
-		# -- try to print my twitter home --
-		global public_tweets = api.home_timeline()
+global api = tweepy.API(auth)	# api istant
 
-		# for tweet in public_tweets:		# to print all in home
-		# 	print(tweet.text)
+# -- try to print my twitter home --
+global public_tweets = api.home_timeline()
 
-		# print(public_tweets[0].text)		# to print only the first tweet in home
-		# print(public_tweets[0].created_at)	# to print the first tweet time
-		# print(public_tweets[0].user.screen_name)	# to print the user creator of the tweet
+# for tweet in public_tweets:		# to print all in home
+# 	print(tweet.text)
 
-	# --- SEARCH TWEETS BY HASHTAG OR KEYWORDS ---
-	def GetTweetByKeyword():
-		limit = 300
-		pyscript.write("main", "Getting Tweet ...")	# NOTE: delete it pls
+# print(public_tweets[0].text)		# to print only the first tweet in home
+# print(public_tweets[0].created_at)	# to print the first tweet time
+# print(public_tweets[0].user.screen_name)	# to print the user creator of the tweet
 
-		input = js.Element("keyword").element
-		keywords = input.value
-		input.value = ""
-		
-		tweets = tweepy.Cursor(api.search_tweets, q = keywords, count = 100, tweet_mode = 'extended').items(limit)	# this let us to get more than 100 tweets
-		# create DataFrame
-		columns = ['user', 'tweet']
-		data = []
-		for tweet in tweets:
-			data.append([tweet.user.screen_name, tweet.full_text])
+# --- SEARCH TWEETS BY HASHTAG OR KEYWORDS ---
+def GetTweetByKeyword():
+	limit = 300
+	write("main", "Getting Tweet ...")
 
-		data_frame = pd.DataFrame(data, columns = columns)
-		pyscript.write("returnTLB", data_frame.to_html())
+	input = Element("keyword")
+	keywords = input.value
+	input.value = ""
+	
+	tweets = tweepy.Cursor(api.search_tweets, q = keywords, count = 100, tweet_mode = 'extended').items(limit)	# this let us to get more than 100 tweets
+	# create DataFrame
+	columns = ['user', 'tweet']
+	data = []
+	for tweet in tweets:
+		data.append([tweet.user.screen_name, tweet.full_text])
 
-	# --- GET TWEET BY USER --- 
-	def GetTweetByUser():
-		user  = 'veritasium'	# user tweets that I want to get the tweet
-		limit = 300		# max num of tweet to get from the user
-		tweets = tweepy.Cursor(api.user_timeline, screen_name = user, count = 200, tweet_mode = 'extended').items(limit)	# this let us to get more than 200 tweets
-		# tweets = api.user_timeline(screen_name = user, count = limit, tweet_mode = 'extended')	# tweet_mode = 'extended' ci permette di leggfere tutto il contenuto del tweet senza avere troncamenti
-		# create DataFrame
-		columns = ['user', 'tweet']
-		data = []
-		for tweet in tweets:
-			data.append([tweet.user.screen_name, tweet.full_text])
+	data_frame = pd.DataFrame(data, columns = columns)
+	Element("returnTLB").element.innerHTML =  data_frame.to_html()
 
-		data_frame = pd.DataFrame(data, columns = columns)
-		print(data_frame.to_html())
+# --- GET TWEET BY USER --- 
+def GetTweetByUser():
+	user  = 'veritasium'	# user tweets that I want to get the tweet
+	limit = 300		# max num of tweet to get from the user
+	tweets = tweepy.Cursor(api.user_timeline, screen_name = user, count = 200, tweet_mode = 'extended').items(limit)	# this let us to get more than 200 tweets
+	# tweets = api.user_timeline(screen_name = user, count = limit, tweet_mode = 'extended')	# tweet_mode = 'extended' ci permette di leggfere tutto il contenuto del tweet senza avere troncamenti
+	# create DataFrame
+	columns = ['user', 'tweet']
+	data = []
+	for tweet in tweets:
+		data.append([tweet.user.screen_name, tweet.full_text])
+
+	data_frame = pd.DataFrame(data, columns = columns)
+	print(data_frame.to_html())
