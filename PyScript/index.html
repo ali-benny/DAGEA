@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>PyScript</title>
+	<!-- <script src="https://cdn.jsdelivr.net/pyodide/v0.20.0/full/pyodide.js"></script> -->
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet"
+		integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
+
+	<script defer src="https://pyscript.net/alpha/pyscript.js"></script>
+
+	<py-env>
+		- tweepy==4.12.0
+		- configparser
+		- pandas
+		- js
+		- pyscript
+		- pyodide
+	</py-env>
+	<py-config>
+paths = [
+    "./index.py"
+]
+	</py-config>
+</head>
+
+<body>
+	<!-- <py-script>
+auth = authentication()
+getKeyword_proxy = create_proxy(auth.GetTweetByKeyword)
+find_btn = document.getElementById("findBtn")
+find_btn.addEventListener("click", getKeyword_proxy)
+	</py-script> -->
+	<h1>Doc</h1>
+	<label for="Keyword Input">Keyword to find:</label><input title="KeywordIn" type="text" id="keyword"><br>
+	<button class="btn" type="button" id="findBtn">Search Tweet</button>
+
+	<h2 id="main"></h2>
+	<script type="text/javascript">
+		$.ajax({
+			type: "POST",
+			url: "./index.py",
+			data: { param: text}
+			}).done(function( o ) {
+			// do something
+		});
+	</script>
+	<py-table id="returnTLB"></py-table>
+	<py-script>print("hello")</py-script>
+	<!-- <py-script>
+from js import document
+from pyodide import create_proxy
+
+def Test():
+	document.getElementById('main').innerHTML = "Testing..."
+
+test_proxy = create_proxy(Test)
+document.getElementById('findBtn').addEventListener("click", test_proxy)
+	</py-script> -->
+	<!-- <div id="returnTLB"></div> -->
+
+</body>
+
+</html>
