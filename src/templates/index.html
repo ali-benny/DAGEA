@@ -3,28 +3,33 @@
 
 <head>
 	<title>Tweet Finder | DAGEA™</title>
+
 	<!-- Required meta tags -->
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 	<link rel="stylesheet" href="../static/css/card.css">
 	<link rel='icon' href='../static/img/logo/favicon-transparent.ico' type='image/x-icon' sizes="16x16" />
-	<!-- Bootstrap CSS v5.2.1 -->
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet"
-		integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
-	<!-- Bootstrap icons -->
 
+	<!-- Bootstrap CSS and JS v5.2.2 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3"
+        crossorigin="anonymous"></script>
+
+    <script src="../interface.js"></script>
 </head>
 
 <body class="bg-dark">
 	<script src="../search.js">
 	</script>
+	<!-- Vecchio header
 	<header>
 		<nav class="navbar navbar-expand-sm navbar-dark bg-dark">
 			<a href="index.html" class="navbar-brand"><img src="../static/img/logo/favicon-transparent.png" width=15%
 					class="d-inline-block" /><b>DAGEA™</b></a>
 			<!-- <button class="navbar-toggler d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#collapsibleNavId" aria-controls="collapsibleNavId"
-				aria-expanded="false" aria-label="Toggle navigation"></button> -->
+				aria-expanded="false" aria-label="Toggle navigation"></button> 
 			<ul class="navbar-nav navbar-left mt-2 mt-lg-0">
 				<li class="nav-item">
 					<a class="nav-link active" href="index.html" aria-current="page"><i class="bi-house-fill"><span
@@ -40,6 +45,9 @@
 			</div>
 		</nav>
 	</header>
+	-->
+
+	<!-- Vecchio main
 	<main class="container-fluid">
 		<div class="position-relative text-light">
 			<div>
@@ -51,8 +59,102 @@
 			</div>
 		</div>
 	</main>
+	-->
+
+	<header>
+        <div class="navbar navbar-expand-md navbar-light">
+            <div class="container">
+                <a href="#" class="navbar-brand">
+                    <img src="../static/img/logo/favicon-transparent.ico" alt="" style="width: 100px;">
+                </a>
+                <div class="navbar-collapse justify-content-end">
+                    <ul class="navbar-nav">
+                        <li class="nav-item dropdown mx-1">
+                            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Help</a>
+                            <ul class="dropdown-menu">
+                                <li class="dropdown-item">
+                                    <a href="#" class="dropdown-item">How it works</a>
+                                </li>
+                                <li class="dropdown-item">
+                                    <a href="#" class="dropdown-item">Research by user</a>
+                                </li>
+                                <li class="dropdown-item">
+                                    <a href="#" class="dropdown-item">Research by tag</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="nav-item dropdown mx-1">
+                            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">TESTO</a>
+                            <ul class="dropdown-menu">
+                                <li class="dropdown-item">
+                                    <a href="#" class="dropdown-item">TESTO</a>
+                                </li>
+                                <li class="dropdown-item">
+                                    <a href="#" class="dropdown-item">TESTO</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="nav-item dropdown mx-1 mr-3">
+                            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">TESTO</a>
+                            <ul class="dropdown-menu">
+                                <li class="dropdown-item">
+                                    <a href="#" class="dropdown-item">TESTO</a>
+                                </li>
+                                <li class="dropdown-item">
+                                    <a href="#" class="dropdown-item">TESTO</a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <form class="d-flex ms-2" role="search">
+                        <input type="search" class="form-control border-dark" placeholder="SEARCH">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </header>
+
+	<main class="container">
+        <div class="container p-3">
+            <div class="text-center">
+                <h1 class="display-3 pb-2">GUI to search tweets</h1>
+            </div>
+        </div>
+
+        <div class="container mt-3">
+            <div class="row">
+                <div class="col-4"></div>
+
+                <div class="col-3">
+                    <div class="input-group">
+                        <i class="fa fa-search"></i>
+                        <input type="text" class="form-control" placeholder="Search tweets">
+                        <button class="btn btn-primary">Search</button>
+                    </div>
+                </div>
+
+                <div class="col-3">
+                    <div class="dropdown" id="tweetSearchBar">
+                        <button class="dropdown-toggle btn border-dark flex-grow-1 text-start" data-bs-toggle="dropdown"
+                            id="tweetSearchBarButton">Research by</button>
+                        <ul class="dropdown-menu">
+                            <li class="dropdow-item">
+                                <a href="#" class="dropdown-item" data-bs-toggle="dropdown" onclick=searchBy(0)>User</a>
+                            </li>
+                            <li class="dropdow-item">
+                                <a href="#" class="dropdown-item" data-bs-toggle="dropdown" onclick=searchBy(1)>Tag</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="col-2"></div>
+            </div>
+        </div>
+    </main>
+
 	<!-- Cards tweet -->
-	<div class="container-fluid d-flex h-100">
+	<div class="container d-flex h-100 pt-5">
 		<div class="row justify-content-center mb-3">
 			{% for post in posts %}
 			<div class="col-lg-4">
@@ -67,9 +169,11 @@
 			{% endfor %}
 		</div>
 	</div>
+	<!-- Commentato perche' crea problemi
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.min.js"
 		integrity="sha384-7VPbUDkoPSGFnVtYi0QogXtr74QeVeeIs99Qfg5YCF+TidwNdjvaKZX19NZ/e6oz" crossorigin="anonymous">
 		</script>
+	-->
 </body>
 
 </html>
