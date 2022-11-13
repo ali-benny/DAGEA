@@ -30,9 +30,6 @@ def __init__():
 	access_token = get_key(section, 'access_token')
 	access_token_secret = get_key(section, 'access_token_secret')
 
-	# TEST: verifica se prende i campi corretti
-	# 	print(api_key) 
-
 	# authentication
 	auth = tweepy.OAuthHandler(api_key, api_key_secret)
 	auth.set_access_token(access_token, access_token_secret)
