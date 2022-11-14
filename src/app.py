@@ -8,9 +8,9 @@ app = Flask(__name__)
 def __main__():
 	connection = sqlite3.connect('database.db')
 	connection.row_factory = sqlite3.Row
-	posts = connection.execute('SELECT * FROM post').fetchall()
+	tweets = connection.execute('SELECT * FROM post').fetchall()
 	connection.close()
-	return render_template('index.html', posts=posts)
+	return render_template('index.html', tweets=tweets)
 
 if __name__ == '__main__':
 	app.run()

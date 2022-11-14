@@ -6,7 +6,7 @@ class Header extends HTMLElement {
   connectedCallback() {
     this.innerHTML = `
       <header>
-        <div class="navbar navbar-expand-md navbar-light">
+        <div class="navbar navbar-expand-sm navbar-dark text-light">
             <div class="container">
                 <a href="./index.html" class="navbar-brand">
                     <img src="../static/img/logo/favicon-transparent.ico" alt="" style="width: 100px;">
