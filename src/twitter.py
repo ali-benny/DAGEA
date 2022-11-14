@@ -30,16 +30,24 @@ def __init__():
 	access_token = get_key(section, 'access_token')
 	access_token_secret = get_key(section, 'access_token_secret')
 
+	bearer_token = get_key(section, 'bearer_token')
+
 	# authentication
-	auth = tweepy.OAuthHandler(api_key, api_key_secret)
-	auth.set_access_token(access_token, access_token_secret)
-
 	global api 
-	api = tweepy.API(auth)	# api istant
+	# auth = tweepy.OAuthHandler(api_key, api_key_secret)#! deprecated: only for v1.0a
+	api = tweepy.Client(
+		bearer_token=bearer_token,
+		consumer_key=api_key,
+		consumer_secret=api_key_secret,
+		access_token=access_token,
+		access_token_secret=access_token_secret
+	)
 
-	# -- try to print my twitter home --
-	global public_tweets 
-	public_tweets = api.home_timeline()
+	# api = tweepy.API(auth)	# api istant 
+
+	# # -- try to print my twitter home --
+	# global public_tweets 
+	# public_tweets = api.home_timeline()
 
 	# for tweet in public_tweets:		# to print all in home
 	# 	print(tweet.text)
@@ -59,12 +67,13 @@ def GetTweetByKeyword(keywords, numTweet):
 	'''
 	limit = numTweet
 	
-	tweets = tweepy.Cursor(api.search_tweets, q = keywords, count = 100, tweet_mode = 'extended').items(limit)	# this let us to get more than 100 tweets
+	# tweets = tweepy.Cursor(api.search_all_tweets, query = keywords, max_result = 100, tweet_mode = 'extended').items(limit)	# this let us to get more than 100 tweets
+	tweets = api.search_recent_tweets(query = keywords, tweet_fields=['user, full_text'])
 	# -- create DataFrame --
 	columns = ['user', 'tweet']
 	data = []
 	for tweet in tweets:
-		data.append([tweet.user.screen_name, tweet.full_text])
+		data.append([tweet.user, tweet.full_text])
 
 	data_frame = pd.DataFrame(data, columns = columns)
 	return data_frame
