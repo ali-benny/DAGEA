@@ -38,7 +38,6 @@ def convertDF2SQL(function, maxTweet, findParam):
 
 def __main__():
 	twitter.__init__()
-	convertDF2SQL('GetTweetByKeyword', 200, 'prova')
 
 if __name__ == '__main__':
 	__main__()
