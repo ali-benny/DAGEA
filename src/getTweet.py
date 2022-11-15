@@ -33,7 +33,7 @@ def convertDF2SQL(function, maxTweet, findParam):
 	connection.commit()	# save my edits on connection
 	
 	# -- insert data on data_frame into db connection
-	df.to_html()
+	# df = df.to_html()
 	df.to_sql('tweet', connection, if_exists='replace', index=False)
 
 def __main__():

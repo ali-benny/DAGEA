@@ -69,14 +69,15 @@ def GetTweetByKeyword(keywords, numTweet):
 	data_frame = pd.DataFrame(data, columns = columns)
 	return data_frame
 
-'''
-	Get Tweet by Username
 
-	:param user: username to get Tweet
-	:param numTweet: max number of Tweet to get
-	:return dataframe of all the finded tweet to convert
-'''
 def GetTweetByUser(user, numTweet):
+	'''
+		Get Tweet by Username
+
+		:param user: username to get Tweet
+		:param numTweet: max number of Tweet to get
+		:return dataframe of all the finded tweet to convert
+	'''
 	limit = numTweet		# max num of tweet to get from the user
 	tweets = tweepy.Cursor(api.user_timeline, screen_name = user, count = 200, tweet_mode = 'extended').items(limit)	# this let us to get more than 200 tweets
 	# tweets = api.user_timeline(screen_name = user, count = limit, tweet_mode = 'extended')	# tweet_mode = 'extended' ci permette di leggfere tutto il contenuto del tweet senza avere troncamenti

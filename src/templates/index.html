@@ -105,38 +105,19 @@
                 </div>
             </div>
         </div>
-        <br><br>
-        <!-- Table tweets -->
-        <div class="container">
-            <table class="table table-condensed text-white" id="tweetTable">
-                <thead>
-                    <tr>
-                        <th>user</th>
-                        <th>description</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for tweet in tweets %}
-                    <tr>
-                        <td>{{ tweet.user }}</td>
-                        <td>{{ tweet.tweet }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
     </main>
 
+    <br><br>
     <!-- Cards tweets -->
     <div class="container d-flex h-100 pt-5 text-dark">
         <div class="row justify-content-center mb-3">
-            {% for post in posts %}
+            {% for tweet in tweets %}
             <div class="col-lg-4">
                 <div class="card" style="width: 90%; margin: 2%">
-                    <img class="card-img-top" src="Images/i3-10105F.jpg" alt="Card image">
+                    <!-- <img class="card-img-top" alt="Card image" src="{{ tweet.media }}" /> -->
                     <div class="card-body">
-                        <h4 class="card-title">{{ user }}</h4>
-                        <p class="card-text">{{ desc }}</p>
+                        <h4 class="card-title">{{ tweet.user }}</h4>
+                        <p class="card-text">{{ tweet.tweet }}</p>
                     </div>
                 </div>
             </div>
