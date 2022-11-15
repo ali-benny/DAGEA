@@ -29,11 +29,12 @@ def convertDF2SQL(function, maxTweet, findParam):
 	connection = sqlite3.connect('database.db')
 	c = connection.cursor()
 		# - create table -
-	c.execute('CREATE TABLE IF NOT EXISTS post (user, desc)')
+	c.execute('CREATE TABLE IF NOT EXISTS tweet (user, desc)')
 	connection.commit()	# save my edits on connection
 	
 	# -- insert data on data_frame into db connection
-	df.to_sql('post', connection, if_exists='replace', index=False)
+	df.to_html()
+	df.to_sql('tweet', connection, if_exists='replace', index=False)
 
 def __main__():
 	twitter.__init__()
