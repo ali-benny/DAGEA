@@ -6,7 +6,7 @@ import os
 
 app = Flask(__name__)
 
-@app.route('/', methods=('PUT', 'GET', 'POST', 'DELETE', 'PATCH'))
+@app.route('/', methods=('GET', 'POST'))
 def homepage():
 	if request.method == 'POST':
 		keyword = request.form['keyword']		# getting keyword from form
