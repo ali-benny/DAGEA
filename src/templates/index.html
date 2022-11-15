@@ -20,15 +20,16 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
 
 
-    <script src="../index.js"></script>
-    <script src="../components/Header.js"></script>
+
 </head>
 
 <body class="bg-dark text-white">
     <script src="../search.js">
     </script>
+    <script src="../index.js"></script>
+    <script src="../components/Header.js"></script>
     <!-- Vecchio header -->
-    <header>
+    <!-- <header>
         <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
             <a href="index.html" class="navbar-brand"><img src="../static/img/logo/favicon-transparent.png" width=15%
                     class="d-inline-block" /><b>DAGEA™</b></a>
@@ -51,7 +52,7 @@
                 </form>
             </div>
         </nav>
-    </header>
+    </header> -->
 
 
     <!-- Vecchio main
@@ -69,7 +70,31 @@
 	-->
 
     <header-component />
-
+    <header>
+        <div class="navbar navbar-expand-sm navbar-dark text-light">
+            <div class="container">
+                <a href="./index.html" class="navbar-brand">
+                    <img src="../static/img/logo/favicon-transparent.ico" alt="" style="width: 100px;">
+                </a>
+                <div class="navbar-collapse justify-content-end">
+                    <ul class="navbar-nav">
+                        <li class="nav-item mx-1">
+                            <a href="./index.html" class="nav-link">Home</a>
+                        </li>
+                        <li class="nav-item mx-1">
+                            <a href="./howItWorks.html" class="nav-link">How it works </a>
+                        </li>
+                        <li class="nav-item mx-1">
+                            <a href="./credits.html" class="nav-link">Credits</a>
+                        </li>
+                    </ul>
+                    <form class="d-flex ms-2" role="search">
+                        <input type="search" class="form-control border-dark" placeholder="SEARCH">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </header>
     <main class="container">
         <div class="container p-3">
             <div class="text-center">
@@ -80,27 +105,22 @@
         <div class="d-flex justify-content-center align-items-center">
             <div class="d-flex">
                 <div class="d-flex">
-                    <form class="d-flex my-2 my-lg-0">
+                    <form class="d-flex my-2 my-lg-0" method="post">
                         <i class="fa fa-search"></i>
-                        <input type="text" class="form-control" placeholder="Search tweets">
-                        <button class="btn btn-primary bi-search" id="searchBtn"></button>
+                        <input type="text" class="form-control" placeholder="Search tweets" name="keyword" id="keyword" value="{{ request.form['keyword'] }}">
+                        <button class="btn btn-primary bi-search" id="searchBtn" type="submit"></button>
                     </form>
                 </div>
 
                 <div class="d-flex">
                     <div class="dropdown align-items-center" id="tweetSearchBar">
-                        <button class="dropdown-toggle btn text-light text-start" data-bs-toggle="dropdown"
-                            id="tweetDrp">Research by </button>
-                        <ul class="dropdown-menu">
-                            <li class="dropdow-item">
-                                <a href="#" class="dropdown-item" id="userDrp" data-bs-toggle="dropdown"
+                        <a class="dropdown-toggle btn text-light text-start" data-bs-toggle="dropdown"
+                            id="tweetDrp">Research by </a>
+                        <div class="dropdown-menu">
+                                <a href="#" class="dropdown-item" id="userDrp"
                                     onclick=searchBy(0)>User</a>
-                            </li>
-                            <li class="dropdow-item">
-                                <a href="#" class="dropdown-item" id="keyDrp" data-bs-toggle="dropdown"
-                                    onclick=searchBy(1)>Keyword & Hashtag</a>
-                            </li>
-                        </ul>
+                                <a href="#" class="dropdown-item" id="keyDrp" onclick=searchBy(0)>Keyword & Hashtag</a>
+                        </div>
                     </div>
                 </div>
             </div>
