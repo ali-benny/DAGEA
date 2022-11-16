@@ -27,4 +27,4 @@ let initializeDate = (dateElement, isStartDate) => {
 initializeDate(document.getElementById("startDate"), true);
 initializeDate(document.getElementById("limitDate"), false);
 
-console.log("End of Index.js")
+console.log("End of Index.js")      /* A print to see if all the index.js code ran correctly */

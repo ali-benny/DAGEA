@@ -58,14 +58,26 @@
                 </div>
             </div>
 
-            <div class="ms-4">
-                <div class="">
-                    <label for="start">Start date:</label>
-                    <input type="date" class="mb-2" id="startDate" value="" min="" max="">
-                </div>
-                <div class="">
-                    <label for="start">Date limit:</label>
-                    <input type="date" class="" id="limitDate" value="" min="" max="">
+            <div class="ms-2">
+                <div class="btn-group dorpdown">
+                    <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown">
+                        Date range
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <div class="dropdown-item">
+                                <label for="start">Start date: </label>
+                                <input type="date" class="" id="startDate" value="" min="" max="">
+                            </div>
+                        </li>
+                        <li>
+                            <div class="dropdown-item">
+
+                                <label for="start">Date limit: </label>
+                                <input type="date" class="" id="limitDate" value="" min="" max="">
+                            </div>
+                        </li>
+                    </ul>
                 </div>
             </div>
         </div>
