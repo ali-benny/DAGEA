@@ -1,13 +1,13 @@
 var cd = new Date();        /* cd stay for Current Date */
 
 let searchBy = (searchCase) => {
-    var optionsButton = document.getElementById("tweetSearchBarButton")
+    var optionsButton = document.getElementById("tweetDrp")
     switch (searchCase) {
         case 0:
-            optionsButton.innerHTML = "Research by user "
+            optionsButton.innerHTML = "Research by username "
             break;
         case 1:
-            optionsButton.innerHTML = "Research by tag "
+            optionsButton.innerHTML = "Research by keyword & hashtag "
             break;
         default:
             break;
