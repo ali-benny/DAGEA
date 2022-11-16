@@ -11,7 +11,6 @@ def homepage():
 	if request.method == 'POST':
 		keyword = request.form['keyword']		# getting keyword from form
 		getTweet.convertDF2SQL('GetTweetByKeyword', 20, keyword)
-		return redirect('/')
 	getTweet.__main__()		# getTweet and save them into db
 	connection = sqlite3.connect('database.db')		# connecting to database
 	connection.row_factory = sqlite3.Row	# read row from database
