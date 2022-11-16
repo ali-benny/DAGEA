@@ -39,7 +39,8 @@
                 <div class="d-flex">
                     <form class="d-flex my-2 my-lg-0" method="post">
                         <i class="fa fa-search"></i>
-                        <input type="text" class="form-control" placeholder="Search tweets" name="keyword" id="keyword" value="{{ request.form['keyword'] }}">
+                        <input type="text" class="form-control" placeholder="Search tweets" name="keyword" id="keyword"
+                            value="{{ request.form['keyword'] }}">
                         <button class="btn btn-primary bi-search" id="searchBtn" type="submit"></button>
                     </form>
                 </div>
@@ -49,10 +50,8 @@
                         <a class="dropdown-toggle btn text-light text-start" data-bs-toggle="dropdown"
                             id="tweetDrp">Research by </a>
                         <div class="dropdown-menu">
-                                <a href="#" class="dropdown-item" id="userDrp"
-                                    onclick=searchBy(0)>User</a>
-                                <a href="#" class="dropdown-item" id="keyDrp"
-                                    onclick=searchBy(1)>Keyword & Hashtag</a>
+                            <a href="#" class="dropdown-item" id="userDrp" onclick=searchBy(0)>User</a>
+                            <a href="#" class="dropdown-item" id="keyDrp" onclick=searchBy(1)>Keyword & Hashtag</a>
                         </div>
                     </div>
                 </div>
@@ -82,25 +81,25 @@
             </div>
         </div>
 
-    <br><br>
-    
-    <!-- Cards tweets -->
-    <div class="container d-flex h-100 pt-5 text-dark">
-        <div class="row justify-content-center mb-3">
-            {% for tweet in tweets %}
-            <div class="col-lg-4">
-                <div class="card" style="width: 90%; margin: 2%">
-                    <!-- <img class="card-img-top" alt="Card image" src="{{ tweet.media }}" /> -->
-                    <div class="card-body">
-                        <h4 class="card-title">{{ tweet.user }}</h4>
-                        <p class="card-text">{{ tweet.tweet }}</p>
+        <br><br>
+
+        <!-- Cards tweets -->
+        <div class="container d-flex h-100 pt-5 text-dark">
+            <div class="row justify-content-center mb-3">
+                {% for tweet in tweets %}
+                <div class="col-lg-4">
+                    <div class="card" style="width: 90%; margin: 2%">
+                        <!-- <img class="card-img-top" alt="Card image" src="{{ tweet.media }}" /> -->
+                        <div class="card-body">
+                            <h4 class="card-title">{{ tweet.user }}</h4>
+                            <p class="card-text">{{ tweet.tweet }}</p>
+                        </div>
                     </div>
                 </div>
+                {% endfor %}
             </div>
-            {% endfor %}
         </div>
-    </div>
-  </main>
+    </main>
 </body>
 
 </html>
