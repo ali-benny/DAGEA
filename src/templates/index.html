@@ -58,8 +58,15 @@
                     </select>
                 </div>
     
-                <!-- Data range -->
+                <!-- Tweet limit -->
                 <div class="col-2">
+                    <input required class="form-control" id="tweetLimit" value="10" min="0" max="200" type="number"
+                        value="{{ request.form['tweetLimit'] }}"">
+                    <small class=" form-text text-muted">Choose the number of tweets to display</small>
+                </div>
+
+                <!-- Data range -->
+                <div class="col">
                     <div class="btn-group dorpdown">
                         <button type="button" class="btn text-dark bg-white dropdown-toggle" data-bs-toggle="dropdown">
                             Date range
@@ -79,13 +86,6 @@
                             </li>
                         </ul>
                     </div>
-                </div>
-    
-                <!-- Tweet limit -->
-                <div class="col">
-                    <input required class="form-control" id="tweetLimit" value="10" min="0" max="200" type="number"
-                        value="{{ request.form['tweetLimit'] }}"">
-                    <small class=" form-text text-muted">Choose the number of tweets to display</small>
                 </div>
             </form>
         </div>
