@@ -27,68 +27,68 @@
     <script src="../components/Header.js"></script>
 
     <header-component />
+
     <main class="container">
+        <!-- Title -->
         <div class="container p-3">
             <div class="text-center">
                 <h1 class="display-3 pb-2">GUI to search tweets</h1>
             </div>
         </div>
 
-        <div class="d-flex justify-content-center align-items-center">
-            <div class="d-flex">
-                <div class="d-flex">
-                    <form class="d-flex my-2 my-lg-0" method="post">
-                        <i class="fa fa-search"></i>
-                        <input type="text" class="form-control" placeholder="Search tweets" name="keyword" id="keyword"
+        <!-- Filter and search -->
+        <div class="container mt-4">
+            <form class="row" action="" method="post">
+                <!-- Search bar -->
+                <div class="col-3">
+                    <i class="fa fa-search"></i>
+                    <div class="d-flex">
+                        <input required type="text" class="form-control me-1" placeholder="Search tweets" name="keyword" id="keyword"
                             value="{{ request.form['keyword'] }}">
                         <button class="btn btn-primary bi-search" id="searchBtn" type="submit"></button>
-                    </form>
-                </div>
-
-                <div class="d-flex">
-                    <div class="dropdown align-items-center" id="tweetSearchBar">
-                        <a class="dropdown-toggle btn text-light text-start" data-bs-toggle="dropdown"
-                            id="tweetDrp">Research by </a>
-                        <div class="dropdown-menu">
-                            <a href="#" class="dropdown-item" id="userDrp" onclick=searchBy(0)>User</a>
-                            <a href="#" class="dropdown-item" id="keyDrp" onclick=searchBy(1)>Keyword & Hashtag</a>
-
-                            <!-- TODO: Gabry deve testare se il server funziona sotituendo i due elementi a sovrastanti coi due input sottostanti-->
-                            <!-- <input required class="dropdown-item" id="userDrp" type="button" onclick=searchBy(0) value="User">
-                            <input required class="dropdown-item" id="userDrp" type="button" onclick=searchBy(1) value="Keyword & Hashtag"> -->
-                        </div>
                     </div>
                 </div>
-            </div>
-
-            <div class="ms-2">
-                <div class="btn-group dorpdown">
-                    <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown">
-                        Date range
-                    </button>
-                    <ul class="dropdown-menu">
-                        <li>
-                            <div class="dropdown-item">
-                                <label for="start">Start date: </label>
-                                <input type="date" class="" id="startDate" value="" min="" max="">
-                            </div>
-                        </li>
-                        <li>
-                            <div class="dropdown-item">
-                                <label for="start">Date limit: </label>
-                                <input type="date" class="" id="limitDate" value="" min="" max="">
-                            </div>
-                        </li>
-                    </ul>
+    
+                <!-- Research by -->
+                <div class="col-5">
+                    <select required class="form-select" aria-label="Default select example">
+                        <option selected value="">Research by </option>
+                        <option value="user">Research by user</option>
+                        <option value="keyword">Research by keyword and hashtag</option>
+                    </select>
                 </div>
-            </div>
-
-            <div class="form-outline ms-3 mt-4">
-                <input required class="form-control" id="tweetLimit" value="0" min="0" max="200" type="number">
-                <small class="form-text text-muted">Choose the number of tweets to display</small>
-            </div>
+    
+                <!-- Data range -->
+                <div class="col-2">
+                    <div class="btn-group dorpdown">
+                        <button type="button" class="btn text-dark bg-white dropdown-toggle" data-bs-toggle="dropdown">
+                            Date range
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <div class="dropdown-item">
+                                    <label for="start">Start date: </label>
+                                    <input type="date" class="" id="startDate" value="" min="" max="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="dropdown-item">
+                                    <label for="start">Date limit: </label>
+                                    <input type="date" class="" id="limitDate" value="" min="" max="">
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+    
+                <!-- Tweet limit -->
+                <div class="col">
+                    <input required class="form-control" id="tweetLimit" value="10" min="0" max="200" type="number"
+                        value="{{ request.form['tweetLimit'] }}"">
+                    <small class=" form-text text-muted">Choose the number of tweets to display</small>
+                </div>
+            </form>
         </div>
-
         <br><br>
 
         <!-- Cards tweets -->
@@ -108,6 +108,7 @@
             </div>
         </div>
     </main>
+
 </body>
 
 </html>
