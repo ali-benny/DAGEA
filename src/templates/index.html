@@ -34,7 +34,7 @@
             </div>
         </div>
 
-        <div class="d-flex justify-content-center align-items-center">
+        <div class="d-flex align-items-center justify-content-center">
             <div class="d-flex">
                 <div class="d-flex">
                     <form class="d-flex my-2 my-lg-0" method="post">
@@ -45,8 +45,8 @@
                     </form>
                 </div>
 
-                <div class="d-flex">
-                    <div class="dropdown align-items-center" id="tweetSearchBar">
+                <div class="d-flex align-items-center">
+                    <div class="dropdown" id="tweetSearchBar">
                         <a class="dropdown-toggle btn text-light text-start" data-bs-toggle="dropdown"
                             id="tweetDrp">Research by </a>
                         <div class="dropdown-menu">
@@ -60,35 +60,46 @@
                     </div>
                 </div>
             </div>
+            <button class="btn btn-primary bi-filter" type="button" data-bs-toggle="collapse"
+                data-bs-target="#contentId" aria-expanded="false" aria-controls="contentId">
+            </button>
+            <div class="collapse justify-content-center" id="contentId">
 
-            <div class="ms-2">
-                <div class="btn-group dorpdown">
-                    <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown">
-                        Date range
-                    </button>
-                    <ul class="dropdown-menu">
-                        <li>
-                            <div class="dropdown-item">
-                                <label for="start">Start date: </label>
-                                <input type="date" class="" id="startDate" value="" min="" max="">
-                            </div>
-                        </li>
-                        <li>
-                            <div class="dropdown-item">
-                                <label for="start">Date limit: </label>
-                                <input type="date" class="" id="limitDate" value="" min="" max="">
-                            </div>
-                        </li>
-                    </ul>
+                <!-- Geolocation switch -->
+                <div class="form-check form-switch align-items-center">
+                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
+                    <label class="form-check-label" for="flexSwitchCheckDefault">Geolocation</label>
+                </div>
+                <br>
+
+                <div class="ms-2">
+                    <div class="btn-group dorpdown">
+                        <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown">
+                            Date range
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <div class="dropdown-item">
+                                    <label for="start">Start date: </label>
+                                    <input type="date" class="" id="startDate" value="" min="" max="">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="dropdown-item">
+                                    <label for="start">Date limit: </label>
+                                    <input type="date" class="" id="limitDate" value="" min="" max="">
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="form-outline ms-3 mt-4">
+                    <input required class="" id="tweetLimit" value="1" min="1" max="200" type="range" step="1" oninput="tweetLimitOutput.value = tweetLimit.value">
+                    <label class="text-info">How many tweets? <output id="tweetLimitOutput">1</output></label>
                 </div>
             </div>
-
-            <div class="form-outline ms-3 mt-4">
-                <input required class="form-control" id="tweetLimit" value="0" min="0" max="200" type="number">
-                <small class="form-text text-muted">Choose the number of tweets to display</small>
-            </div>
         </div>
-
         <br><br>
 
         <!-- Cards tweets -->
