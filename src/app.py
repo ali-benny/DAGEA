@@ -10,7 +10,8 @@ app = Flask(__name__)
 def homepage():
 	if request.method == 'POST':
 		keyword = request.form['keyword']		# getting keyword from form
-		getTweet.convertDF2SQL('GetTweetByKeyword', 20, keyword)
+		tweetLimit = request.form['tweetLimit']	# getting tweetLimit input, from the <input type="number" name="tweetLimit"> of index.html, in the form of a string
+		getTweet.convertDF2SQL('GetTweetByKeyword', int(tweetLimit), keyword)
 		connection = sqlite3.connect('database.db')		# connecting to database
 		connection.row_factory = sqlite3.Row	# read row from database
 		tweets = connection.execute('SELECT * FROM tweet').fetchall() 	# getting all tweet form db
