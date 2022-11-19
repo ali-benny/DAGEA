@@ -1,7 +1,7 @@
 import twitter
 import sqlite3
 
-def convertDF2SQL(function, maxTweet, findParam):
+def convertDF2SQL(researchBy, maxTweet, keyword):
 	"""
 	The convertDF2SQL function takes in a function, maxTweet and findParam. 
 	In base alla funzione che voglio usare per cercare tweet,
@@ -15,12 +15,12 @@ def convertDF2SQL(function, maxTweet, findParam):
 	..notes: https://www.youtube.com/watch?v=hDNxHiybF8Q
 	https://datatofish.com/pandas-dataframe-to-sql/
 	"""
-	if function == "GetTweetByUser":
-		user = findParam
+	if researchBy == "researchByUser":
+		user = keyword
 		df = twitter.GetTweetByUser(user, maxTweet)
-	elif function == "GetTweetByKeyword":
-		keyword = findParam
-		df = twitter.GetTweetByKeyword(keyword, maxTweet)
+	elif researchBy == "researchByKeyword":
+		keywordOrHashtag = keyword
+		df = twitter.GetTweetByKeyword(keywordOrHashtag, maxTweet)
 	else: 
 		df = ""
 		return "ERROR: please insert correct parameter"
