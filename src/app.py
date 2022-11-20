@@ -47,5 +47,13 @@ def homepage():
 		currentResearchMethod=currentResearchMethod
 	)
 
+@app.route('/explain')
+def explainPage():
+	return render_template('howItWorks.html')
+
+@app.route('/credits')
+def creditsPage():
+	return render_template('credits.html')
+
 if __name__=="__main__":
     app.run(debug=True)
