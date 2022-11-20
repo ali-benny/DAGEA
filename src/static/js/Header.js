@@ -23,9 +23,6 @@ class Header extends HTMLElement {
                             <a href="/credits" class="nav-link">Credits</a>
                         </li>
                     </ul>
-                    <form class="d-flex ms-2" role="search">
-                        <input type="search" class="form-control border-dark" placeholder="SEARCH">
-                    </form>
                 </div>
             </div>
         </div>
