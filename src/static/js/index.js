@@ -26,7 +26,7 @@ let initializeDate = (dateElement, isStartDate) => {
         dateElement.setAttribute('value', String(cYear) + "-" + cMonth + "-" + cDay)
 }
 
-initializeDate(document.getElementById("startDate"), true);
-initializeDate(document.getElementById("limitDate"), false);
+initializeDate(document.getElementById("maxDate"), true);
+initializeDate(document.getElementById("minDate"), false);
 
 console.log("End of Index.js")      /* A print to see if all the index.js code ran correctly */

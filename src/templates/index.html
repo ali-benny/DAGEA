@@ -43,25 +43,29 @@
                 <div class="col-3">
                     <i class="fa fa-search"></i>
                     <div class="d-flex">
-                        <input required type="text" class="form-control me-1" placeholder="Search tweets" name="keyword" id="keyword"
-                            value="{{ request.form['keyword'] }}">
+                        <input required type="text" class="form-control me-1" placeholder="Search tweets" name="keyword"
+                            id="keyword" value="{{ request.form['keyword'] }}">
                         <button class="btn btn-primary bi-search" id="searchBtn" type="submit"></button>
                     </div>
                 </div>
-    
+
                 <!-- Research by -->
                 <div class="col-5">
                     <select required name="researchBy" class="form-select" aria-label="Default select example">
-                        <option selected value="">Research by </option>
-                        <option value="researchByUser">Research by user</option>
-                        <option value="researchByKeyword">Research by keyword and hashtag</option>
+                        {% for method in researchMethods %}
+                            {% if method.method == currentResearchMethod %}
+                                <option selected value="{{ method.method }}">{{ method.text }}</option>
+                            {% else %}
+                                <option value="{{ method.method }}">{{ method.text }}</option>
+                            {% endif %}
+                        {% endfor %}
                     </select>
                 </div>
-    
+
                 <!-- Tweet limit -->
                 <div class="col-2">
-                    <input required class="form-control" id="tweetLimitInput" value="{{ tweetLimit }}" min="0" max="200" type="number"
-                        name="tweetLimit">
+                    <input required class="form-control" id="tweetLimitInput" value="{{ tweetLimit }}" min="0" max="200"
+                        type="number" name="tweetLimit">
                     <small class="form-text text-muted">Choose the number of tweets to display</small>
                 </div>
 
@@ -75,13 +79,13 @@
                             <li>
                                 <div class="dropdown-item">
                                     <label for="start">Start date: </label>
-                                    <input type="date" class="" id="startDate" value="" min="" max="">
+                                    <input type="date" id="maxDate" name="maxDate" value="{{ maxDate }}" min="" max="">
                                 </div>
                             </li>
                             <li>
                                 <div class="dropdown-item">
                                     <label for="start">Date limit: </label>
-                                    <input type="date" class="" id="limitDate" value="" min="" max="">
+                                    <input type="date" id="minDate" name="minDate" value="{{ minDate }}" min="" max="">
                                 </div>
                             </li>
                         </ul>
