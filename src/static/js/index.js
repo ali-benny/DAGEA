@@ -1,5 +1,4 @@
 let cd = new Date();        /* cd stay for Current Date */
-let tweetLimit = 6;         /* The default value of the tweetLimit input */
 
 /*  Funzione (momentaneamente) inutilizzata. Potrebbe tornare utile in futuro ergo teniamola ancora un po'
 let searchBy = (searchCase) => {
@@ -16,15 +15,7 @@ let searchBy = (searchCase) => {
     }
 }*/
 
-let initializeTweetLimit = (tweetLimitInput) => {
-    /**
-     * Questa funziona setta a <tweetLimit> il numero minimo di tweet da ricercare
-     * qualora il campo dell'input sia vuoto (ovvero al load della home page)
-     */
-    if (tweetLimitInput.getAttribute('value') == "")
-        tweetLimitInput.setAttribute('value', tweetLimit)
-}
-
+ 
 let initializeDate = (dateElement, isStartDate) => {
     var cYear = cd.getFullYear()
     var cMonth = String(cd.getMonth() + 1)
@@ -37,6 +28,5 @@ let initializeDate = (dateElement, isStartDate) => {
 
 initializeDate(document.getElementById("startDate"), true);
 initializeDate(document.getElementById("limitDate"), false);
-initializeTweetLimit(document.getElementById("tweetLimitInput"));
 
 console.log("End of Index.js")      /* A print to see if all the index.js code ran correctly */
