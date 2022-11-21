@@ -1,5 +1,9 @@
 import twitter
 import sqlite3
+import app
+
+def GeolocationTrue():
+	twitter.GetTweetGeolocated()
 
 def convertDF2SQL(function, maxTweet, findParam):
 	"""
@@ -15,10 +19,11 @@ def convertDF2SQL(function, maxTweet, findParam):
 	..notes: https://www.youtube.com/watch?v=hDNxHiybF8Q
 	https://datatofish.com/pandas-dataframe-to-sql/
 	"""
-	if function == "GetTweetByUser":
+	app.isGeolocated()
+	if function == "user":
 		user = findParam
 		df = twitter.GetTweetByUser(user, maxTweet)
-	elif function == "GetTweetByKeyword":
+	elif function == "keyword":
 		keyword = findParam
 		df = twitter.GetTweetByKeyword(keyword, maxTweet)
 	else: 

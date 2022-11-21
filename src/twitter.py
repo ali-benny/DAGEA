@@ -35,19 +35,30 @@ def __init__():
 	auth.set_access_token(access_token, access_token_secret)
 
 	global api 
-	api = tweepy.API(auth)	# api istant
+	api = tweepy.API(auth)	# api istant NOTE: add wait_on_rate_limit=True for 429 error
 
 	# -- try to print my twitter home --
 	global public_tweets 
 	public_tweets = api.home_timeline()
 
-	# for tweet in public_tweets:		# to print all in home
-	# 	print(tweet.text)
+def get_twitter_location(search):
+    count = 0
+    for tweet in tweepy.Cursor(api.search_tweets, q=search).items(limit):
+        if hasattr(tweet, 'coordinates') and tweet.coordinates is not None:
+            count += 1
+            print("Coordinates", tweet.coordinates)
+        if hasattr(tweet, 'location') and tweet.location is not None:
+            count += 1
+            print("Coordinates", tweet.location)
+    print(count)
 
-	# print(public_tweets[0].text)		# to print only the first tweet in home
-	# print(public_tweets[0].created_at)	# to print the first tweet time
-	# print(public_tweets[0].user.screen_name)	# to print the user creator of the tweets
-	
+def GetTweetLocation(search, limit):
+    location_data = []
+    for tweet in tweepy.Cursor(api.search_tweets, q=search).items(limit):
+        if hasattr(tweet, 'user') and hasattr(tweet.user, 'screen_name') and hasattr(tweet.user, 'location'):
+            if tweet.user.location:
+                location_data.append((tweet.user.screen_name, tweet.user.location))
+    return location_data
 	
 def GetTweetByKeyword(keywords, numTweet):
 	'''
@@ -59,7 +70,7 @@ def GetTweetByKeyword(keywords, numTweet):
 	'''
 	limit = numTweet
 	
-	tweets = tweepy.Cursor(api.search_tweets, q = keywords, count = 100, tweet_mode = 'extended').items(limit)	# this let us to get more than 100 tweets
+	tweets = tweepy.Cursor(api.search_tweets, q = keywords, count = 10, tweet_mode = 'extended').items(limit)	# this let us to get more than 100 tweets
 	# -- create DataFrame --
 	columns = ['user', 'tweet']
 	data = []
@@ -76,11 +87,11 @@ def GetTweetByUser(user, numTweet):
 
 		:param user: username to get Tweet
 		:param numTweet: max number of Tweet to get
-		:return dataframe of all the finded tweet to convert
+		:return dataframe of all the find tweet to convert
 	'''
 	limit = numTweet		# max num of tweet to get from the user
 	tweets = tweepy.Cursor(api.user_timeline, screen_name = user, count = 200, tweet_mode = 'extended').items(limit)	# this let us to get more than 200 tweets
-	# tweets = api.user_timeline(screen_name = user, count = limit, tweet_mode = 'extended')	# tweet_mode = 'extended' ci permette di leggfere tutto il contenuto del tweet senza avere troncamenti
+	# tweets = api.user_timeline(screen_name = user, count = limit, tweet_mode = 'extended')	# tweet_mode = 'extended' ci permette di leggere tutto il contenuto del tweet senza avere troncamenti
 	# -- create DataFrame --
 	columns = ['user', 'tweet']
 	data = []
