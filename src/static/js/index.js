@@ -17,9 +17,9 @@ let searchBy = (searchCase) => {
 
  
 let initializeDate = (dateElement, isStartDate) => {
-    var cYear = cd.getFullYear()
-    var cMonth = String(cd.getMonth() + 1)
-    var cDay = String(cd.getDate()) 
+    let cYear = cd.getFullYear()
+    let cMonth = String(cd.getMonth() + 1)
+    let cDay = String(cd.getDate()) 
     dateElement.setAttribute('max', String(cYear) + "-" + cMonth + "-" + cDay)
     dateElement.setAttribute('min', String(cYear - 10) + "-" + cMonth + "-" + cDay)
     if (isStartDate)
