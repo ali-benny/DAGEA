@@ -1,116 +1,91 @@
-<!doctype html>
-<html lang="en">
+{% extends "base.html" %}
 
-<head>
-    <title>Tweet Finder | DAGEA™</title>
+{% block html_title %}Tweet Finder | DAGEA™{% endblock %}
 
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel='icon' href='../static/img/logo/favicon-transparent.ico' type='image/x-icon' sizes="16x16" />
+{% block js_inclusion %}
+<script async src="../static/js/index.js"></script>
+{% endblock %}
 
-    <!-- Bootstrap CSS and JS v5.2.2 -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3"
-        crossorigin="anonymous"></script>
-    <!-- Bootstrap icons -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
+{% block main_content %}
+<!-- Title -->
+<div class="container p-3">
+    <div class="text-center">
+        <h1 class="display-3 pb-2">GUI to search tweets</h1>
+    </div>
+</div>
 
-</head>
-
-<body class="bg-dark text-white">
-    <script src="../static/js/search.js"></script>
-    <script async src="../static/js/index.js"></script>
-    <script src="../static/js/Header.js"></script>
-
-    <header-component />
-
-    <main class="container">
-        <!-- Title -->
-        <div class="container p-3">
-            <div class="text-center">
-                <h1 class="display-3 pb-2">GUI to search tweets</h1>
+<!-- Filter and search -->
+<div class="container mt-4">
+    <form class="row" action="" method="post">
+        <!-- Search bar -->
+        <div class="col-3">
+            <div class="d-flex">
+                <input required type="text" class="form-control me-1" placeholder="Search tweets" name="keyword"
+                    id="keyword" value="{{ request.form['keyword'] }}">
+                <button class="btn btn-primary bi-search" id="searchBtn" type="submit"></button>
             </div>
         </div>
 
-        <!-- Filter and search -->
-        <div class="container mt-4">
-            <form class="row" action="" method="post">
-                <!-- Search bar -->
-                <div class="col-3">
-                    <div class="d-flex">
-                        <input required type="text" class="form-control me-1" placeholder="Search tweets" name="keyword"
-                            id="keyword" value="{{ request.form['keyword'] }}">
-                        <button class="btn btn-primary bi-search" id="searchBtn" type="submit"></button>
-                    </div>
-                </div>
-
-                <!-- Research by -->
-                <div class="col-5">
-                    <select required name="researchBy" class="form-select" aria-label="Default select example">
-                        {% for method in researchMethods %}
-                            {% if method.method == currentResearchMethod %}
-                                <option selected value="{{ method.method }}">{{ method.text }}</option>
-                            {% else %}
-                                <option value="{{ method.method }}">{{ method.text }}</option>
-                            {% endif %}
-                        {% endfor %}
-                    </select>
-                </div>
-
-                <!-- Tweet limit -->
-                <div class="col-2">
-                    <input required class="form-control" id="tweetLimitInput" value="{{ tweetLimit }}" min="0" max="200"
-                        type="number" name="tweetLimit">
-                    <small class="form-text text-muted">Choose the number of tweets to display</small>
-                </div>
-
-                <!-- Data range -->
-                <div class="col">
-                    <div class="btn-group dorpdown">
-                        <button type="button" class="btn text-dark bg-white dropdown-toggle" data-bs-toggle="dropdown">
-                            Date range
-                        </button>
-                        <ul class="dropdown-menu">
-                            <li>
-                                <div class="dropdown-item">
-                                    <label for="start">Start date: </label>
-                                    <input type="date" id="maxDate" name="maxDate" value="{{ maxDate }}" min="" max="">
-                                </div>
-                            </li>
-                            <li>
-                                <div class="dropdown-item">
-                                    <label for="start">Date limit: </label>
-                                    <input type="date" id="minDate" name="minDate" value="{{ minDate }}" min="" max="">
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </form>
-        </div>
-        <br><br>
-
-        <!-- Cards tweets -->
-        <div class="container d-flex h-100 pt-5 text-dark">
-            <div class="row justify-content-center mb-3">
-                {% for tweet in tweets %}
-                <div class="col-lg-4">
-                    <div class="card" style="width: 90%; margin: 2%">
-                        <!-- <img class="card-img-top" alt="Card image" src="{{ tweet.media }}" /> -->
-                        <div class="card-body">
-                            <h4 class="card-title">{{ tweet.user }}</h4>
-                            <p class="card-text">{{ tweet.tweet }}</p>
-                        </div>
-                    </div>
-                </div>
+        <!-- Research by -->
+        <div class="col-5">
+            <select required name="researchBy" class="form-select" aria-label="Default select example">
+                {% for method in researchMethods %}
+                {% if method.method == currentResearchMethod %}
+                <option selected value="{{ method.method }}">{{ method.text }}</option>
+                {% else %}
+                <option value="{{ method.method }}">{{ method.text }}</option>
+                {% endif %}
                 {% endfor %}
+            </select>
+        </div>
+
+        <!-- Tweet limit -->
+        <div class="col-2">
+            <input required class="form-control" id="tweetLimitInput" value="{{ tweetLimit }}" min="0" max="200"
+                type="number" name="tweetLimit">
+            <small class="form-text text-muted">Choose the number of tweets to display</small>
+        </div>
+
+        <!-- Data range -->
+        <div class="col">
+            <div class="btn-group dorpdown">
+                <button type="button" class="btn text-dark bg-white dropdown-toggle" data-bs-toggle="dropdown">
+                    Date range
+                </button>
+                <ul class="dropdown-menu">
+                    <li>
+                        <div class="dropdown-item">
+                            <label for="start">Start date: </label>
+                            <input type="date" id="maxDate" name="maxDate" value="{{ maxDate }}" min="" max="">
+                        </div>
+                    </li>
+                    <li>
+                        <div class="dropdown-item">
+                            <label for="start">Date limit: </label>
+                            <input type="date" id="minDate" name="minDate" value="{{ minDate }}" min="" max="">
+                        </div>
+                    </li>
+                </ul>
             </div>
         </div>
-    </main>
+    </form>
+</div>
+<br><br>
 
-</body>
-
-</html>
+<!-- Cards tweets -->
+<div class="container d-flex h-100 pt-5 text-dark">
+    <div class="row justify-content-center mb-3">
+        {% for tweet in tweets %}
+        <div class="col-lg-4">
+            <div class="card" style="width: 90%; margin: 2%">
+                <!-- <img class="card-img-top" alt="Card image" src="{{ tweet.media }}" /> -->
+                <div class="card-body">
+                    <h4 class="card-title">{{ tweet.user }}</h4>
+                    <p class="card-text">{{ tweet.tweet }}</p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
