@@ -1,8 +1,12 @@
-import tweepy
-import configparser
-import pandas as pd 	# for save tweet in SVG
-import js
-from js import document
+import os
+try:
+	import tweepy
+	import configparser
+	import pandas as pd 	# for save tweet in SVG
+except ModuleNotFoundError:
+    os.system('pip install tweepy')
+    os.system('pip install configparser')
+    os.system('pip install pandas')
 
 def main():
 	keywords = document.getElementById("keyword").innerHTML()
