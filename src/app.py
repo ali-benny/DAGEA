@@ -3,8 +3,12 @@ import getTweet
 import sqlite3
 import jinja2
 import os
+from flask_wtf import CSRFProtect
 
 app = Flask(__name__)
+app.secret_key = 'secret_key'
+csrf = CSRFProtect(app)
+
 startTweetLimit = 6
 researchMethods = [
 	{'method':"", 'text':'Research by '},
