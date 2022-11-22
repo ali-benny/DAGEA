@@ -1,8 +1,14 @@
-from flask import Flask, render_template, request
-import getTweet
-import sqlite3
-import jinja2
 import os
+try:
+    from flask import Flask, render_template, request
+    import getTweet
+    import sqlite3
+    import jinja2
+except ModuleNotFoundError:
+    os.system('pip install flask')
+    os.system('pip install getTweet')
+    os.system('pip install sqlite3')
+    os.system('pip install jinja2')
 
 app = Flask(__name__)
 

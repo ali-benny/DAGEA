@@ -1,7 +1,12 @@
-import configparser
 import os
-import pandas as pd  # for save tweet in SVG
-import tweepy
+try:
+    import configparser
+    import pandas as pd  # for save tweet in SVG
+    import tweepy
+except ModuleNotFoundError:
+    os.system('pip install configparser')
+    os.system('pip install pandas')
+    os.system('pip install tweepy')
 
 def get_key(section, setting):
 	"""

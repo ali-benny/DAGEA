@@ -4,3 +4,5 @@
 - **Go to:**  ``` /dagea/src ```
 
 - **Run:** ```python3 app.py ```
+
+- **Nota:** Ad un primo tentativo di esecuzione, se mancanti, verranno installate automaticamente le librerire python necessarie per il funzionamento del codice tramite ```pip```. Ad un secondo tentativo di esecuzione non dovrebbero insorgere problemi relativi alla mancanza di librerie. 

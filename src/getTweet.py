@@ -1,5 +1,10 @@
-import twitter
-import sqlite3
+import os
+try:
+    import sqlite3
+    import twitter
+except ModuleNotFoundError:
+    os.system('pip install sqlite3')
+    os.system('pip install twitter')
 
 def convertDF2SQL(researchBy, maxTweet, keyword):
 	"""
