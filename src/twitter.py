@@ -41,17 +41,6 @@ def __init__():
 	global public_tweets 
 	public_tweets = api.home_timeline()
 
-def get_twitter_location(search):
-    count = 0
-    for tweet in tweepy.Cursor(api.search_tweets, q=search).items(limit):
-        if hasattr(tweet, 'coordinates') and tweet.coordinates is not None:
-            count += 1
-            print("Coordinates", tweet.coordinates)
-        if hasattr(tweet, 'location') and tweet.location is not None:
-            count += 1
-            print("Coordinates", tweet.location)
-    print(count)
-
 def GetTweetLocation(search, limit):
     location_data = []
     for tweet in tweepy.Cursor(api.search_tweets, q=search).items(limit):
@@ -60,7 +49,7 @@ def GetTweetLocation(search, limit):
                 location_data.append((tweet.user.screen_name, tweet.user.location))
     return location_data
 	
-def GetTweetByKeyword(keywords, numTweet):
+def GetTweetByKeyword(keywords, numTweet, location=False):
 	'''
 	Get Tweet by Hashtag and Keyword
 
@@ -81,7 +70,7 @@ def GetTweetByKeyword(keywords, numTweet):
 	return data_frame
 
 
-def GetTweetByUser(user, numTweet):
+def GetTweetByUser(user, numTweet, location=False):
 	'''
 		Get Tweet by Username
 

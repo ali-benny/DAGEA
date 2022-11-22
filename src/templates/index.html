@@ -32,6 +32,7 @@
     <!-- Import JS -->
     <script async src="../static/js/index.js"></script>
     <script src="../static/js/Header.js"></script>
+    <script src="../static/js/marker.js"></script>
 
     <header-component />
     <main class="container h-100">
@@ -125,15 +126,16 @@
                 </div>
             </div>
             <!-- Map -->
-            <div class="col-sm" style="width: 60%">
-                <div class="card bg-secondary h-100" style="margin: 2pt">
-                    <div class="card-body h-100" style="position: relative">
-                        <h1>Mappa</h1>
-                    <div id="map"></div>
-                        <script src="../static/js/location.js"></script>
+            <div class="card col-sm bg-secondary h-100" style="margin: 2pt">
+                <div class="card-body h-100">
+                    <h1>Map</h1>
+                    <div class="map-container h-100" style="position: relative">
+                        <div id="map"></div>
+                        <script src="../static/js/map.js"></script>
                     </div>
                 </div>
             </div>
+        </div>
     </main>
 </body>
 

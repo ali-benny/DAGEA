@@ -1,9 +1,7 @@
 import twitter
 import sqlite3
 import app
-
-def GeolocationTrue():
-	twitter.GetTweetGeolocated()
+import os
 
 def convertDF2SQL(function, maxTweet, findParam):
 	"""
@@ -19,13 +17,18 @@ def convertDF2SQL(function, maxTweet, findParam):
 	..notes: https://www.youtube.com/watch?v=hDNxHiybF8Q
 	https://datatofish.com/pandas-dataframe-to-sql/
 	"""
-	app.isGeolocated()
 	if function == "user":
 		user = findParam
-		df = twitter.GetTweetByUser(user, maxTweet)
+		if app.isLocated():
+			df = twitter.GetTweetByUser(user, maxTweet, location=True)
+		else:
+			df = twitter.GetTweetByUser(user, maxTweet)
 	elif function == "keyword":
 		keyword = findParam
-		df = twitter.GetTweetByKeyword(keyword, maxTweet)
+		if app.isLocated():
+			df = twitter.GetTweetByKeyword(keyword, maxTweet, location=True)
+		else:
+			df = twitter.GetTweetByKeyword(keyword, maxTweet)
 	else: 
 		df = ""
 		return "ERROR: please insert correct parameter"
@@ -38,8 +41,8 @@ def convertDF2SQL(function, maxTweet, findParam):
 	connection.commit()	# save my edits on connection
 	
 	# -- insert data on data_frame into db connection
-	# df = df.to_html()
 	df.to_sql('tweet', connection, if_exists='replace', index=False)
+	df.to_json(os.path.abspath('dataframe.json'))
 
 def __main__():
 	twitter.__init__()

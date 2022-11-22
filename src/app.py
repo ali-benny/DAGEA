@@ -27,14 +27,12 @@ def homepage():
 	connection.close()	# close connection to database
 	return render_template('index.html', tweets=tweets)		# rendering flask template 'index.html'
 
-def isGeolocated():
+def isLocated():
 	if request.method == 'POST':	
 		check = request.form.get('check-geolocation')
 		if check == 1:		# if is checked
-			print('🏓')
-			getTweet.GeolocationTrue()
-		else:
-			print("🧊")
+			return True
+		return False
 
 if __name__=="__main__":
     app.run(debug=True)
