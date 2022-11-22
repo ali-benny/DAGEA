@@ -24,6 +24,7 @@ def __init__():
 	my_path = os.path.abspath('config.ini')
 	config.read(my_path)
 	section = 'twitter'		#! change it as your [param] on config.ini file 
+	
 	api_key = get_key(section, 'api_key')
 	api_key_secret = get_key(section, 'api_key_secret')
 
