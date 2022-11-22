@@ -7,7 +7,7 @@
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="stylesheet" href="../static/css/card.css">
+    <link rel="stylesheet" href="../static/css/location.css">
     <link rel='icon' href='../static/img/logo/favicon-transparent.ico' type='image/x-icon' sizes="16x16" />
 
     <!-- Bootstrap CSS and JS v5.2.2 -->
@@ -102,8 +102,9 @@
             </div>
         </div>
         <br><br>
-
+        
         <div class="row">
+
             <div class="col-sm">
                 <!-- Cards tweets -->
                 <div class="container d-flex h-100 pt-5 text-dark">
@@ -123,7 +124,18 @@
                 </div>
             </div>
             <div class="col-sm">
-                <location-col />
+                <!-- Map -->
+                <div class="container d-flex h-100 pt-5 text-dark">
+                    <div class="row justify-content-center mb-3">
+                        <div class="col-lg-4">
+                            <div class="card" style="width: 90%; margin: 2%">
+                                <div class="card-body">
+                                    <div id="mapid" style="height: 400px;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
     </main>
 </body>

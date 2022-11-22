@@ -1,18 +1,11 @@
-class location extends HTMLElement {
-	constructor() {
-		super();
-	}
-
-	connectedCallback() {
-		this.innerHTML = `
-		<button class="btn btn-secondary bi-map-fill" type="button" data-bs-toggle="collapse" data-bs-target="#locationId"
-			aria-expanded="false" aria-controls="locationId">
-		</button>
-		<div class="collapse text-white" id="locationId">
-			<h1>mi vedi?</h1>
-		</div>
-	`;
-	}
+function openNav() {
+    document.getElementById("mySidenav").style.width = "250px";
+    document.getElementById("main").style.marginRight = "250px";
+    document.body.style.backgroundColor = "rgba(0,0,0,0.4)";
 }
 
-customElements.define("location-col", location);
+function closeNav() {
+    document.getElementById("mySidenav").style.width = "0";
+    document.getElementById("main").style.marginRight= "0";
+    document.body.style.backgroundColor = "white";
+}
