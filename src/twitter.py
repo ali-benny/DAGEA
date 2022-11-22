@@ -1,7 +1,19 @@
-import configparser
 import os
-import pandas as pd  # for save tweet in SVG
-import tweepy
+try:
+	import configparser
+	import pandas as pd  # for save tweet in SVG
+	import tweepy
+except ModuleNotFoundError:
+	os.system('pip install configparser')
+	os.system('pip install pandas')
+	os.system('pip install tweepy')
+
+# dichiarazione variabile config utile al file di test
+config = configparser.ConfigParser()
+# path al file contenente le keys, altrimenti il file di test dava problemi a trovare il valore "section"
+# (attenzione a sostituire il \ con /, altrimenti non funziona)
+configFilePath = 'C:/Users/alice/Desktop/dagea-1/src/config.ini' 
+config.read(configFilePath)
 
 def get_key(section, setting):
 	"""
