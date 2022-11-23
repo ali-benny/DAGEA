@@ -1,6 +1,6 @@
-let cd = new Date();        /* cd stay for Current Date */
+/* 
 
-/*  Funzione (momentaneamente) inutilizzata. Potrebbe tornare utile in futuro ergo teniamola ancora un po'
+ Funzione (momentaneamente) inutilizzata. Potrebbe tornare utile in futuro ergo teniamola ancora un po'
 let searchBy = (searchCase) => {
     var optionsButton = document.getElementById("tweetDrp")
     switch (searchCase) {
@@ -13,7 +13,7 @@ let searchBy = (searchCase) => {
         default:
             break;
     }
-}*/
+}
 
  
 let initializeDate = (dateElement, isStartDate) => {
