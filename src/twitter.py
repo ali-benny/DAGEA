@@ -63,13 +63,13 @@ def __init__():
 	
 	
 def GetTweetByKeyword(keywords, numTweet):
-	'''
+	"""
 	Get Tweet by Hashtag and Keyword
 
 	:param keywords: keyword or hashtag to search
 	:param numTweet: max number of Tweet to get
 	:return: dataframe of all the finded tweet to convert
-	'''
+	"""
 	limit = numTweet
 	
 	tweets = tweepy.Cursor(api.search_tweets, q = keywords, count = 100, tweet_mode = 'extended').items(limit)	# this let us to get more than 100 tweets
@@ -84,13 +84,13 @@ def GetTweetByKeyword(keywords, numTweet):
 
 
 def GetTweetByUser(user, numTweet):
-	'''
+	"""
 		Get Tweet by Username
 
 		:param user: username to get Tweet
 		:param numTweet: max number of Tweet to get
 		:return: dataframe of all the finded tweet to convert
-	'''
+	"""
 	limit = numTweet		# max num of tweet to get from the user
 	tweets = tweepy.Cursor(api.user_timeline, screen_name = user, count = 200, tweet_mode = 'extended').items(limit)	# this let us to get more than 200 tweets
 	# tweets = api.user_timeline(screen_name = user, count = limit, tweet_mode = 'extended')	# tweet_mode = 'extended' ci permette di leggfere tutto il contenuto del tweet senza avere troncamenti
