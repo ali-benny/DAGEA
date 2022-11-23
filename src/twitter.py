@@ -68,7 +68,7 @@ def GetTweetByKeyword(keywords, numTweet):
 
 	:param keywords: keyword or hashtag to search
 	:param numTweet: max number of Tweet to get
-	:return dataframe of all the finded tweet to convert
+	:return: dataframe of all the finded tweet to convert
 	'''
 	limit = numTweet
 	
@@ -89,7 +89,7 @@ def GetTweetByUser(user, numTweet):
 
 		:param user: username to get Tweet
 		:param numTweet: max number of Tweet to get
-		:return dataframe of all the finded tweet to convert
+		:return: dataframe of all the finded tweet to convert
 	'''
 	limit = numTweet		# max num of tweet to get from the user
 	tweets = tweepy.Cursor(api.user_timeline, screen_name = user, count = 200, tweet_mode = 'extended').items(limit)	# this let us to get more than 200 tweets
