@@ -1,0 +1,11 @@
+    34	CampanelliEmanuele <emanuele.campanelli@studio.unibo.it>
+     9	Alice <alice17bee@gmail.com>
+     9	alicealtena <alice.altena@gmail.com>
+     8	Alice Altena <alice.altena@studio.unibo.it>
+     8	Alice Benatti <alice17bee@gmail.com>
+     7	Gabriele Buttinoni <gabriele.buttinoni@gmail.com>
+     5	Gabriele Buttinoni <gabriele.buttinoni@studio.unibo.it>
+     3	Emanuele Campanelli <emanuele.campanelli@studio.unibo.it>
+     2	Alice Benatti <alice.benatti4@studio.unibo.it>
+co-authored commits:
+85
