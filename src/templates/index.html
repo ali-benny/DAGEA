@@ -48,25 +48,6 @@
 
         <!-- Data range -->
         <div class="col">
-            <!-- <div class="btn-group dorpdown">
-                <button type="button" class="btn text-dark bg-white dropdown-toggle" data-bs-toggle="dropdown">
-                    Date range
-                </button>
-                <ul class="dropdown-menu">
-                    <li>
-                        <div class="dropdown-item">
-                            <label for="start">Start date: </label>
-                            <input type="date" id="maxDate" name="maxDate" value="{{ maxDate }}" min="" max="">
-                        </div>
-                    </li>
-                    <li>
-                        <div class="dropdown-item">
-                            <label for="start">Date limit: </label>
-                            <input type="date" id="minDate" name="minDate" value="{{ minDate }}" min="" max="">
-                        </div>
-                    </li>
-                </ul>
-            </div> -->
             <select required name="currentRange" class="form-select" aria-label="Default select example">
                 {% for option in dataRangeInputs %}
                 {% if option.value == currentRange %}
