@@ -8,12 +8,10 @@ except ModuleNotFoundError:
 	os.system('pip install pandas')
 	os.system('pip install tweepy')
 
-# dichiarazione variabile config utile al file di test
+# read configuration from config file
 config = configparser.ConfigParser()
-# path al file contenente le keys, altrimenti il file di test dava problemi a trovare il valore "section"
-# (attenzione a sostituire il \ con /, altrimenti non funziona)
-configFilePath = 'C:/Users/alice/Desktop/dagea-1/src/config.ini' 
-config.read(configFilePath)
+my_path = os.path.abspath('config.ini')
+config.read(my_path)
 
 def get_key(section, setting):
 	"""
@@ -30,11 +28,7 @@ def get_key(section, setting):
 	return key
 
 def __init__():
-	# read configuration from config file
 	global config
-	config = configparser.ConfigParser()
-	my_path = os.path.abspath('config.ini')
-	config.read(my_path)
 	section = 'twitter'		#! change it as your [param] on config.ini file 
 	
 	api_key = get_key(section, 'api_key')
