@@ -18,7 +18,7 @@ p.display.set_caption('Scacchi')
 def loadImages():
     pieces = ['bR','bN','bB','bQ','bK','bp','wp','wQ','wK','wB','wN','wR']
     for piece in pieces:
-        IMAGES[piece] = p.transform.scale(p.image.load("immagini/"+ piece +".png"),(SQ_SIZE,SQ_SIZE))
+        IMAGES[piece] = p.transform.scale(p.image.load("scacchi/immagini/"+ piece +".png"),(SQ_SIZE,SQ_SIZE))
         #N.B. in caso se volessimo chiamare uno specifico pezzo ci basterebbe fare IMAGES['nome pezzo']
 
 def main():
