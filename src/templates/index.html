@@ -32,7 +32,6 @@
     <!-- Import JS -->
     <script async src="../static/js/index.js"></script>
     <script src="../static/js/Header.js"></script>
-    <script src="../static/js/marker.js"></script>
 
     <header-component />
     <main class="container h-100">
@@ -49,18 +48,19 @@
                         <input type="text" class="form-control" placeholder="Search tweets" name="keyword" id="keyword"
                             value="{{ request.form['keyword'] }}">
                         <button class="btn btn-primary bi-search" id="searchBtn" type="submit"></button>
-                    </form>
                 </div>
-                <div class="d-flex align-items-center">
-                    <div class="dropdown" id="tweetSearchBar">
-                        <a class="dropdown-toggle btn text-light text-start" data-bs-toggle="dropdown"
-                            id="tweetDrp">Research by </a>
-                        <div class="dropdown-menu">
-                            <a href="#" class="dropdown-item" id="userDrp" onclick=searchBy(0)>User</a>
-                            <a href="#" class="dropdown-item" id="keyDrp" onclick=searchBy(1)>Keyword &
-                                Hashtag</a>
-                        </div>
-                    </div>
+                <!-- Research by -->
+                <div class="d-flex">
+                    <select required name="researchBy" class="form-select bg-dark text-light"
+                        aria-label="Default select example">
+                        {% for method in researchMethods %}
+                        {% if method.method == currentResearchMethod %}
+                        <option selected value="{{ method.method }}">{{ method.text }}</option>
+                        {% else %}
+                        <option value="{{ method.method }}">{{ method.text }}</option>
+                        {% endif %}
+                        {% endfor %}
+                    </select>
                 </div>
             </div>
             <button class="btn btn-primary bi-filter" type="button" data-bs-toggle="collapse" data-bs-target="#filterId"
@@ -68,10 +68,10 @@
             </button>
             <div class="collapse justify-content-center" id="filterId">
                 <div class="row">
-                    <!-- Geolocation switch -->
+                    <!-- Location check -->
                     <div class="col-sm">
                         <div class="form-check form-switch align-items-center">
-                            <input class="form-check-input" type="checkbox" id="check-geolocation" onvalue="0">
+                            <input class="form-check-input" type="checkbox" name="isLocated" />
                             <label class="form-check-label" for="flexSwitchCheckDefault">Location</label>
                         </div>
                     </div>
@@ -98,12 +98,15 @@
                         </div>
                     </div>
                     <div class="form-outline ms-3 mt-4 col-sm">
-                        <input required class="" id="tweetLimit" value="1" min="1" max="200" type="range" step="1"
-                            oninput="tweetLimitOutput.value = tweetLimit.value">
-                        <label class="text-info">How many tweets? <output id="tweetLimitOutput">1</output></label>
+                        <!-- <input required class="" id="tweetLimit" value="{{ tweetLimit }}" min="1" max="200"                name="tweetLimit" type="range" step="1" oninput="tweetLimitOutput.value = tweetLimit.value">
+                        <label class="text-info">How many tweets? <output id="tweetLimitOutput">1</output></label> -->
+                        <input class="form-control" id="tweetLimitInput" value="{{ tweetLimit }}" min="1" max="200"
+                            type="number" name="tweetLimit">
+                        <small class="form-text text-muted">Choose the number of tweets to display</small>
                     </div>
                 </div>
             </div>
+            </form>
         </div>
         <br><br>
         <div class="row align-items-baseline justify-content-center h-100">

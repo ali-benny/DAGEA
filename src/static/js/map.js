@@ -11,4 +11,4 @@ const marker = L.marker([44.491026, 11.335586], 10)
 	.bindPopup("<b>Hello world!</b><br />I am a popup.")
 	.openPopup();
 
-map.on("click", onMapClick);
+// map.on("click", onMapClick);

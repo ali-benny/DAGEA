@@ -1,51 +1,57 @@
-import twitter
 import sqlite3
-import app
 import os
+# from src import app
+import twitter
 
-def convertDF2SQL(function, maxTweet, findParam):
+def GetTweet(function, maxTweet, searchVar, isLocated=False):
 	"""
-	The convertDF2SQL function takes in a function, maxTweet and findParam. 
-	In base alla funzione che voglio usare per cercare tweet,
-	ricavo il dataframe e lo salvo in un file database.db
+	The GetTweet function is used to retrieve tweets from the Twitter API. 
+	The function takes two parameters: a string representing the type of tweet (user or keyword), and a string representing the variable to search for that type of tweet (the user name or keyword). The function returns a dataframe containing all retrieved tweets.
 	
-	:param function: Specify which function to use
-	:param maxTweet: Limit the number of tweets that will be downloaded
-	:param findParam: param to search by de function
-	:return: database.db file otherwise send Error if no correct parameter
-	
-	..notes: https://www.youtube.com/watch?v=hDNxHiybF8Q
-	https://datatofish.com/pandas-dataframe-to-sql/
+	:param function: Determine which function to call
+	:param maxTweet: Determine the maximum number of tweets that will be returned
+	:param searchVar: Find the correct tweet
+	:return: The dataframe of the tweets that were retrieved
 	"""
 	if function == "user":
-		user = findParam
-		if app.isLocated():
+		user = searchVar
+		if isLocated:
 			df = twitter.GetTweetByUser(user, maxTweet, location=True)
+			convertDF2SQL(twitter.location_data_frame, 'location')	
 		else:
 			df = twitter.GetTweetByUser(user, maxTweet)
 	elif function == "keyword":
-		keyword = findParam
-		if app.isLocated():
+		keyword = searchVar
+		if isLocated:
 			df = twitter.GetTweetByKeyword(keyword, maxTweet, location=True)
+			convertDF2SQL(twitter.location_data_frame, 'location')	
 		else:
 			df = twitter.GetTweetByKeyword(keyword, maxTweet)
 	else: 
 		df = ""
-		return "ERROR: please insert correct parameter"
+		return "ERROR: please insert correct parameter"	# non deve accadere mai
+	convertDF2SQL(df, 'database')
+
+def convertDF2SQL(dataframe, fileName, location=False):
+	"""
+	The convertDF2SQL function takes a pandas dataframe and converts it to a SQL database.
+	The function also saves the dataframe as a JSON file.
 	
+	:param dataframe: Insert the dataframe into the database
+	:return: The connection to the database
+	"""
+	file = fileName + '.db'
 	# -- create db --
-	connection = sqlite3.connect('database.db')
+	connection = sqlite3.connect(file)
 	c = connection.cursor()
 		# - create table -
-	c.execute('CREATE TABLE IF NOT EXISTS tweet (user, desc)')
+	if location:
+		c.execute("CREATE TABLE IF NOT EXISTS tweet (user TEXT, desc TEXT, location BOOLEAN)")
+	else:
+		c.execute('CREATE TABLE IF NOT EXISTS tweet (user TEXT, desc TEXT)')
 	connection.commit()	# save my edits on connection
 	
-	# -- insert data on data_frame into db connection
-	df.to_sql('tweet', connection, if_exists='replace', index=False)
-	df.to_json(os.path.abspath('dataframe.json'))
-
-def __main__():
-	twitter.__init__()
-
-if __name__ == '__main__':
-	__main__()
+	# -- insert data_frame into db connection
+	dataframe.to_sql('tweet', connection, if_exists='replace', index=False)
+	file = fileName + '.json'
+	dataframe.to_json(os.path.abspath(file))
