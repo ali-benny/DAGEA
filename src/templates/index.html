@@ -28,7 +28,7 @@
 
 </head>
 
-<body class="bg-dark text-white h-100">
+<body class="bg-dark text-white h-100 w-100">
     <!-- Import JS -->
     <script async src="../static/js/index.js"></script>
     <script src="../static/js/Header.js"></script>
@@ -66,7 +66,7 @@
             <button class="btn btn-primary bi-filter" type="button" data-bs-toggle="collapse" data-bs-target="#filterId"
                 aria-expanded="false" aria-controls="filterId">
             </button>
-            <div class="collapse justify-content-center" id="filterId">
+            <div class="collapse justify-content-center align-items-center" id="filterId">
                 <div class="row">
                     <!-- Location check -->
                     <div class="col-sm">
@@ -109,16 +109,16 @@
             </form>
         </div>
         <br><br>
-        <div class="row align-items-baseline justify-content-center h-100">
-            <div class="col-sm">
+        <div class="row align-items-baseline justify-content-around h-100 w-100">
+            <div class="col d-flex">
                 <!-- Cards tweets -->
-                <div class="container d-flex h-100 text-dark">
+                <div class="container d-flex text-dark">
                     <div class="row justify-content-center mb-3">
                         {% for tweet in tweets %}
                         <div class="col-lg-4">
                             <div class="card" style="width: 90%; margin: 2pt">
-                                <!-- <img class="card-img-top" alt="Card image" src="{{ tweet.media }}" /> -->
-                                <div class="card-body">
+                                <!-- <img class="card-img-top bi-geo" alt="Card image" hidden="false"/> -->
+                                <div class="card-body" style="height: 100%">
                                     <h4 class="card-title">{{ tweet.user }}</h4>
                                     <p class="card-text">{{ tweet.tweet }}</p>
                                 </div>
@@ -129,11 +129,12 @@
                 </div>
             </div>
             <!-- Map -->
-            <div class="card col-sm bg-secondary h-100" style="margin: 2pt">
+            <div class="card col d-flex bg-secondary h-100" style="margin: 2pt">
                 <div class="card-body h-100">
-                    <h1>Map</h1>
+                    <h1>Tweet by Location</h1>
                     <div class="map-container h-100" style="position: relative">
                         <div id="map"></div>
+                        <script>var exports = {};</script>
                         <script src="../static/js/map.js"></script>
                     </div>
                 </div>

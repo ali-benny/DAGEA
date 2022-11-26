@@ -2,9 +2,13 @@ import configparser
 import os
 import pandas as pd  # for save tweet in SVG
 import tweepy
+import sqlite3
 
+""" global variables """
 global location_data	# list of tweet with coordinates with [user, text, lon, lat]
 global location_data_frame
+global config
+global api
 
 def get_key(section, setting):
 	"""
@@ -51,6 +55,36 @@ def __init__():
 	api = tweepy.API(auth)
 	return api
 
+def convertDF2SQL(dataframe, location = False):
+	"""
+	The convertDF2SQL function takes a pandas dataframe and converts it to a SQL database.
+	The function can also take an optional location argument, which will add the latitude and longitude if the research is with located tweets.
+	
+	Parameters
+	----------
+		dataframe
+			Store the data in a sql database
+		location
+			Specify if the dataframe is a list of tweets or a list of located tweets
+	"""
+	global location_data_frame
+	# -- connect to db --
+	connection = sqlite3.connect("database.db")
+	c = connection.cursor()
+	# - create table -
+	if location:
+		c.execute("CREATE TABLE IF NOT EXISTS located_tweet (user TEXT, tweet TEXT, lat DOUBLE, lon DOUBLE)")
+		connection.commit()	# save my edits on connection
+		location_data_frame.to_sql('located_tweet', connection, if_exists='replace', index=False)
+	
+	c.execute('CREATE TABLE IF NOT EXISTS all_tweet (user TEXT, tweet TEXT, location BOOLEAN)')
+	connection.commit()	# save my edits on connection
+	dataframe.to_sql('all_tweet', connection, if_exists='replace', index=False)
+
+	# save dataframe as json
+	dataframe.to_json("all_tweet.json")
+	location_data_frame.to_json("located_tweet.json")
+
 def GetTweetByKeyword(keywords, numTweet, location=False):
 	"""
 	The GetTweetByKeyword function takes a list of keywords and the number of tweets you want to get. 
@@ -66,37 +100,69 @@ def GetTweetByKeyword(keywords, numTweet, location=False):
 			Indicate whether or not you want to save the location of each tweet
 	
 	## Returns
-		A dataframe with the columns: user, tweet
+		A dataframe with the columns: user, tweet, location
 	"""
+	global location_data_frame
+	global location_data
 	data = []
 	location_data = []
+	location_data_frame = []
 	# -- get tweets --
-	if numTweet <= 100:
+	if (int)(numTweet) <= 100:
 		tweets = api.search_tweets(q = keywords, count = numTweet)	# this let us to get more than 100 tweets
 	else:
-		tweets = tweepy.Cursor(api.search_tweets, q = keywords, count = 100).items(numTweet)
+		tweets = tweepy.Cursor(api.search_tweets, q = keywords, count = 100, tweet_mode = 'extended').items(numTweet)
 	# -- save tweets in lists --
 	for tweet in tweets:
-		data.append((tweet.user.screen_name, tweet.text))
+		# I want to save location of tweet?
+		# if location and (tweet.coordinates is not None): 
+		if tweets.get("includes", None) != None and tweets["includes"].get("places", None) != None:
+			print('🐛',tweet["geo"]["place_id"])
+			location_data.append([tweet.user.screen_name, tweet.text, tweet.place, 0])
+		data.append((tweet.user.screen_name, tweet.text, (bool)(location)))
+	# -- create DataFrame --
+	data_frame = pd.DataFrame(data, columns = ['user', 'tweet', 'location'])
+	location_data_frame = pd.DataFrame(location_data, columns = ['user', 'tweet', 'lat', 'lon'])
+	return data_frame
+
+def GetTweetByUser(user, numTweet, location=False):
+	"""
+	The GetTweetByUser function takes a user and the number of tweets to retrieve. 
+	It returns a DataFrame with the username, tweet text, and location (if available).
+	
+	Parameters
+	----------
+		user
+			Specify the user's twitter handle
+		numTweet
+			Specify the number of tweets to be retrieved
+		location=False
+			Get the location of tweet
+	
+	Returns
+	-------
+		A dataframe with the searched tweets
+	"""
+	global location_data_frame
+	global location_data
+	data = []
+	location_data = []
+	location_data_frame = []
+	# -- get tweets --
+	if (int)(numTweet) <= 100:
+		tweets = api.user_timeline(screen_name = user, count = numTweet)	# this let us to get more than 100 tweets
+	else:
+		tweets = tweepy.Cursor(api.user_timeline, screen_name = user, count = 200, tweet_mode = 'extended').items(numTweet)
+	# -- save tweets in lists --
+	for tweet in tweets:
 		# I want to save location of tweet?
 		if location and (tweet.coordinates is not None): 
 			lon = tweet.coordinates['coordinates'][0]
 			lat = tweet.coordinates['coordinates'][1]
 			location_data.append([tweet.user.screen_name, tweet.text, lon, lat])
+		data.append((tweet.user.screen_name, tweet.text, (bool)(location)))
 	# -- create DataFrame --
-	columns = ['user', 'tweet']
-	data_frame = pd.DataFrame(data, columns = columns)
-	columns = ['user', 'tweet', 'lat', 'lon']
-	location_data_frame = pd.DataFrame(location_data, columns = columns)
-	location_data_frame.to_json('location.json')
+	data_frame = pd.DataFrame(data, columns = ['user', 'tweet', 'location'])
+	location_data_frame = pd.DataFrame(location_data, columns = ['user', 'tweet', 'lat', 'lon'])
 	return data_frame
 
-def GetTweetByUser(user, numTweet, location=False):
-	tweets = tweepy.Cursor(api.user_timeline, screen_name = user, count = 200, tweet_mode = 'extended').items(numTweet)
-	# -- create DataFrame --
-	columns = ['user', 'tweet']
-	data = []
-	for tweet in tweets:
-		data.append([tweet.user.screen_name, tweet.full_text])
-	data_frame = pd.DataFrame(data, columns = columns)
-	return data_frame
