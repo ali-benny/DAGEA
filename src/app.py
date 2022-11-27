@@ -81,5 +81,9 @@ def explainPage():
 def creditsPage():
 	return render_template('credits.html')
 
+@app.route('/chess')
+def chessPage():
+	return render_template('chess.html')
+
 if __name__=="__main__":
     app.run(debug=True)
