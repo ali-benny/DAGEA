@@ -4,7 +4,7 @@ e di disegnare ogni volta la scacchiera con tutti i pezzi necesssari
 '''
 import pygame as p
 import chess
-import scacchi_engine
+from scacchi import scacchi_engine
 
 
 WIDTH = HEIGHT = 512 #volendo si può scegliere 400 come dimensione
@@ -21,7 +21,7 @@ def loadImages():
         IMAGES[piece] = p.transform.scale(p.image.load("scacchi/immagini/"+ piece +".png"),(SQ_SIZE,SQ_SIZE))
         #N.B. in caso se volessimo chiamare uno specifico pezzo ci basterebbe fare IMAGES['nome pezzo']
 
-def main():
+def __main__():
     p.init()
     screen = p.display.set_mode((WIDTH,HEIGHT))
     clock = p.time.Clock()
@@ -59,7 +59,7 @@ def drawPieces(screen, board):
 
     
 if __name__ == "__main__":
-    main()
+    __main__()
 
 
 

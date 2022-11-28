@@ -10,6 +10,9 @@ except ModuleNotFoundError:
     os.system('pip install sqlite3')
     os.system('pip install jinja2')
 
+from scacchi import scacchi_101
+from scacchi import scacchi_engine
+
 app = Flask(__name__)
 
 startTweetLimit = 6
@@ -79,6 +82,7 @@ def explainPage():
 
 @app.route('/chess')
 def chessPage():
+	scacchi_101.__main__()
 	return render_template('chess.html')
 
 @app.route('/credits')
