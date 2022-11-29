@@ -1,6 +1,8 @@
-from flask import Flask, render_template, request
-import getTweet
 import sqlite3
+
+from flask import Flask, render_template, request
+
+import getTweet
 import twitter
 
 app = Flask(__name__)
@@ -61,6 +63,14 @@ def homepage():
 						   currentResearchMethod=currentResearchMethod,
 						   #    markers=markers
 						   )
+
+@app.route('/explain')
+def explainPage():
+	return render_template('howItWorks.html')
+
+@app.route('/credits')
+def creditsPage():
+	return render_template('credits.html')
 
 if __name__ == "__main__":
 	app.run(debug=True)
