@@ -82,6 +82,11 @@ def explainPage():
 
 @app.route('/chess')
 def chessPage():
+	#scacchi_101.__main__()
+	return render_template('chess.html')
+
+@app.route('/partita')
+def chessGame():
 	scacchi_101.__main__()
 	return render_template('chess.html')
 
