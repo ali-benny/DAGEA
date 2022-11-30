@@ -1,48 +1,32 @@
-import os
-try:
-    import sqlite3
-    import twitter
-except ModuleNotFoundError:
-    os.system('pip install sqlite3')
-    os.system('pip install twitter')
+import twitter
 
-def convertDF2SQL(researchBy, maxTweet, keyword):
+def GetTweet(function, maxTweet, searchVar, isLocated):
 	"""
-	The convertDF2SQL function takes in a function, maxTweet and findParam. 
-	In base alla funzione che voglio usare per cercare tweet,
-	ricavo il dataframe e lo salvo in un file database.db
+	The GetTweet function is used to get tweets from the Twitter API.
+	It takes as input a function, maxTweet and searchVar. 
 	
-	:param function: Specify which function to use
-	:param maxTweet: Limit the number of tweets that will be downloaded
-	:param findParam: param to search by de function
-	:return: database.db file otherwise send Error if no correct parameter
+	Parameters
+	----------
+		function = "researchByUser" or "researchByKeyword"
+			Select the type of research, and to specify if the user wants to get also location data
+		maxTweet
+			Specify the number of tweets to be retrieved
+		searchVar
+			Specify the search term
+		isLocated = True or False
+			Determine if the dataframe should be filtered by location or not
 	
-	..notes: https://www.youtube.com/watch?v=hDNxHiybF8Q
-	https://datatofish.com/pandas-dataframe-to-sql/
+	Returns
+	-------
+		Error if function not found or not match
 	"""
-	if researchBy == "researchByUser":
-		user = keyword
-		df = twitter.GetTweetByUser(user, maxTweet)
-	elif researchBy == "researchByKeyword":
-		keywordOrHashtag = keyword
-		df = twitter.GetTweetByKeyword(keywordOrHashtag, maxTweet)
+	if function == "researchByUser":
+		user = searchVar
+		df = twitter.GetTweetByUser(user, maxTweet, isLocated)
+	elif function == "researchByKeyword":
+		keyword = searchVar
+		df = twitter.GetTweetByKeyword(keyword, maxTweet, isLocated)
 	else: 
 		df = ""
-		return "ERROR: please insert correct parameter"
-	
-	# -- create db --
-	connection = sqlite3.connect('database.db')
-	c = connection.cursor()
-		# - create table -
-	c.execute('CREATE TABLE IF NOT EXISTS tweet (user, desc)')
-	connection.commit()	# save my edits on connection
-	
-	# -- insert data on data_frame into db connection
-	# df = df.to_html()
-	df.to_sql('tweet', connection, if_exists='replace', index=False)
-
-def __main__():
-	twitter.__init__()
-
-if __name__ == '__main__':
-	__main__()
+		return "ERROR: please insert correct parameter"	# non deve accadere mai
+	twitter.convertDF2SQL(df, isLocated)
