@@ -13,6 +13,8 @@
 <!-- Filter and search -->
 <div class="container mt-4">
     <form class="row" action="" method="post">
+        <div class="col-2"></div>
+
         <!-- Search bar -->
         <div class="col-3">
             <div class="d-flex">
@@ -23,7 +25,7 @@
         </div>
 
         <!-- Research by -->
-        <div class="col-4">
+        <div class="col-3">
             <select required name="researchBy" class="form-select" aria-label="Default select example">
                 {% for method in researchMethods %}
                 {% if method.method == currentResearchMethod %}
@@ -35,39 +37,27 @@
             </select>
         </div>
 
-        <!-- Tweet limit -->
+        <!-- Tweets limit -->
         <div class="col-2">
-            <input required class="form-control" id="tweetLimitInput" value="{{ tweetLimit }}" min="0" max="200"
-                type="number" name="tweetLimit">
+            <input required class="form-control" id="tweetsLimitInput" value="{{ tweetsLimit }}" min="0" max="200"
+                type="number" name="tweetsLimit">
             <small class="form-text text-muted">Choose the number of tweets to display</small>
         </div>
 
         <!-- Data range -->
-        <div class="col">
-            <select required name="currentRange" class="form-select" aria-label="Default select example">
-                {% for option in dataRangeInputs %}
-                {% if option.value == currentRange %}
-                <option selected value="{{ option.value }}">{{ option.text }}</option>
-                {% else %}
-                <option value="{{ option.value }}">{{ option.text }}</option>
-                {% endif %}
-                {% endfor %}
-            </select>
-        </div>
-    </form>
+        <!-- Temporaneamente rimosso perche' con l'introduzione delle classi la cosa diventa piu' complessa, al punto da richeidere una nuova migliorata -->
+</form>
 </div>
 <br><br>
 
 <!-- Cards tweets -->
 <div class="container d-flex h-100 pt-5 text-dark">
     <div class="row justify-content-center mb-3">
-        {% for tweet in tweets %}
+        {% for text in tweetsText %}
         <div class="col-lg-4">
             <div class="card" style="width: 90%; margin: 2%">
-                <!-- <img class="card-img-top" alt="Card image" src="{{ tweet.media }}" /> -->
                 <div class="card-body">
-                    <h4 class="card-title">{{ tweet.user }}</h4>
-                    <p class="card-text">{{ tweet.tweet }}</p>
+                    <p class="card-text">{{ text }}</p>
                 </div>
             </div>
         </div>
