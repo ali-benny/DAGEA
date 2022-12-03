@@ -113,12 +113,18 @@ class APIv2:
             cls.expansions = expansions
 
     @classmethod
-    def getDataFrame(cls, request: str = None) -> None:
-        match request:
-            case 'text':
-                return '' if cls.dataFrame.empty else cls.dataFrame[request]
-            case _:                
-                return '' if cls.dataFrame.empty else cls.dataFrame
+    def getDataFrames(cls, responseField: int, field: str = None):
+        try:
+            if cls.dataFrames == [] or cls.dataFrames[responseField].empty:    # O non si e' chiamata nessuna funzione di ricerca o la chiamata non ha trovato nulla
+                return ''
+            else:
+                return cls.dataFrames[responseField][field]
+        except IndexError:
+            print("ERROR: APIv2 Class, getDataFrames: except IndexError")
+            return ''
+        except KeyError:
+            print("ERROR: APIv2 Class, getDataFrames: except KeyError")
+            return ''
 
     ################  RESEARCH  ################
     @classmethod
@@ -153,6 +159,7 @@ class APIv2:
     ################  DATA HANDLING  ################
     @classmethod
     def createDataFrames(cls, response, field: str = 'all') -> None:
+        cls.dataFrames = []
         match field:
             case 'all':
                 cls.dataFrames.append(pd.DataFrame(response))
@@ -179,28 +186,27 @@ class APIv2:
                     cls.dataFrames[1].to_csv('responseData.csv')
                     cls.dataFrames[2].to_csv('responseIncludes.csv')
                     cls.dataFrames[3].to_csv('responseErrors.csv')
-                except AttributeError:      # Caso in cui il dataFrame sia vuoto (non si sono chiamati i metodi del'API)
+                except AttributeError:      # Caso in cui dataFrames[i] sia vuoto (non si sono chiamati i metodi del'API)
                     print("ATTENTION: currently there is no 'cls.dataFrames[i]' attribute in the APIv2 class.\nPossible causes:\n1) You haven't called any APIv2 method of the class yet --> Call one\n2) The call returned no results --> Try modifying the query")
             case 'response':
                 try:
                     cls.dataFrames[0].to_csv('response.csv')
-                except AttributeError:      # Caso in cui il dataFrame sia vuoto (non si sono chiamati i metodi del'API)
+                except AttributeError:      # Caso in cui dataFrames[i] sia vuoto (non si sono chiamati i metodi del'API)
                     print("ATTENTION: currently there is no 'cls.dataFrames[0]' attribute in the APIv2 class.\nPossible causes:\n1) You haven't called any APIv2 method of the class yet --> Call one\n2) The call returned no results --> Try modifying the query")
             case 'data':
                 try:
                     cls.dataFrames[1].to_csv('responseData.csv')
-                except AttributeError:      # Caso in cui il dataFrame sia vuoto (non si sono chiamati i metodi del'API)
+                except AttributeError:      # Caso in cui dataFrames[i] sia vuoto (non si sono chiamati i metodi del'API)
                     print("ATTENTION: currently there is no 'cls.dataFrames[1]' attribute in the APIv2 class.\nPossible causes:\n1) You haven't called any APIv2 method of the class yet --> Call one\n2) The call returned no results --> Try modifying the query")
             case 'includes':
                 try:
                     cls.dataFrames[2].to_csv('responseIncludes.csv')
-                except AttributeError:      # Caso in cui il dataFrame sia vuoto (non si sono chiamati i metodi del'API)
+                except AttributeError:      # Caso in cui dataFrames[i] sia vuoto (non si sono chiamati i metodi del'API)
                     print("ATTENTION: currently there is no 'cls.dataFrames[2]' attribute in the APIv2 class.\nPossible causes:\n1) You haven't called any APIv2 method of the class yet --> Call one\n2) The call returned no results --> Try modifying the query")
             case 'errors':
                 try:
                     cls.dataFrames[3].to_csv('responseErrors.csv')
-                except AttributeError:      # Caso in cui il dataFrame sia vuoto (non si sono chiamati i metodi del'API)
+                except AttributeError:      # Caso in cui dataFrames[i] sia vuoto (non si sono chiamati i metodi del'API)
                     print("ATTENTION: currently there is no 'cls.dataFrames[3]' attribute in the APIv2 class.\nPossible causes:\n1) You haven't called any APIv2 method of the class yet --> Call one\n2) The call returned no results --> Try modifying the query")
             case _:
                 raise ValueError("ERROR: APIv2 Class, _createCsvFile: match error")
-        

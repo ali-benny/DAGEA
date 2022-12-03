@@ -33,14 +33,13 @@ def homepage():
 	if request.method == 'POST':
 		#startDateRange = request.form.get('startDateRange')
 		#endDateRange = request.form.get('endDateRange')
-		ts.APIv2.setDatas(query=request.form['keyword'], tweetsLimit=request.form['tweetsLimit'])
-		
+		ts.APIv2.setDatas(query=request.form['keyword'], tweetsLimit=request.form['tweetsLimit'], expansions=['author_id'])
 		currentResearchMethod = request.form.get('researchBy')
 		ts.APIv2.researchDecree(researchType=currentResearchMethod)
 
 		return render_template(
 			'index.html',
-			tweetsText=ts.APIv2.getDataFrame('text'),
+			tweetsText=ts.APIv2.getDataFrames(responseField=1, field='text'),
 			tweetsLimit=ts.APIv2.tweetsLimit,
 			researchMethods=researchMethods,
 			currentResearchMethod=currentResearchMethod,
@@ -48,7 +47,7 @@ def homepage():
 		)	# rendering flask template 'index.html'
 	return render_template(
 		'index.html',
-		tweetsText=ts.APIv2.getDataFrame('text'),
+		tweetsText=ts.APIv2.getDataFrames(responseField=1, field='text'),
 		tweetsLimit=ts.APIv2.tweetsLimit,
 		researchMethods=researchMethods,
 		currentResearchMethod=currentResearchMethod,
