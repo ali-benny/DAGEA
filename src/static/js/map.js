@@ -9,18 +9,20 @@ const tiles = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
 // connecting to database
 exports.select = function (callback){
     var db = new sqlite3.Database("../../database.db");           
-    db.all("SELECT * FROM located_tweet", function(err,rows){
+    db.all("SELECT * FROM all_tweets", function(err,rows){
          if(err) return callback(err);
          rows.forEach(function (row) { 
-            addMarker(row.latitude, row.longitude, row.tweet, row.user);
+			if (row.location != null) {
+				addMarker(row.location, row.tweet, row.user);
+			}
 		});
-        db.close();
+        db.close();a
         return callback(null);
 	}); 
 }
 
-function addMarker(lat, lon, tweet, user) {
-	const marker = L.marker([lat, lon]).addTo(map);
+function addMarker(coordinate, tweet, user) {
+	const marker = L.marker(coordinate).addTo(map);
 	marker.bindPopup("<b>" + user + "</b><br>" + tweet);
 }
 // for (const row in tweets) {

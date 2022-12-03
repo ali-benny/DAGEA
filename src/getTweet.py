@@ -22,10 +22,10 @@ def GetTweet(function, maxTweet, searchVar, isLocated):
 	"""
 	if function == "researchByUser":
 		user = searchVar
-		df = twitter.GetTweetByUser(user, maxTweet, isLocated)
+		df = twitter.GetTweetByUser(user, (int)(maxTweet), isLocated)
 	elif function == "researchByKeyword":
 		keyword = searchVar
-		df = twitter.GetTweetByKeyword(keyword, maxTweet, isLocated)
+		df = twitter.GetTweetByKeyword(keyword, (int)(maxTweet), isLocated)
 	else: 
 		df = ""
 		return "ERROR: please insert correct parameter"	# non deve accadere mai

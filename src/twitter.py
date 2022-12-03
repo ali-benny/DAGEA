@@ -1,21 +1,17 @@
 import os
-try:
-    import configparser
-    import pandas as pd  # for save tweet in SVG
-    import tweepy
-	import sqlite3
-except ModuleNotFoundError:
-    os.system('pip install sqlite3')
-    os.system('pip install configparser')
-    os.system('pip install pandas')
-    os.system('pip install tweepy')
-
-""" global variables """
-global location_data  # list of tweet with coordinates with [user, text, lon, lat]
-global location_data_frame
-global config
-global api
-
+import configparser
+import pandas as pd  # for save tweet in SVG
+import tweepy
+import sqlite3
+import time
+# try:
+	
+# except ModuleNotFoundError:
+# 	os.system('pip install sqlite3')
+# 	os.system('pip install configparser')
+# 	os.system('pip install pandas')
+# 	os.system('pip install tweepy')
+#	os.system('pip install time')
 
 def get_key(section, setting):
 	"""
@@ -31,7 +27,6 @@ def get_key(section, setting):
 		key = None
 	return key
 
-
 def __init__():
 	"""
 	The __init__ function is called automatically every time the class is 
@@ -42,29 +37,35 @@ def __init__():
 	-------
 			The api object
 	"""
+	# init global variables
+	location_data = []
+	location_data_frame = []
 	# read configuration from config file
 	global config
 	config = configparser.ConfigParser()
 	my_path = os.path.abspath('config.ini')
 	config.read(my_path)
 	section = 'twitter'  # ! change it as your [param] on config.ini file
+	global api_key, api_key_secret, access_token, access_token_secret
 	api_key = get_key(section, 'api_key')
 	api_key_secret = get_key(section, 'api_key_secret')
 
 	access_token = get_key(section, 'access_token')
 	access_token_secret = get_key(section, 'access_token_secret')
 
-	# authentication
-	auth = tweepy.OAuthHandler(api_key, api_key_secret)
-	auth.set_access_token(access_token, access_token_secret)
+	# authentication v1.1
+	# auth = tweepy.OAuthHandler(api_key, api_key_secret)
+	# auth.set_access_token(access_token, access_token_secret)
 
+	# authentication v2
+	global client
+	client = tweepy.Client(get_key('twitter', 'bearer_token'))
 	global api
 	# api istant NOTE: add wait_on_rate_limit=True for 429 error
-	api = tweepy.API(auth)
-	return api
+	api = tweepy.API(client)
+	return client
 
-
-def convertDF2SQL(dataframe, location=False):
+def convertDF2SQL(dataframe, location=False, stream=False):
 	"""
 	The convertDF2SQL function takes a pandas dataframe and converts it to a SQL database.
 	The function can also take an optional location argument, which will add the latitude and longitude if the research is with located tweets.
@@ -76,26 +77,59 @@ def convertDF2SQL(dataframe, location=False):
 			location
 					Specify if the dataframe is a list of tweets or a list of located tweets
 	"""
-	global location_data_frame
+	global location_data
 	# -- connect to db --
 	connection = sqlite3.connect("database.db")
 	c = connection.cursor()
 	# - create table -
 	if location:
+		location_data_frame = pd.DataFrame(location_data, columns=['user', 'tweet', 'lat', 'lon'])
 		c.execute(
 			"CREATE TABLE IF NOT EXISTS located_tweet (user TEXT, tweet TEXT, lat DOUBLE, lon DOUBLE)")
 		connection.commit()  # save my edits on connection
 		location_data_frame.to_sql('located_tweet', connection, if_exists='replace', index=False)
+		location_data_frame.to_json("located_tweet.json")
 
 	c.execute(
-		'CREATE TABLE IF NOT EXISTS all_tweet (user TEXT, tweet TEXT, location BOOLEAN, date DATETIME)')
+		'CREATE TABLE IF NOT EXISTS all_tweets (user TEXT, tweet TEXT, location BOOLEAN, date DATETIME)')
 	connection.commit()  # save my edits on connection
-	dataframe.to_sql('all_tweet', connection, if_exists='replace', index=False)
-
+	if stream:
+		dataframe.to_sql('all_tweets', connection, if_exists='append', index=False)
+	dataframe.to_sql('all_tweets', connection, if_exists='replace', index=False)
 	# save dataframe as json
-	dataframe.to_json("all_tweet.json")
-	location_data_frame.to_json("located_tweet.json")
+	dataframe.to_json("all_tweets.json")
 
+class MyStream(tweepy.StreamingClient):
+	tweets =  []
+	limit = 10
+	dataframe = []
+	def on_connect(self):
+		print('Connected!')
+
+	def on_status(self, status):
+		self.tweets.append(status)
+		if len(self.tweets) == self.limit:
+			self.disconnect()
+			convertDF2SQL(self.dataframe, stream=True)
+	
+	def on_tweet(self, tweet):
+		if tweet.refecenced_tweets == None:
+			if not tweet.truncated:
+				self.tweets.append([tweet.user.screen_name, tweet.text, tweet.place, tweet.created_at])
+			else:
+				self.tweets.append([tweet.user.screen_name, tweet.extended_tweet['full_text'], tweet.place, tweet.created_at])
+			self.dataframe = pd.DataFrame(self.tweets, columns = ['user', 'tweet', 'location','date'])
+			
+			time.sleep(0.1)
+
+def StreamByKeyword(keywords):
+	global api_key, api_key_secret, access_token, access_token_secret
+	stream_tweet = MyStream(bearer_token=get_key('twitter','bearer_token'))
+	for keyword in keywords:
+		stream_tweet.add_rules(tweepy.StreamRule(keyword))
+	stream_tweet.filter(tweet_fields=["referenced_tweets"])
+	
+	
 def GetTweetByKeyword(keywords, numTweet, location=False):
 	"""
 	The GetTweetByKeyword function takes a list of keywords and the number of tweets you want to get. 
@@ -113,33 +147,31 @@ def GetTweetByKeyword(keywords, numTweet, location=False):
 	## Returns
 			A dataframe with the columns: user, tweet, location
 	"""
-	global location_data_frame
-	global location_data
+# TODO: add keyword control max 512 characters long
 	data = []
-	location_data = []
-	location_data_frame = []
 	# -- get tweets --
-	# if location:	# if i want to get only tweet with location
-	# 	keywords = keywords + " has:geo"
-	if numTweet <= '100':
-		tweets = api.search_tweets(q=keywords, count=numTweet)
+	expansion = ["attachments.media_keys"]
+	if location:	# if i want to get only tweet with location
+		expansion.append("geo.place_id")
+	if numTweet <= 100:
+		tweets = client.search_recent_tweets(query=keywords, max_results=numTweet, expansions = expansion)
+		print('🎃')
 	else:
-		tweets = tweepy.Cursor(api.search_tweets, q=keywords, count=100, tweet_mode='extended').items((int)(numTweet))
+		tweets = tweepy.Cursor(client.search_recent_tweets, query=keywords, max_results = 100, expansions = expansion, tweet_mode='extended').items(numTweet)
 	# -- save tweets in lists --
-	for tweet in tweets:
-		geo = False
-		print('🧪', tweet)
+	includes = tweets.includes
+	place = includes["geo.place_id"]
+	for tweet in tweets.data:
+		try:
+			text = tweet.full_text
+		except AttributeError:
+			text = tweet.text
 		# I want to save location of tweet?
-		# if location and (tweet.geo is not None):
-		if location and tweet.place is not None:
-			geo = True
-			lon = tweet.place.bounding_box.coordinates[0][0][0]
-			lat = tweet.place.bounding_box.coordinates[0][0][1]
-			location_data.append([tweet.user.screen_name, tweet.text, lon, lat])
-		data.append((tweet.user.screen_name, tweet.text, geo, tweet.created_at))
+		print('📍', tweet.place.full_name)
+			# location_data.append([tweet.user.screen_name, text, lon, lat])
+		data.append((tweet.user.screen_name, text, place.full_name, tweet.created_at))
 	# -- create DataFrame --
 	data_frame = pd.DataFrame(data, columns=['user', 'tweet', 'location', 'date'])
-	location_data_frame = pd.DataFrame(location_data, columns=['user', 'tweet', 'lat', 'lon'])
 	return data_frame
 
 def GetTweetByUser(user, numTweet, location=False):
@@ -174,16 +206,17 @@ def GetTweetByUser(user, numTweet, location=False):
 							   count=200, tweet_mode='extended').items((int)(numTweet))
 	# -- save tweets in lists --
 	for tweet in tweets:
-		print('🐈', tweet)
+		if tweet.truncated:
+			text = tweet.extended_tweet['full_text']
+		else:
+			text = tweet.text
 		# I want to save location of tweet?
 		if location and (tweet.coordinates is not None):
 			lon = tweet.coordinates['coordinates'][0]
 			lat = tweet.coordinates['coordinates'][1]
-			location_data.append(
-				[tweet.user.screen_name, tweet.text, lon, lat])
-		data.append((tweet.user.screen_name, tweet.text, (bool)(location), tweet.created_at))
+			location_data.append([tweet.user.screen_name, text, lon, lat])
+		data.append((tweet.user.screen_name, text, (bool)(location), tweet.created_at))
 	# -- create DataFrame --
 	data_frame = pd.DataFrame(data, columns=['user', 'tweet', 'location', 'date'])
-	location_data_frame = pd.DataFrame(
-		location_data, columns=['user', 'tweet', 'lat', 'lon'])
+	location_data_frame = pd.DataFrame(location_data, columns=['user', 'tweet', 'lat', 'lon'])
 	return data_frame
