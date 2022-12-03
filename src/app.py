@@ -1,5 +1,8 @@
-import TweetSearch as ts
+# import TweetSearch as ts
+import getTweet
 import os
+import twitter
+import sqlite3
 try:
     from flask import Flask, render_template, request
 except ModuleNotFoundError:
@@ -25,7 +28,7 @@ dataRangeInputs = [
 
 app = Flask(__name__)
 
-ts.APIv2.__init__()
+# ts.APIv2.__init__()
 
 @app.route('/', methods=('GET', 'POST'))
 def homepage():
@@ -34,31 +37,31 @@ def homepage():
 
 	:return: The rendered template 'index'
 	"""
-	currentResearchMethod = ""							# the currently chosen search method
-	if request.method == 'POST':
-		#startDateRange = request.form.get('startDateRange')
-		#endDateRange = request.form.get('endDateRange')
-		ts.APIv2.setDatas(query=request.form['keyword'], tweetsLimit=request.form['tweetsLimit'])
+	# currentResearchMethod = ""							# the currently chosen search method
+	# if request.method == 'POST':
+	# 	#startDateRange = request.form.get('startDateRange')
+	# 	#endDateRange = request.form.get('endDateRange')
+	# 	ts.APIv2.setDatas(query=request.form['keyword'], tweetsLimit=request.form['tweetsLimit'])
 		
-		currentResearchMethod = request.form.get('researchBy')
-		ts.APIv2.researchDecree(researchType=currentResearchMethod)
+	# 	currentResearchMethod = request.form.get('researchBy')
+	# 	ts.APIv2.researchDecree(researchType=currentResearchMethod)
 
-		return render_template(
-			'index.html',
-			tweetsText=ts.APIv2.getDataFrame('text'),
-			tweetsLimit=ts.APIv2.tweetsLimit,
-			researchMethods=researchMethods,
-			currentResearchMethod=currentResearchMethod,
-			dataRangeInputs=dataRangeInputs,
-		)	# rendering flask template 'index.html'
-	return render_template(
-		'index.html',
-		tweetsText=ts.APIv2.getDataFrame('text'),
-		tweetsLimit=ts.APIv2.tweetsLimit,
-		researchMethods=researchMethods,
-		currentResearchMethod=currentResearchMethod,
-		dataRangeInputs=dataRangeInputs,
-	)
+	# 	return render_template(
+	# 		'index.html',
+	# 		tweetsText=ts.APIv2.getDataFrame('text'),
+	# 		tweetsLimit=ts.APIv2.tweetsLimit,
+	# 		researchMethods=researchMethods,
+	# 		currentResearchMethod=currentResearchMethod,
+	# 		dataRangeInputs=dataRangeInputs,
+	# 	)	# rendering flask template 'index.html'
+	# return render_template(
+	# 	'index.html',
+	# 	tweetsText=ts.APIv2.getDataFrame('text'),
+	# 	tweetsLimit=ts.APIv2.tweetsLimit,
+	# 	researchMethods=researchMethods,
+	# 	currentResearchMethod=currentResearchMethod,
+	# 	dataRangeInputs=dataRangeInputs,
+	# )
 	isLocated = False
 	twitter.__init__()
 	if request.method == 'POST':
@@ -101,9 +104,9 @@ def homepage():
 	return render_template('index.html',
 						   tweets=tweets,
 						   location=isLocated,
-						   tweetLimit=startTweetLimit,
+						   tweetLimit=10,
 						   researchMethods=researchMethods,
-						   currentResearchMethod=currentResearchMethod,
+						#    currentResearchMethod=currentResearchMethod,
 						   #    markers=markers
 						   )
 
