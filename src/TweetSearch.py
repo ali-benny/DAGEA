@@ -52,21 +52,6 @@ class APIv1:
             #print(f"tweeet_id: {tweet_id}, api.geo_id(place_id).centroid: NO GEO ATTRIBUTE --> NO COORDINATES")
             return [0.0,0.0]
         
-
-#! CURRENTLY UNUSED CLASS 
-class SQLIntegration(APIv1):
-    @classmethod
-    def __init__(cls) -> None:
-        APIv1.__init__()
-
-    @classmethod
-    def convertDF2SQL(cls) -> None:
-        connection = sqlite3.connect('database.db')
-        c = connection.cursor()
-        c.execute('CREATE TABLE IF NOT EXISTS tweet (user, desc)')
-        connection.commit()	# save my edits on connection
-        cls.dataFrame.to_sql(cls.section, connection, if_exists='replace', index=False)
-
 class APIv2:
     ################ API SETUP ################
     @classmethod
@@ -97,20 +82,6 @@ class APIv2:
             cls.start_time = start_time
         if end_time is not None:
             cls.end_time = end_time
-
-    @classmethod
-    def getDataFrames(cls, responseField: int, field: str = None):
-        try:
-            if cls.dataFrames == [] or cls.dataFrames[responseField].empty:    # O non si e' chiamata nessuna funzione di ricerca o la chiamata non ha trovato nulla
-                return ''
-            else:
-                return cls.dataFrames[responseField][field]
-        except IndexError:
-            print("ERROR: APIv2 Class, getDataFrames: except IndexError")
-            return ''
-        except KeyError:
-            print("ERROR: APIv2 Class, getDataFrames: except KeyError")
-            return ''
 
     ################  RESEARCH  ################
     @classmethod
@@ -177,12 +148,6 @@ class APIv2:
     @classmethod
     def _createCsvFile(cls) -> None:
         try:
-            '''
-            i = 0
-            for dataFrame in cls.dataFrames:
-                i =+ 1
-                dataFrame.to_csv('dataFrame'+str(i)+'.csv')
-            '''
             cls.dataFrames[0].to_csv('response.csv')
             cls.dataFrames[1].to_csv('responseData.csv')
             cls.dataFrames[2].to_csv('responseIncludes.csv')
