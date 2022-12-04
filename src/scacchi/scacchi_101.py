@@ -4,7 +4,9 @@ e di disegnare ogni volta la scacchiera con tutti i pezzi necesssari
 '''
 import pygame as p
 import chess
-from scacchi import scacchi_engine
+import sys
+import app
+from . import scacchi_engine
 
 
 WIDTH = HEIGHT = 512 #volendo si può scegliere 400 come dimensione
@@ -29,18 +31,25 @@ def __main__():
     gs = scacchi_engine.Gamest()
     loadImages() #viene fatto solo una volta prima del ciclo
     run = True
+    print('BEFORE while')
     while run:
+        print('------------------------------------------------')
         for event in p.event.get():
             if event.type == p.QUIT:
+                print('EXIT')
                 run = False
         drawGamest(screen,gs)
         clock.tick(MAX_FPS)
         p.display.flip()
+        print('END LOOP')
+    p.quit()
+    sys.exit()
+    print('AFTER while')
+    return True
 
 def drawGamest(screen, gs):
     drawBoard(screen) #disegnerà i quadrati della scacchiera
     drawPieces(screen, gs.board) #disegnerà i pezzi sopra la scacchiera
-
     
 def drawBoard(screen):
     colors = [p.Color("white"), p.Color("gray")]
@@ -56,24 +65,6 @@ def drawPieces(screen, board):
             if piece != "--": #non è vuoto
                 screen.blit(IMAGES[piece], p.Rect(c*SQ_SIZE, r*SQ_SIZE, SQ_SIZE, SQ_SIZE))
 
-
     
 if __name__ == "__main__":
     __main__()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
