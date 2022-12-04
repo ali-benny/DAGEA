@@ -36,10 +36,11 @@ def homepage():
 		ts.APIv2.setDatas(query=request.form['keyword'], tweetsLimit=request.form['tweetsLimit'], expansions=['author_id'])
 		currentResearchMethod = request.form.get('researchBy')
 		ts.APIv2.researchDecree(researchType=currentResearchMethod)
+		ts.APIv2._createCsvFile()
 
 		return render_template(
 			'index.html',
-			tweetsText=ts.APIv2.getDataFrames(responseField=1, field='text'),
+			tweetCards=ts.APIv2.createCard(),
 			tweetsLimit=ts.APIv2.tweetsLimit,
 			researchMethods=researchMethods,
 			currentResearchMethod=currentResearchMethod,
@@ -47,7 +48,7 @@ def homepage():
 		)	# rendering flask template 'index.html'
 	return render_template(
 		'index.html',
-		tweetsText=ts.APIv2.getDataFrames(responseField=1, field='text'),
+		tweetCards=ts.APIv2.createCard(),
 		tweetsLimit=ts.APIv2.tweetsLimit,
 		researchMethods=researchMethods,
 		currentResearchMethod=currentResearchMethod,

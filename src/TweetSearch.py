@@ -89,7 +89,8 @@ class APIv2:
     def __init__(cls) -> None:
         # TODO: Trovare un modo migliore per esportare questo token di mrd
         cls.client = tweepy.Client(bearer_token='AAAAAAAAAAAAAAAAAAAAAC9YjAEAAAAA8mWmHYSXfAYFTtl2JTBaKP6SKac%3DvjWg4UEGQovjZMb5EBPmwjuIktxnOouIvBi0yUCjFZCWZEtW8q')
-    
+        cls.response = cls.client.get_user(id=0)    # Questa chiamata di get_user ritornera' un dato response vuoto (analogo ad una string avuota '')
+
     ################  ATTRIBUTE SETTING   ################
     dataFrames = []
     query = ''
@@ -145,18 +146,32 @@ class APIv2:
     @classmethod
     def getTweetByUser(cls, username: str) -> None:
         userData = cls.client.get_user(username=username).data
-        if (userData is not None):      # Entra nell'if sse trova un utente con quell'username
+        if (userData is not None):      # Entra nell'if sse trova almeno un utente con quell'username
             userId = userData.id
-            response = cls.client.get_users_tweets(id=userId)
-            cls.createDataFrames(response)
+            cls.response = cls.client.get_users_tweets(id=userId)
+            cls.createDataFrames(cls.response)
 
     @classmethod
     def getTweetByKeyword(cls, query: str, tweetsLimit=None, start_time=None, end_time=None, expansions=None) -> None:
-        #response = cls.client.search_recent_tweets(query=query, max_results=tweetsLimit, start_time=start_time, end_time=end_time)
-        response = cls.client.search_recent_tweets(query=query, max_results=tweetsLimit, expansions=expansions)
-        cls.createDataFrames(response)
+        #cls.response = cls.client.search_recent_tweets(query=query, max_results=tweetsLimit, start_time=start_time, end_time=end_time)
+        cls.response = cls.client.search_recent_tweets(query=query, max_results=tweetsLimit, expansions=expansions)
+        cls.createDataFrames(cls.response)
 
     ################  DATA HANDLING  ################
+    @classmethod
+    def createCard(cls):
+        if cls.response.data is not None:
+            card=[]
+            for tweet in cls.response.data:
+                text = tweet.text
+                tmp = cls.client.get_user(id=tweet.author_id).data
+                username = tmp if tmp is not None else 'Unknown'
+                card.append({"username": username, "text": text})
+                print(f"CARD:\n{card}")
+            return card
+        else:
+            return ''
+
     @classmethod
     def createDataFrames(cls, response, field: str = 'all') -> None:
         cls.dataFrames = []

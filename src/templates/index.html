@@ -53,11 +53,12 @@
 <!-- Cards tweets -->
 <div class="container d-flex h-100 pt-5 text-dark">
     <div class="row justify-content-center mb-3">
-        {% for text in tweetsText %}
+        {% for tweet in tweetCards %}
         <div class="col-lg-4">
             <div class="card" style="width: 90%; margin: 2%">
                 <div class="card-body">
-                    <p class="card-text">{{ text }}</p>
+                    <h3 class="card-title">{{ tweet.username }}</h3>
+                    <p class="card-text">{{ tweet.text }}</p>
                 </div>
             </div>
         </div>
