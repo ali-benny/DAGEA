@@ -11,7 +11,6 @@ except ModuleNotFoundError:
     os.system('pip install pandas')
     os.system('pip install configparser')
 
-#! CURRENTLY UNTESTED CLASS 
 class APIv1:
     ################ API SETUP ################
     section = 'twitter'		#! change it as your [param] on config.ini file 
@@ -39,36 +38,22 @@ class APIv1:
         cls.APILabel = APILabel
     
     ################  RESEARCH  ################
-    tweetsLimit = 10
-
     @classmethod
-    def setTweetsLimit(cls, tweetsLimit) -> None:
-        cls.tweetsLimit=int(tweetsLimit)
+    def getCoordinates(cls, tweet_id, client):
+        tweetInfo = client.get_tweet(tweet_id, expansions=['geo.place_id'])
+        pd.DataFrame(tweetInfo.data).to_csv('tweetInfoResponseData.csv')
+        try:
+            place_id = tweetInfo.data.geo['place_id']
+            placeObj = cls.api.geo_id(place_id)
+            return placeObj.centroid
+            #print(f"tweetInfo (response):{tweetInfo}")
+            #print(f"tweeet_id: {tweet_id}, place_id: {place_id}, api.geo_id(place_id).centroid: {placeObj.centroid}")
+        except TypeError:
+            #print(f"tweeet_id: {tweet_id}, api.geo_id(place_id).centroid: NO GEO ATTRIBUTE --> NO COORDINATES")
+            return [0.0,0.0]
+        
 
-    @classmethod
-    def getTweetByKeyword(cls, researchPeriod: int, query: str, fromDate=None, toDate=None) -> None:
-        match researchPeriod:
-            case 0:
-                print('last30Days')
-                tweets = cls.api.search_30_day(cls.APILabel, query=query, maxResults=cls.tweetsLimit, fromDate=fromDate, toDate=toDate)
-                cls._createDataFrame(tweets)
-            case 1:
-                print('always')
-                tweets = cls.api.search_full_archive(cls.APILabel, query=query, maxResults=cls.tweetsLimit, fromDate=fromDate, toDate=toDate)
-                cls._createDataFrame(tweets)
-            case _:
-                raise ValueError("match error")
-
-    @classmethod
-    def _createDataFrame(cls, tweets) -> None:
-        # TODO: Handle wich fields must be saved and wich colums must be created
-        columns = ['Time', 'User', 'Tweet']
-        data = []
-        for tweet in tweets:
-            data.append([tweet.created_at, tweet.user.screen_name, tweet.text])
-        cls.dataFrame = pd.DataFrame(data, columns=columns)
-
-#! CURRENTLY UNTESTED CLASS 
+#! CURRENTLY UNUSED CLASS 
 class SQLIntegration(APIv1):
     @classmethod
     def __init__(cls) -> None:
@@ -83,7 +68,6 @@ class SQLIntegration(APIv1):
         cls.dataFrame.to_sql(cls.section, connection, if_exists='replace', index=False)
 
 class APIv2:
-    # TODO(?) -> None: Vale la pena cercare di creare una tabella SQL anche per l'API v2?
     ################ API SETUP ################
     @classmethod
     def __init__(cls) -> None:
@@ -96,16 +80,15 @@ class APIv2:
         cls.response = cls.client.get_user(id=0)    # Questa chiamata di get_user ritornera' un dato response vuoto (analogo ad una string avuota '')
 
     ################  ATTRIBUTE SETTING   ################
-    dataFrames = []
     query = ''
     tweetsLimit = 10
     start_time = ''
     end_time = ''
-    expansions = []
+    expansions = ['author_id','geo.place_id']
 
     @classmethod
     # TODO: Credo proprio che esistano strumenti migliori per implementare la semantica di questa funzione
-    def setDatas(cls, query: str = None, tweetsLimit = None, start_time=None, end_time=None, expansions=None) -> None:
+    def setDatas(cls, query: str = None, tweetsLimit = None, start_time=None, end_time=None) -> None:
         if query is not None:
             cls.query = query
         if tweetsLimit is not None:
@@ -114,8 +97,6 @@ class APIv2:
             cls.start_time = start_time
         if end_time is not None:
             cls.end_time = end_time
-        if expansions is not None:
-            cls.expansions = expansions
 
     @classmethod
     def getDataFrames(cls, responseField: int, field: str = None):
@@ -136,13 +117,10 @@ class APIv2:
     def researchDecree(cls, researchType: str) -> None:
         match researchType:
             case 'researchByUser':
-                print('User research')
                 cls.getTweetByUser(username=cls.query)
             case 'researchByKeyword':
-                print('Keyword  research')
                 cls.getTweetByKeyword(query=cls.query, tweetsLimit=cls.tweetsLimit, start_time=cls.start_time, end_time=cls.end_time, expansions=cls.expansions)
             case 'researchByHashtag':
-                print('Hashtag  research')
                 cls.getTweetByKeyword(query='#'+cls.query, tweetsLimit=cls.tweetsLimit, start_time=cls.start_time, end_time=cls.end_time, expansions=cls.expansions)
             case _:
                 raise ValueError("ERROR: APIv2 Class, researchDecree: match error")
@@ -153,31 +131,31 @@ class APIv2:
         if (userData is not None):      # Entra nell'if sse trova almeno un utente con quell'username
             userId = userData.id
             cls.response = cls.client.get_users_tweets(id=userId)
-            #cls.createDataFrames(cls.response)
 
     @classmethod
     def getTweetByKeyword(cls, query: str, tweetsLimit=None, start_time=None, end_time=None, expansions=None) -> None:
         #cls.response = cls.client.search_recent_tweets(query=query, max_results=tweetsLimit, start_time=start_time, end_time=end_time)
         cls.response = cls.client.search_recent_tweets(query=query, max_results=tweetsLimit, expansions=expansions)
-        #cls.createDataFrames(cls.response)
 
-    ################  DATA HANDLING  ################
     @classmethod
     def createCard(cls):
         if cls.response.data is not None:
             card=[]
             for tweet in cls.response.data:
+                APIv1.__init__()
+                coordinates = APIv1.getCoordinates(tweet_id=tweet.id, client=cls.client)
                 text = tweet.text
                 tmp = cls.client.get_user(id=tweet.author_id).data
                 username = tmp if tmp is not None else 'Unknown'
-                card.append({"username": username, "text": text})
-                print(f"CARD:\n{card}")
+                card.append({"username": username, "text": text, "coordinates": coordinates})
+                #print(f"CARD:\n{card}")
             return card
         else:
             return ''
 
+    ################  DEBUG  ################
     @classmethod
-    def createDataFrames(cls, response, field: str = 'all') -> None:
+    def _createDataFrames(cls, response, field: str = 'all') -> None:
         cls.dataFrames = []
         match field:
             case 'all':

@@ -33,10 +33,9 @@ def homepage():
 	if request.method == 'POST':
 		#startDateRange = request.form.get('startDateRange')
 		#endDateRange = request.form.get('endDateRange')
-		ts.APIv2.setDatas(query=request.form['keyword'], tweetsLimit=request.form['tweetsLimit'], expansions=['author_id'])
+		ts.APIv2.setDatas(query=request.form['keyword'], tweetsLimit=request.form['tweetsLimit'])
 		currentResearchMethod = request.form.get('researchBy')
 		ts.APIv2.researchDecree(researchType=currentResearchMethod)
-		#ts.APIv2._createCsvFile()
 
 		return render_template(
 			'index.html',
