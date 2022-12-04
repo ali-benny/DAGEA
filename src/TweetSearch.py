@@ -89,6 +89,10 @@ class APIv2:
     def __init__(cls) -> None:
         # TODO: Trovare un modo migliore per esportare questo token di mrd
         cls.client = tweepy.Client(bearer_token='AAAAAAAAAAAAAAAAAAAAAC9YjAEAAAAA8mWmHYSXfAYFTtl2JTBaKP6SKac%3DvjWg4UEGQovjZMb5EBPmwjuIktxnOouIvBi0yUCjFZCWZEtW8q')
+        cls.__init__response()
+
+    @classmethod
+    def __init__response(cls) -> None:
         cls.response = cls.client.get_user(id=0)    # Questa chiamata di get_user ritornera' un dato response vuoto (analogo ad una string avuota '')
 
     ################  ATTRIBUTE SETTING   ################
@@ -149,13 +153,13 @@ class APIv2:
         if (userData is not None):      # Entra nell'if sse trova almeno un utente con quell'username
             userId = userData.id
             cls.response = cls.client.get_users_tweets(id=userId)
-            cls.createDataFrames(cls.response)
+            #cls.createDataFrames(cls.response)
 
     @classmethod
     def getTweetByKeyword(cls, query: str, tweetsLimit=None, start_time=None, end_time=None, expansions=None) -> None:
         #cls.response = cls.client.search_recent_tweets(query=query, max_results=tweetsLimit, start_time=start_time, end_time=end_time)
         cls.response = cls.client.search_recent_tweets(query=query, max_results=tweetsLimit, expansions=expansions)
-        cls.createDataFrames(cls.response)
+        #cls.createDataFrames(cls.response)
 
     ################  DATA HANDLING  ################
     @classmethod
@@ -193,35 +197,17 @@ class APIv2:
                 raise ValueError("ERROR: APIv2 Class, createDataFrames: match error")
         
     @classmethod
-    def _createCsvFile(cls, field: str = 'all') -> None:
-        match field:
-            case 'all':
-                try:
-                    cls.dataFrames[0].to_csv('response.csv')
-                    cls.dataFrames[1].to_csv('responseData.csv')
-                    cls.dataFrames[2].to_csv('responseIncludes.csv')
-                    cls.dataFrames[3].to_csv('responseErrors.csv')
-                except AttributeError:      # Caso in cui dataFrames[i] sia vuoto (non si sono chiamati i metodi del'API)
-                    print("ATTENTION: currently there is no 'cls.dataFrames[i]' attribute in the APIv2 class.\nPossible causes:\n1) You haven't called any APIv2 method of the class yet --> Call one\n2) The call returned no results --> Try modifying the query")
-            case 'response':
-                try:
-                    cls.dataFrames[0].to_csv('response.csv')
-                except AttributeError:      # Caso in cui dataFrames[i] sia vuoto (non si sono chiamati i metodi del'API)
-                    print("ATTENTION: currently there is no 'cls.dataFrames[0]' attribute in the APIv2 class.\nPossible causes:\n1) You haven't called any APIv2 method of the class yet --> Call one\n2) The call returned no results --> Try modifying the query")
-            case 'data':
-                try:
-                    cls.dataFrames[1].to_csv('responseData.csv')
-                except AttributeError:      # Caso in cui dataFrames[i] sia vuoto (non si sono chiamati i metodi del'API)
-                    print("ATTENTION: currently there is no 'cls.dataFrames[1]' attribute in the APIv2 class.\nPossible causes:\n1) You haven't called any APIv2 method of the class yet --> Call one\n2) The call returned no results --> Try modifying the query")
-            case 'includes':
-                try:
-                    cls.dataFrames[2].to_csv('responseIncludes.csv')
-                except AttributeError:      # Caso in cui dataFrames[i] sia vuoto (non si sono chiamati i metodi del'API)
-                    print("ATTENTION: currently there is no 'cls.dataFrames[2]' attribute in the APIv2 class.\nPossible causes:\n1) You haven't called any APIv2 method of the class yet --> Call one\n2) The call returned no results --> Try modifying the query")
-            case 'errors':
-                try:
-                    cls.dataFrames[3].to_csv('responseErrors.csv')
-                except AttributeError:      # Caso in cui dataFrames[i] sia vuoto (non si sono chiamati i metodi del'API)
-                    print("ATTENTION: currently there is no 'cls.dataFrames[3]' attribute in the APIv2 class.\nPossible causes:\n1) You haven't called any APIv2 method of the class yet --> Call one\n2) The call returned no results --> Try modifying the query")
-            case _:
-                raise ValueError("ERROR: APIv2 Class, _createCsvFile: match error")
+    def _createCsvFile(cls) -> None:
+        try:
+            '''
+            i = 0
+            for dataFrame in cls.dataFrames:
+                i =+ 1
+                dataFrame.to_csv('dataFrame'+str(i)+'.csv')
+            '''
+            cls.dataFrames[0].to_csv('response.csv')
+            cls.dataFrames[1].to_csv('responseData.csv')
+            cls.dataFrames[2].to_csv('responseIncludes.csv')
+            cls.dataFrames[3].to_csv('responseErrors.csv')
+        except AttributeError:      # Caso in cui dataFrames[i] sia vuoto (non si sono chiamati i metodi del'API)
+            print("ATTENTION: currently there is no 'cls.dataFrames[i]' attribute in the APIv2 class.\nPossible causes:\n1) You haven't called any APIv2 method of the class yet --> Call one\n2) The call returned no results --> Try modifying the query")
