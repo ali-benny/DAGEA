@@ -1,0 +1,17 @@
+NOTA: potreste mettere il commento alla partita di scrumble in formato .xls o .odc? Per fare analisi statistiche è molto più semplice. Grazie
+
+13 novembre
+no code! (forse per colpa mia)
+taiga(in uso)
+mattermost in uso 
+
+
+10 dicembre
+git con grande preponderanza di due persone (fenomeno rilevato anche in taiga)
+Presenza di SQ ma senza dati
+Unico codebase per FE/BE?
+Niente test
+mattermost molto attivo
+Taiga attivo, wiki con molti documenti
+
+
