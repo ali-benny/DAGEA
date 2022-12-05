@@ -8,6 +8,9 @@ try:
 except ModuleNotFoundError:
     os.system('pip install flask')
 
+from scacchi import scacchi_101
+from scacchi import scacchi_engine
+
 researchMethods = [
 	{'method':"", 'text':'Research by '},
 	{'method':'researchByUser', 'text':'Research by user'},
