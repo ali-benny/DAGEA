@@ -2,3 +2,6 @@
 *.pyc
 .vscode/
 *.db
+*.csv
+localTests.py
+coordinates.json

@@ -37,34 +37,10 @@ def homepage():
 	:return: The rendered template 'index'
 	"""
 	currentResearchMethod = ""							# the currently chosen search method
-	# if request.method == 'POST':
-	# 	#startDateRange = request.form.get('startDateRange')
-	# 	#endDateRange = request.form.get('endDateRange')
-	# 	ts.APIv2.setDatas(query=request.form['keyword'], tweetsLimit=request.form['tweetsLimit'])
-		
-	# 	currentResearchMethod = request.form.get('researchBy')
-	# 	ts.APIv2.researchDecree(researchType=currentResearchMethod)
-
-	# 	return render_template(
-	# 		'index.html',
-	# 		tweetsText=ts.APIv2.getDataFrame('text'),
-	# 		tweetsLimit=ts.APIv2.tweetsLimit,
-	# 		researchMethods=researchMethods,
-	# 		currentResearchMethod=currentResearchMethod,
-	# 		dataRangeInputs=dataRangeInputs,
-	# 	)	# rendering flask template 'index.html'
-	# return render_template(
-	# 	'index.html',
-	# 	tweetsText=ts.APIv2.getDataFrame('text'),
-	# 	tweetsLimit=ts.APIv2.tweetsLimit,
-	# 	researchMethods=researchMethods,
-	# 	currentResearchMethod=currentResearchMethod,
-	# 	dataRangeInputs=dataRangeInputs,
-	# )
-	isLocated = False
-	twitter.__init__()
 	if request.method == 'POST':
-		keyword = request.form['keyword']		# getting keyword from form
+		#startDateRange = request.form.get('startDateRange')
+		#endDateRange = request.form.get('endDateRange')
+		ts.APIv2.setDatas(query=request.form['keyword'], tweetsLimit=request.form['tweetsLimit'])
 		currentResearchMethod = request.form.get('researchBy')
 		# getting tweetLimit input, from the <input type="number" name="tweetLimit"> of index.html, in the form of a string
 		tweetLimit = request.form['tweetLimit']
@@ -99,15 +75,24 @@ def homepage():
 	tweets = connection.execute('SELECT * FROM all_tweets').fetchall()
 	connection.close()  # close connection to database
 
-	# rendering flask template 'index.html'
-	return render_template('index.html',
-						   tweets=tweets,
-						   location=isLocated,
-						   tweetLimit=10,
-						   researchMethods=researchMethods,
-						#    currentResearchMethod=currentResearchMethod,
-						   #    markers=markers
-						   )
+		return render_template(
+			'index.html',
+			tweetCards=ts.APIv2.createCard(),
+			tweetsLimit=ts.APIv2.tweetsLimit,
+			researchMethods=researchMethods,
+			currentResearchMethod=currentResearchMethod,
+			dataRangeInputs=dataRangeInputs,
+		)	# rendering flask template 'index.html'
+	
+	ts.APIv2._APIv2__init__response()
+	return render_template(
+		'index.html',
+		tweetCards=ts.APIv2.createCard(),
+		tweetsLimit=ts.APIv2.tweetsLimit,
+		researchMethods=researchMethods,
+		currentResearchMethod=currentResearchMethod,
+		dataRangeInputs=dataRangeInputs,
+	)
 
 @app.route('/explain')
 def explainPage():
