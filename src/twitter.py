@@ -54,16 +54,16 @@ def __init__():
 	access_token_secret = get_key(section, 'access_token_secret')
 
 	# authentication v1.1
-	# auth = tweepy.OAuthHandler(api_key, api_key_secret)
-	# auth.set_access_token(access_token, access_token_secret)
+	auth = tweepy.OAuthHandler(api_key, api_key_secret)
+	auth.set_access_token(access_token, access_token_secret)
 
-	# authentication v2
-	global client
-	client = tweepy.Client(get_key('twitter', 'bearer_token'))
+	# # authentication v2
+	# global client
+	# client = tweepy.Client(get_key('twitter', 'bearer_token'))
 	global api
 	# api istant NOTE: add wait_on_rate_limit=True for 429 error
-	api = tweepy.API(client)
-	return client
+	api = tweepy.API(auth)
+	return auth
 
 def convertDF2SQL(dataframe, location=False, stream=False):
 	"""
@@ -113,21 +113,21 @@ class MyStream(tweepy.StreamingClient):
 			convertDF2SQL(self.dataframe, stream=True)
 	
 	def on_tweet(self, tweet):
-		if tweet.refecenced_tweets == None:
-			if not tweet.truncated:
-				self.tweets.append([tweet.user.screen_name, tweet.text, tweet.place, tweet.created_at])
-			else:
-				self.tweets.append([tweet.user.screen_name, tweet.extended_tweet['full_text'], tweet.place, tweet.created_at])
-			self.dataframe = pd.DataFrame(self.tweets, columns = ['user', 'tweet', 'location','date'])
-			
-			time.sleep(0.1)
+		# if tweet.refecenced_tweets == None:
+		if not tweet.truncated:
+			self.tweets.append([tweet.user.screen_name, tweet.text, tweet.place, tweet.created_at])
+		else:
+			self.tweets.append([tweet.user.screen_name, tweet.extended_tweet['full_text'], tweet.place, tweet.created_at])
+		self.dataframe = pd.DataFrame(self.tweets, columns = ['user', 'tweet', 'location','date'])
+		convertDF2SQL(self.dataframe, stream=True)
+
 
 def StreamByKeyword(keywords):
-	global api_key, api_key_secret, access_token, access_token_secret
 	stream_tweet = MyStream(bearer_token=get_key('twitter','bearer_token'))
 	for keyword in keywords:
-		stream_tweet.add_rules(tweepy.StreamRule(keyword))
-	stream_tweet.filter(tweet_fields=["referenced_tweets"])
+		stream_tweet.add_rules(tweepy.StreamRule(keyword)) 	# add rules
+	# stream_tweet.filter(tweet_fields=["referenced_tweets"])
+	stream_tweet.filter()	# run the stream
 	
 	
 def GetTweetByKeyword(keywords, numTweet, location=False):
@@ -154,22 +154,22 @@ def GetTweetByKeyword(keywords, numTweet, location=False):
 	if location:	# if i want to get only tweet with location
 		expansion.append("geo.place_id")
 	if numTweet <= 100:
-		tweets = client.search_recent_tweets(query=keywords, max_results=numTweet, expansions = expansion)
+		tweets = api.search_tweets(q=keywords, count=numTweet, expansions = expansion)
 		print('🎃')
 	else:
-		tweets = tweepy.Cursor(client.search_recent_tweets, query=keywords, max_results = 100, expansions = expansion, tweet_mode='extended').items(numTweet)
+		tweets = tweepy.Cursor(api.search_tweets, q=keywords, count = 100, expansions = expansion, tweet_mode='extended').items(numTweet)
 	# -- save tweets in lists --
-	includes = tweets.includes
-	place = includes["geo.place_id"]
-	for tweet in tweets.data:
+	# includes = tweets.includes
+	# place = includes["geo"]
+	for tweet in tweets:
 		try:
 			text = tweet.full_text
 		except AttributeError:
 			text = tweet.text
 		# I want to save location of tweet?
-		print('📍', tweet.place.full_name)
+		# print('📍', tweet.place.full_name)
 			# location_data.append([tweet.user.screen_name, text, lon, lat])
-		data.append((tweet.user.screen_name, text, place.full_name, tweet.created_at))
+		data.append((tweet.user.screen_name, text, tweet.place, tweet.created_at))
 	# -- create DataFrame --
 	data_frame = pd.DataFrame(data, columns=['user', 'tweet', 'location', 'date'])
 	return data_frame

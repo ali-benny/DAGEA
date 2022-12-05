@@ -10,9 +10,8 @@ except ModuleNotFoundError:
 
 researchMethods = [
 	{'method':"", 'text':'Research by '},
-	{'method':'researchByUser', 'text':'Research by user'},
-	{'method':'researchByKeyword','text':'Research by keyword'},
-	{'method':'researchByHashtag','text':'Research by hashtag'}
+	{'method':'researchByUser', 'text':'user'},
+	{'method':'researchByKeyword','text':'keyword and hashtag'},
 ]	# A list containing all available search methods
 dataRangeInputs = [
 	{'value':"", 'text':'Search from '},
@@ -37,7 +36,7 @@ def homepage():
 
 	:return: The rendered template 'index'
 	"""
-	# currentResearchMethod = ""							# the currently chosen search method
+	currentResearchMethod = ""							# the currently chosen search method
 	# if request.method == 'POST':
 	# 	#startDateRange = request.form.get('startDateRange')
 	# 	#endDateRange = request.form.get('endDateRange')

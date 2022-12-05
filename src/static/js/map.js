@@ -1,13 +1,16 @@
+console.log("🧪map.js loaded");
 const map = L.map("map").setView([44.491026, 11.335586], 1);
-
-const tiles = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+console.log("🚀");
+L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
 	maxZoom: 19,
 	attribution:
 		'&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
 }).addTo(map);
-
+console.log("👍");
 // connecting to database
 exports.select = function (callback){
+	
+console.log("🟨");
     var db = new sqlite3.Database("../../database.db");           
     db.all("SELECT * FROM all_tweets", function(err,rows){
          if(err) return callback(err);
@@ -16,7 +19,7 @@ exports.select = function (callback){
 				addMarker(row.location, row.tweet, row.user);
 			}
 		});
-        db.close();a
+        db.close();
         return callback(null);
 	}); 
 }
