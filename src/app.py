@@ -42,6 +42,7 @@ def homepage():
 		ts.APIv2.setDatas(query=request.form['keyword'], tweetsLimit=request.form['tweetsLimit'])
 		currentResearchMethod = request.form.get('researchBy')
 		ts.APIv2.researchDecree(researchType=currentResearchMethod)
+
 		'''
 		whatBtn = request.form['btnradio']
 		if whatBtn == 'Stream':
@@ -53,13 +54,14 @@ def homepage():
 			getTweet.GetTweet(currentResearchMethod, (int)(ts.APIv2.tweetsLimit), ts.APIv2.query, isLocated)
 		else:
 			print('Error: unknown button')
-			'''
+		'''
+		'''
 		connection = sqlite3.connect('database.db')		# connecting to database
 		connection.row_factory = sqlite3.Row  # read row from database
 		# getting all tweet form db
 		tweets = connection.execute('SELECT * FROM all_tweets').fetchall()
 		connection.close()  # close connection to database
-		# rendering flask template 'index.html'
+		'''
 		
 		return render_template(
 			'index.html',

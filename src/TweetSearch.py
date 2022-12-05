@@ -102,12 +102,13 @@ class APIv2:
         userData = cls.client.get_user(username=username).data
         if (userData is not None):      # Entra nell'if sse trova almeno un utente con quell'username
             userId = userData.id
-            cls.response = cls.client.get_users_tweets(id=userId, expansions=cls.expansions)
+            cls.response = cls.client.get_users_tweets(id=userId, expansions=cls.expansions, tweet_fields=['created_at'])
 
     @classmethod
     def getTweetByKeyword(cls, query: str, tweetsLimit=None, start_time=None, end_time=None) -> None:
         #cls.response = cls.client.search_recent_tweets(query=query, max_results=tweetsLimit, start_time=start_time, end_time=end_time)
-        cls.response = cls.client.search_recent_tweets(query=query, max_results=tweetsLimit, expansions=cls.expansions)
+        cls.response = cls.client.search_recent_tweets(query=query, max_results=tweetsLimit, expansions=cls.expansions, tweet_fields=['created_at'])
+        #APIv2._createMarksJson()
 
     ################################  OTHER  ################################
     @classmethod
@@ -116,11 +117,12 @@ class APIv2:
             card=[]
             APIv1.__init__()
             for tweet in cls.response.data:
-                coordinates = APIv1.getCoordinates(tweet_id=tweet.id, client=cls.client)
-                text = tweet.text
                 tmp = cls.client.get_user(id=tweet.author_id).data
                 username = tmp if tmp is not None else 'Unknown'
-                card.append({"username": username, "text": text, "coordinates": coordinates})
+                text = tweet.text
+                createdAt = str(tweet.created_at)[0:16]     # Si taglia la parte della stringa contenente dai secondi in poi
+                coordinates = APIv1.getCoordinates(tweet_id=tweet.id, client=cls.client)
+                card.append({"username": username, "text": text, "createdAt": createdAt, "coordinates": coordinates})
             return card
         else:
             return ''
@@ -151,7 +153,7 @@ class APIv2:
     
     @classmethod
     def _createCsvFiles(cls) -> None:
-        cls._deleteCsvFile()             # Si eliminano i .csv di ricerche passate
+        cls._deleteCsvFiles()             # Si eliminano i .csv di ricerche passate
         cls._createDataFrames()     # E si creano quelli coi nuovi dati
         try:
             cls.dataFrames[0].to_csv('response.csv')
