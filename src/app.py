@@ -1,17 +1,18 @@
-# import TweetSearch as ts
-import getTweet
+import TweetSearch as ts
 import os
+import getTweet
 import twitter
-import sqlite3
 try:
-    from flask import Flask, render_template, request
+	from flask import Flask, render_template, request
+	import sqlite3
 except ModuleNotFoundError:
     os.system('pip install flask')
 
 researchMethods = [
 	{'method':"", 'text':'Research by '},
-	{'method':'researchByUser', 'text':'user'},
-	{'method':'researchByKeyword','text':'keyword and hashtag'},
+	{'method':'researchByUser', 'text':'Research by user'},
+	{'method':'researchByKeyword','text':'Research by keyword'},
+	{'method':'researchByHashtag','text':'Research by hashtag'}
 ]	# A list containing all available search methods
 dataRangeInputs = [
 	{'value':"", 'text':'Search from '},
@@ -27,53 +28,35 @@ dataRangeInputs = [
 
 app = Flask(__name__)
 
-# ts.APIv2.__init__()
+ts.APIv2.__init__()
 
 @app.route('/', methods=('GET', 'POST'))
 def homepage():
-	"""
-	The homepage function is used to render the index.html template and display all tweets from database.
-
-	:return: The rendered template 'index'
-	"""
 	currentResearchMethod = ""							# the currently chosen search method
 	if request.method == 'POST':
-		#startDateRange = request.form.get('startDateRange')
-		#endDateRange = request.form.get('endDateRange')
-		ts.APIv2.setDatas(query=request.form['keyword'], tweetsLimit=request.form['tweetLimit'])
+		
+		ts.APIv2.setDatas(query=request.form['keyword'], tweetsLimit=request.form['tweetsLimit'])
 		currentResearchMethod = request.form.get('researchBy')
-		# getting tweetLimit input, from the <input type="number" name="tweetLimit"> of index.html, in the form of a string
+		ts.APIv2.researchDecree(researchType=currentResearchMethod)
+		'''
 		whatBtn = request.form['btnradio']
-		print('✨',whatBtn)
 		if whatBtn == 'Stream':
-			twitter.StreamByKeyword(keyword)
+			twitter.StreamByKeyword(ts.APIv2.query)
 		elif whatBtn == 'Search':
 			if request.form.get('isLocated'):	# use form.get because you will get None as default value if the key doesn't exist. ->see https://stackoverflow.com/questions/11285613/check-if-a-form-input-is-checked-in-flask
 				isLocated = True
 			# getting tweets from twitter API
-			getTweet.GetTweet(currentResearchMethod, (int)(tweetLimit), keyword, isLocated)
+			getTweet.GetTweet(currentResearchMethod, (int)(ts.APIv2.tweetsLimit), ts.APIv2.query, isLocated)
 		else:
 			print('Error: unknown button')
+			'''
 		connection = sqlite3.connect('database.db')		# connecting to database
 		connection.row_factory = sqlite3.Row  # read row from database
 		# getting all tweet form db
 		tweets = connection.execute('SELECT * FROM all_tweets').fetchall()
 		connection.close()  # close connection to database
 		# rendering flask template 'index.html'
-		return render_template('index.html',
-							   tweets=tweets,
-							   tweetLimit=tweetLimit,
-							   location=isLocated,
-							   researchMethods=researchMethods,
-							   currentResearchMethod=currentResearchMethod,
-							   )
-	# twitter.__init__()		# getTweet and save them into db
-	connection = sqlite3.connect('database.db')		# connecting to database
-	connection.row_factory = sqlite3.Row  # read row from database
-	# getting all tweet form db
-	tweets = connection.execute('SELECT * FROM all_tweets').fetchall()
-	connection.close()  # close connection to database
-
+		
 		return render_template(
 			'index.html',
 			tweetCards=ts.APIv2.createCard(),
@@ -82,7 +65,14 @@ def homepage():
 			currentResearchMethod=currentResearchMethod,
 			dataRangeInputs=dataRangeInputs,
 		)	# rendering flask template 'index.html'
-	
+
+	# twitter.__init__()		# getTweet and save them into db
+	connection = sqlite3.connect('database.db')		# connecting to database
+	connection.row_factory = sqlite3.Row  # read row from database
+	# getting all tweet form db
+	tweets = connection.execute('SELECT * FROM all_tweets').fetchall()
+	connection.close()  # close connection to database
+
 	ts.APIv2._APIv2__init__response()
 	return render_template(
 		'index.html',
@@ -91,7 +81,7 @@ def homepage():
 		researchMethods=researchMethods,
 		currentResearchMethod=currentResearchMethod,
 		dataRangeInputs=dataRangeInputs,
-	)
+	)	# rendering flask template 'index.html'
 
 @app.route('/explain')
 def explainPage():
