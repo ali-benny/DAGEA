@@ -33,6 +33,7 @@ ts.APIv2.__init__()
 @app.route('/', methods=('GET', 'POST'))
 def homepage():
 	currentResearchMethod = ""							# the currently chosen search method
+	currentRange = ""							# the currently chosen search method
 	if request.method == 'POST':
 		
 		ts.APIv2.setDatas(query=request.form['keyword'], tweetsLimit=request.form['tweetsLimit'])
@@ -86,6 +87,17 @@ def homepage():
 @app.route('/explain')
 def explainPage():
 	return render_template('howItWorks.html')
+
+@app.route('/chess')
+def chessPage():
+	return render_template('chess.html')
+
+@app.route('/startGame')
+def chessGame():
+	print('PRIMA: scacchi_101.__main__()')
+	scacchi_101.__main__()
+	# Va in loop perche' non esce mai dalla funzione __main__()
+	return render_template('chess.html')
 
 @app.route('/credits')
 def creditsPage():

@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block html_title %}Play Chess{% endblock %}
+
+{% block main_content %}
+<div>
+    <div class="text-center">
+        <h2 class="pb-2">Per iniziare a giocare a scacchi premi il pulsante</h2>
+    </div>
+</div>
+
+<div class="container d-grid gap-2 col-6 mx-auto">
+    <form class="row" action="/startGame" method="post">
+         <div class="d-grid gap-2 col-6 mx-auto">
+            <button type="button" class="btn btn-light"><a href="/startGame">Gioca</a></button>
+        </div>
+    </form>
+</div>
+{% endblock %}
