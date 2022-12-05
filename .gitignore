@@ -4,3 +4,4 @@
 *.db
 *.csv
 localTests.py
+coordinates.json

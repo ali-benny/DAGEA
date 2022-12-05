@@ -49,7 +49,7 @@ class APIv1:
             return placeObj.centroid
             #print(f"tweetInfo (response):{tweetInfo}")
             #print(f"tweeet_id: {tweet_id}, place_id: {place_id}, api.geo_id(place_id).centroid: {placeObj.centroid}")
-        except TypeError:
+        except TypeError:       # Caso in cui nel tweet non e' stato taggato alcun luogo
             #print(f"tweeet_id: {tweet_id}, api.geo_id(place_id).centroid: NO GEO ATTRIBUTE --> NO COORDINATES")
             return [0.0,0.0]
         
@@ -109,6 +109,7 @@ class APIv2:
         #cls.response = cls.client.search_recent_tweets(query=query, max_results=tweetsLimit, start_time=start_time, end_time=end_time)
         cls.response = cls.client.search_recent_tweets(query=query, max_results=tweetsLimit, expansions=cls.expansions)
 
+    ################################  OTHER  ################################
     @classmethod
     def createCard(cls):
         if cls.response.data is not None:
@@ -124,6 +125,18 @@ class APIv2:
         else:
             return ''
 
+    @classmethod
+    def _createMarksJson(cls):
+        coordinates=[]
+        APIv1.__init__()
+        for tweet in cls.response.data:
+            tweetCoordinates = APIv1.getCoordinates(tweet_id=tweet.id, client=cls.client)
+            coordinates.append({"latitude": tweetCoordinates[1], "longitude": tweetCoordinates[0]})
+        
+        # TODO: Questo file dovrebbe essere eliminato una volta compiuto il suo scopo?
+        with open('coordinates.json', 'w') as file:
+            file.write(json.dumps(coordinates))
+
     ################################  DEBUG  ################################
     @classmethod
     def _createDataFrames(cls) -> None:
@@ -137,7 +150,7 @@ class APIv2:
         cls.dataFrames.append(pd.DataFrame(cls.response.errors))
     
     @classmethod
-    def _createCsvFile(cls) -> None:
+    def _createCsvFiles(cls) -> None:
         cls._deleteCsvFile()             # Si eliminano i .csv di ricerche passate
         cls._createDataFrames()     # E si creano quelli coi nuovi dati
         try:
@@ -152,7 +165,7 @@ class APIv2:
             print("ATTENTION: currently there is no 'cls.dataFrames[i]' attribute in the APIv2 class.\nPossible causes:\n1) You haven't called any APIv2 method of the class yet --> Call one\n2) The call returned no results --> Try modifying the query")
 
     @classmethod
-    def _deleteCsvFile(cll)-> None:
+    def _deleteCsvFiles(cll)-> None:
         myPath = os.path.dirname(os.path.abspath(__file__)) + '/'
         for file in listdir(myPath):
             if file.endswith('.csv'):
