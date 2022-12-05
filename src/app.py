@@ -40,10 +40,9 @@ def homepage():
 	if request.method == 'POST':
 		#startDateRange = request.form.get('startDateRange')
 		#endDateRange = request.form.get('endDateRange')
-		ts.APIv2.setDatas(query=request.form['keyword'], tweetsLimit=request.form['tweetsLimit'])
+		ts.APIv2.setDatas(query=request.form['keyword'], tweetsLimit=request.form['tweetLimit'])
 		currentResearchMethod = request.form.get('researchBy')
 		# getting tweetLimit input, from the <input type="number" name="tweetLimit"> of index.html, in the form of a string
-		tweetLimit = request.form['tweetLimit']
 		whatBtn = request.form['btnradio']
 		print('✨',whatBtn)
 		if whatBtn == 'Stream':
