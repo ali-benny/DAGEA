@@ -102,7 +102,7 @@ class APIv2:
         userData = cls.client.get_user(username=username).data
         if (userData is not None):      # Entra nell'if sse trova almeno un utente con quell'username
             userId = userData.id
-            cls.response = cls.client.get_users_tweets(id=userId)
+            cls.response = cls.client.get_users_tweets(id=userId, expansions=cls.expansions)
 
     @classmethod
     def getTweetByKeyword(cls, query: str, tweetsLimit=None, start_time=None, end_time=None) -> None:
