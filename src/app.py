@@ -2,6 +2,7 @@ import TweetSearch as ts
 import os
 import getTweet
 import twitter
+import utils
 try:
 	from flask import Flask, render_template, request
 	import sqlite3
@@ -11,23 +12,7 @@ except ModuleNotFoundError:
 from scacchi import scacchi_101
 from scacchi import scacchi_engine
 
-researchMethods = [
-	{'method':"", 'text':'Research by '},
-	{'method':'researchByUser', 'text':'Research by user'},
-	{'method':'researchByKeyword','text':'Research by keyword'},
-	{'method':'researchByHashtag','text':'Research by hashtag'}
-]	# A list containing all available search methods
-dataRangeInputs = [
-	{'value':"", 'text':'Search from '},
-	{'value':'today', 'text':'Search from today'},
-	{'value':'oneDayAgo', 'text':'Search from 1 day ago'},
-	{'value':'twoDaysAgo', 'text':'Search from 2 days ago'},
-	{'value':'threeDaysAgo', 'text':'Search from 3 days ago'},
-	{'value':'fourDaysAgo', 'text':'Search from 4 days ago'},
-	{'value':'fiveDaysAgo', 'text':'Search from 5 days ago'},
-	{'value':'sixDaysAgo', 'text':'Search from 6 days ago'},
-	{'value':'sevenDaysAgo', 'text':'Search from 7 days ago'},
-]
+researchMethods = utils.initializeResearchMethods()
 
 app = Flask(__name__)
 
@@ -36,13 +21,14 @@ ts.APIv2.__init__()
 @app.route('/', methods=('GET', 'POST'))
 def homepage():
 	currentResearchMethod = ""							# the currently chosen search method
-	currentRange = ""							# the currently chosen search method
+	dates = utils.initializeDates()
 	if request.method == 'POST':
 		
 		ts.APIv2.setDatas(query=request.form['keyword'], tweetsLimit=request.form['tweetsLimit'])
 		currentResearchMethod = request.form.get('researchBy')
 		ts.APIv2.researchDecree(researchType=currentResearchMethod)
-
+		dates['minDateValue']=request.form['minDate']
+		dates['maxDateValue']=request.form['maxDate']
 		'''
 		whatBtn = request.form['btnradio']
 		if whatBtn == 'Stream':
@@ -69,7 +55,7 @@ def homepage():
 			tweetsLimit=ts.APIv2.tweetsLimit,
 			researchMethods=researchMethods,
 			currentResearchMethod=currentResearchMethod,
-			dataRangeInputs=dataRangeInputs,
+			dates=dates
 		)	# rendering flask template 'index.html'
 
 	# twitter.__init__()		# getTweet and save them into db
@@ -79,14 +65,16 @@ def homepage():
 	tweets = connection.execute('SELECT * FROM all_tweets').fetchall()
 	connection.close()  # close connection to database
 
+	# Reinizizalizzazione col fine di avere di avere un reset dei campi quanto si torna alla home
 	ts.APIv2._APIv2__init__response()
+	dates = utils.initializeDates()
 	return render_template(
 		'index.html',
 		tweetCards=ts.APIv2.createCard(),
 		tweetsLimit=ts.APIv2.tweetsLimit,
 		researchMethods=researchMethods,
 		currentResearchMethod=currentResearchMethod,
-		dataRangeInputs=dataRangeInputs,
+		dates=dates
 	)	# rendering flask template 'index.html'
 
 @app.route('/explain')
