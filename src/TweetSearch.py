@@ -71,6 +71,7 @@ class APIv2:
     start_time = ''
     end_time = ''
     expansions = ['author_id','geo.place_id']
+    tweet_fields=['created_at']
 
     @classmethod
     # TODO: Credo proprio che esistano strumenti migliori per implementare la semantica di questa funzione
@@ -79,17 +80,19 @@ class APIv2:
             cls.query = query
         if tweetsLimit is not None:
             cls.tweetsLimit = tweetsLimit
+        # I parametri attuali {start|end}_time sono ritornati da HTML nella forma: YYYY-MM-DDTHH:DD e vanno
+        # dunque fatte delle modifiche per adattarle al formato dell'API v2, ovvero:YYYY-MM-DDTHH:DD:SS:Z
         if start_time is not None:
-            cls.start_time = start_time
+            cls.start_time = start_time + ':00Z'
         if end_time is not None:
-            cls.end_time = end_time
+            cls.end_time = end_time + ':00Z'
 
     ################################  RESEARCH  ################################
     @classmethod
     def researchDecree(cls, researchType: str) -> None:
         match researchType:
             case 'researchByUser':
-                cls.getTweetByUser(username=cls.query)
+                cls.getTweetByUser(username=cls.query, start_time=cls.start_time, end_time=cls.end_time)
             case 'researchByKeyword':
                 cls.getTweetByKeyword(query=cls.query, tweetsLimit=cls.tweetsLimit, start_time=cls.start_time, end_time=cls.end_time)
             case 'researchByHashtag':
@@ -98,16 +101,16 @@ class APIv2:
                 raise ValueError("ERROR: APIv2 Class, researchDecree: match error")
  
     @classmethod
-    def getTweetByUser(cls, username: str) -> None:
+    def getTweetByUser(cls, username: str, tweetsLimit=None, start_time=None, end_time=None) -> None:
         userData = cls.client.get_user(username=username).data
         if (userData is not None):      # Entra nell'if sse trova almeno un utente con quell'username
             userId = userData.id
-            cls.response = cls.client.get_users_tweets(id=userId, expansions=cls.expansions, tweet_fields=['created_at'])
+            cls.response = cls.client.get_users_tweets(id=userId, max_results=tweetsLimit, expansions=cls.expansions, tweet_fields=cls.tweet_fields, start_time=start_time, end_time=end_time)
 
     @classmethod
     def getTweetByKeyword(cls, query: str, tweetsLimit=None, start_time=None, end_time=None) -> None:
         #cls.response = cls.client.search_recent_tweets(query=query, max_results=tweetsLimit, start_time=start_time, end_time=end_time)
-        cls.response = cls.client.search_recent_tweets(query=query, max_results=tweetsLimit, expansions=cls.expansions, tweet_fields=['created_at'])
+        cls.response = cls.client.search_recent_tweets(query=query, max_results=tweetsLimit, expansions=cls.expansions, tweet_fields=cls.tweet_fields, start_time=start_time, end_time=end_time)
         #APIv2._createMarksJson()
 
     ################################  OTHER  ################################

@@ -12,23 +12,22 @@ except ModuleNotFoundError:
 from scacchi import scacchi_101
 from scacchi import scacchi_engine
 
-researchMethods = utils.initializeResearchMethods()
-
 app = Flask(__name__)
 
 ts.APIv2.__init__()
+researchMethods = utils.initializeResearchMethods()
 
 @app.route('/', methods=('GET', 'POST'))
 def homepage():
 	currentResearchMethod = ""							# the currently chosen search method
 	dates = utils.initializeDates()
 	if request.method == 'POST':
-		
-		ts.APIv2.setDatas(query=request.form['keyword'], tweetsLimit=request.form['tweetsLimit'])
 		currentResearchMethod = request.form.get('researchBy')
-		ts.APIv2.researchDecree(researchType=currentResearchMethod)
 		dates['minDateValue']=request.form['minDate']
 		dates['maxDateValue']=request.form['maxDate']
+		ts.APIv2.setDatas(query=request.form['keyword'], tweetsLimit=request.form['tweetsLimit'], start_time=dates['minDateValue'], end_time=dates['maxDateValue'])
+		ts.APIv2.researchDecree(researchType=currentResearchMethod)
+		
 		'''
 		whatBtn = request.form['btnradio']
 		if whatBtn == 'Stream':
