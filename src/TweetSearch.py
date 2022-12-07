@@ -68,8 +68,8 @@ class APIv2:
     ################################  ATTRIBUTE SETTING   ################################
     query = ''
     tweetsLimit = 10
-    start_time = ''
-    end_time = ''
+    start_time = None
+    end_time = None
     expansions = ['author_id','geo.place_id']
     tweet_fields=['created_at']
 
@@ -134,13 +134,14 @@ class APIv2:
     def _createMarksJson(cls):
         coordinates=[]
         APIv1.__init__()
-        for tweet in cls.response.data:
-            tweetCoordinates = APIv1.getCoordinates(tweet_id=tweet.id, client=cls.client)
-            coordinates.append({"latitude": tweetCoordinates[1], "longitude": tweetCoordinates[0]})
-        
-        # TODO: Questo file dovrebbe essere eliminato una volta compiuto il suo scopo?
-        with open('coordinates.json', 'w') as file:
-            file.write(json.dumps(coordinates))
+        if cls.response.data is not None:       # cls.response.data == None quando la ricerca fatta non ha prodotto risultati
+            for tweet in cls.response.data:
+                tweetCoordinates = APIv1.getCoordinates(tweet_id=tweet.id, client=cls.client)
+                coordinates.append({"latitude": tweetCoordinates[1], "longitude": tweetCoordinates[0]})
+            
+            # TODO: Questo file dovrebbe essere eliminato una volta compiuto il suo scopo?
+            with open('coordinates.json', 'w') as file:
+                file.write(json.dumps(coordinates))
 
     ################################  DEBUG  ################################
     @classmethod
