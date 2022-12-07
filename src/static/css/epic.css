@@ -5,7 +5,12 @@
 	--fantacitorio: #FAB234;
 }
 
-a {
+button a {
+	text-decoration: none;
+	color: white;
+	overflow: hidden;
+}
+button a:hover {
 	text-decoration: none;
 	color: white;
 	overflow: hidden;
