@@ -66,33 +66,23 @@
 		<div class="row">
 			<!-- Select ranges -->
 			<div class="col">
-				<div class="btn-group dorpdown">
-					<button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown">
-						Date range
-					</button>
-					<ul class="dropdown-menu">
-						<li>
-							<div class="dropdown-item">
-								<label for="start">Start date: </label>
-								<div class="input-group mb-3">
-									<input type="datetime-local" class="form-control" name="minDate"
-										value="{{ dates.get('minDateValue') }}" min="{{ dates.get('minDate') }}"
-										max="{{ dates.get('maxDate') }}" aria-label="star_timet">
-								</div>
-							</div>
-						</li>
-						<li>
-							<div class="dropdown-item">
-								<label for="start">End date: </label>
-								<div class="input-group mb-3">
-									<input type="datetime-local" class="form-control" name="maxDate"
-										value="{{ dates.get('maxDateValue') }}" min="{{ dates.get('minDate') }}"
-										max="{{ dates.get('maxDate') }}" aria-label="end_time">
-								</div>
-							</div>
-						</li>
-					</ul>
+				<label for="start">Start date: </label>
+				<div class="input-group mb-3">
+					<input type="datetime-local" class="form-control" name="minDate"
+						value="{{ dates.get('minDateValue') }}" min="{{ dates.get('minDate') }}"
+						max="{{ dates.get('maxDate') }}" aria-label="star_timet">
 				</div>
+				<!-- <button id="reset" class="btn border text-white" onclick="resetDates('end_date')">Reset</button> -->
+			</div>
+
+			<div class="col">
+				<label for="start">End date: </label>
+				<div class="input-group mb-3">
+					<input type="datetime-local" class="form-control" name="maxDate"
+						value="{{ dates.get('maxDateValue') }}" min="{{ dates.get('minDate') }}"
+						max="{{ dates.get('maxDate') }}" aria-label="end_time">
+				</div>
+				<!-- <button id="reset" class="btn border text-white" onclick="resetDates('end_date')">Reset</button> -->
 			</div>
 		</div>
 

@@ -6,12 +6,16 @@ try:
     import configparser         # Used for APIv1 initialization
     import csv                        # Used for APIv2
     import json                      # Used for APIv2
+    import datetime
+    from datetime import timedelta, datetime
+    import js2py
 except ModuleNotFoundError:
     os.system('pip install tweepy')
     os.system('pip install pandas')
     os.system('pip install configparser')
     os.system('pip install csv')
     os.system('pip install json')
+    os.system('pip install js2py')
 
 class APIv1:
     ################################ API SETUP ################################
@@ -90,6 +94,14 @@ class APIv2:
     ################################  RESEARCH  ################################
     @classmethod
     def researchDecree(cls, researchType: str) -> None:
+        # Quando si usa l'API v2 di twitter, twitter in automatico determina qual e' il valore limite del parametro start_time (ovvero: momento x in cui l'API v2 viene invocata - 7 giorni),
+        # e, onde evitare errori di valori di start_time non validi, lo si aggiorna (qualora fosse necessario) prima di chiamare la API v2
+        dtformat = '%Y-%m-%dT%H:%M:%SZ'
+        currentDate = datetime.utcnow()
+        validStartDate = currentDate - timedelta(days=7)
+        validStartDate = validStartDate.strftime(dtformat)
+        if cls.start_time < validStartDate:
+            cls.start_time = validStartDate
         match researchType:
             case 'researchByUser':
                 cls.getTweetByUser(username=cls.query, start_time=cls.start_time, end_time=cls.end_time)

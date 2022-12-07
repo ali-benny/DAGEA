@@ -86,7 +86,6 @@ def chessPage():
 
 @app.route('/startGame')
 def chessGame():
-	print('PRIMA: scacchi_101.__main__()')
 	scacchi_101.__main__()
 	# Va in loop perche' non esce mai dalla funzione __main__()
 	return render_template('chess.html')
