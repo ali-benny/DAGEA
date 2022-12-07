@@ -165,7 +165,7 @@ class APIv2:
             print("ATTENTION: currently there is no 'cls.dataFrames[i]' attribute in the APIv2 class.\nPossible causes:\n1) You haven't called any APIv2 method of the class yet --> Call one\n2) The call returned no results --> Try modifying the query")
 
     @classmethod
-    def _deleteCsvFiles(cll)-> None:
+    def _deleteCsvFiles(cls)-> None:
         myPath = os.path.dirname(os.path.abspath(__file__)) + '/'
         for file in listdir(myPath):
             if file.endswith('.csv'):

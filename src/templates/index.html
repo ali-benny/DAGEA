@@ -12,21 +12,28 @@
 
 <!-- Filter and search -->
 <div class="container mt-4">
-	<form class="" action="" method="post">
+	<form class="d-flex justify-content-between align-items-center w-100" action="" method="post">
 		<div class="row">
 
 			<!-- Search bar -->
-			<div class="col-3">
-				<div class="d-flex">
-					<input required type="text" class="form-control me-1" placeholder="Search tweets" name="keyword"
-						id="keyword" value="{{ request.form['keyword'] }}">
-					<button class="btn btn-primary bi-search" id="searchBtn" type="submit"></button>
+			<div class="d-flex w-75">
+				<input type="text" class="form-control" style="max-width: 60%" placeholder="Search tweets"
+					name="keyword" id="keyword" value="{{ request.form['keyword'] }}">
+				<div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+					<input type="radio" class="btn-check" name="btnradio" id="searchBtn" autocomplete="off"
+						value="Search">
+					<label class="btn btn-outline-primary bi-search" for="searchBtn" title="Search Tweets"></label>
+
+					<input type="radio" class="btn-check" name="btnradio" id="streamBtn" autocomplete="off"
+						value="Stream">
+					<label class="btn btn-outline-danger bi-play-fill" for="streamBtn" title="Stream Tweets"></label>
 				</div>
+				<button type="submit" class="btn btn-success" style="margin: 1px;">Invia</button>
 			</div>
 
 			<!-- Research by -->
-			<div class="col-3">
-				<select required name="researchBy" class="form-select" aria-label="Default select example">
+			<div class="d-flex">
+				<select name="researchBy" class="form-select" aria-label="Default select example">
 					{% for method in researchMethods %}
 					{% if method.method == currentResearchMethod %}
 					<option selected value="{{ method.method }}">{{ method.text }}</option>
@@ -39,7 +46,7 @@
 
 			<!-- Tweets limit -->
 			<div class="col-2">
-				<input required class="form-control" id="tweetsLimitInput" value="{{ tweetsLimit }}" min="0" max="200"
+				<input class="form-control" id="tweetsLimitInput" value="{{ tweetsLimit }}" min="0" max="200"
 					type="number" name="tweetsLimit">
 				<small class="form-text text-muted">Choose the number of tweets to display</small>
 			</div>
@@ -51,17 +58,7 @@
 					<label class="form-check-label" for="flexSwitchCheckDefault">Location</label>
 				</div>
 			</div>
-
-			<div class="col">
-				<div class="btn-group" role="group" aria-label="Basic radio toggle button group">
-					<input type="radio" class="btn-check" name="btnradio" id="streamBtn" autocomplete="off"
-						value="Stream">
-					<label class="btn btn-outline-danger bi-play-fill" for="streamBtn" title="Stream Tweets"></label>
-				</div>
-				<button type="submit" class="btn btn-success" style="margin: 1px;">Invia</button>
-			</div>
 		</div>
-
 	</form>
 </div>
 <br><br>
@@ -76,9 +73,9 @@
 				<div class="col-lg-4">
 					<div class="card" style="width: 90%; margin: 2%">
 						<div class="card-body">
-							<h3 class="card-title">{{ tweet.username }}</h3>
+							<h3 class="card-title">{{ tweet.user }}</h3>
 							<p class="card-text">{{ tweet.text }}</p>
-							<p class="card-text">{{ tweet.coordinates }}</p>
+							<p class="card-text">{{ tweet.date }}</p>
 						</div>
 					</div>
 				</div>

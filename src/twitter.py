@@ -4,14 +4,6 @@ import pandas as pd  # for save tweet in SVG
 import tweepy
 import sqlite3
 import time
-# try:
-	
-# except ModuleNotFoundError:
-# 	os.system('pip install sqlite3')
-# 	os.system('pip install configparser')
-# 	os.system('pip install pandas')
-# 	os.system('pip install tweepy')
-#	os.system('pip install time')
 
 def get_key(section, setting):
 	"""

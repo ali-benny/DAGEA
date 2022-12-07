@@ -1,7 +1,7 @@
 import TweetSearch as ts
 import os
-import getTweet
-import twitter
+import TweetStream
+
 try:
 	from flask import Flask, render_template, request
 	import sqlite3
@@ -37,55 +37,56 @@ ts.APIv2.__init__()
 def homepage():
 	currentResearchMethod = ""							# the currently chosen search method
 	currentRange = ""							# the currently chosen search method
+	stream = False
 	if request.method == 'POST':
-		
-		ts.APIv2.setDatas(query=request.form['keyword'], tweetsLimit=request.form['tweetsLimit'])
-		currentResearchMethod = request.form.get('researchBy')
-		ts.APIv2.researchDecree(researchType=currentResearchMethod)
-		'''
+		tweets = []  # list of tweets
 		whatBtn = request.form['btnradio']
 		if whatBtn == 'Stream':
-			twitter.StreamByKeyword(ts.APIv2.query)
+			stream = True
+			# getting stream tweets
+			TweetStream.StreamByKeyword(request.form['keyword'])
+			connection = sqlite3.connect('database.db')		# connecting to database
+			connection.row_factory = sqlite3.Row  # read row from database
+			# getting all tweet form db
+			tweets = connection.execute('SELECT * FROM all_tweets').fetchall()
+			connection.close()  # close connection to database
 		elif whatBtn == 'Search':
-			if request.form.get('isLocated'):	# use form.get because you will get None as default value if the key doesn't exist. ->see https://stackoverflow.com/questions/11285613/check-if-a-form-input-is-checked-in-flask
-				isLocated = True
 			# getting tweets from twitter API
-			getTweet.GetTweet(currentResearchMethod, (int)(ts.APIv2.tweetsLimit), ts.APIv2.query, isLocated)
+			ts.APIv2.setDatas(query=request.form['keyword'], tweetsLimit=request.form['tweetsLimit'])
+			currentResearchMethod = request.form.get('researchBy')
+			ts.APIv2.researchDecree(researchType=currentResearchMethod)
+			tweets = ts.APIv2.createCard()
 		else:
 			print('Error: unknown button')
-			'''
+		# rendering flask template 'index.html'
+		return render_template(
+			'index.html',
+			tweetCards=tweets,
+			tweetsLimit=ts.APIv2.tweetsLimit,
+			researchMethods=researchMethods,
+			currentResearchMethod=currentResearchMethod,
+			dataRangeInputs=dataRangeInputs,
+		)
+
+	# twitter.__init__()		# getTweet and save them into db
+	if stream:
 		connection = sqlite3.connect('database.db')		# connecting to database
 		connection.row_factory = sqlite3.Row  # read row from database
 		# getting all tweet form db
 		tweets = connection.execute('SELECT * FROM all_tweets').fetchall()
 		connection.close()  # close connection to database
-		# rendering flask template 'index.html'
-		
-		return render_template(
-			'index.html',
-			tweetCards=ts.APIv2.createCard(),
-			tweetsLimit=ts.APIv2.tweetsLimit,
-			researchMethods=researchMethods,
-			currentResearchMethod=currentResearchMethod,
-			dataRangeInputs=dataRangeInputs,
-		)	# rendering flask template 'index.html'
+	else:
+		ts.APIv2._APIv2__init__response()
+		tweets = ts.APIv2.createCard()
 
-	# twitter.__init__()		# getTweet and save them into db
-	connection = sqlite3.connect('database.db')		# connecting to database
-	connection.row_factory = sqlite3.Row  # read row from database
-	# getting all tweet form db
-	tweets = connection.execute('SELECT * FROM all_tweets').fetchall()
-	connection.close()  # close connection to database
-
-	ts.APIv2._APIv2__init__response()
+	# rendering flask template 'index.html'
 	return render_template(
 		'index.html',
-		tweetCards=ts.APIv2.createCard(),
-		tweetsLimit=ts.APIv2.tweetsLimit,
+		tweetCards=tweets,
 		researchMethods=researchMethods,
 		currentResearchMethod=currentResearchMethod,
 		dataRangeInputs=dataRangeInputs,
-	)	# rendering flask template 'index.html'
+	)	
 
 @app.route('/explain')
 def explainPage():
