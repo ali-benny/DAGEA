@@ -66,26 +66,29 @@
 		</div>
 
 		<div class="row">
-			<!-- Select ranges -->
-			<div class="col">
-				<label for="start">Start date: </label>
-				<div class="input-group mb-3">
-					<input type="datetime-local" class="form-control" name="minDate" id="minDate"
-						value="{{ dates.get('minDateValue') }}" min="{{ dates.get('minDate') }}"
-						max="{{ dates.get('maxDate') }}" aria-label="star_timet">
-				</div>
-				<input type="button" id="reset" class="btn border text-white" onclick="resetDates('minDate')" value="Reset">
-			</div>
-
-			<div class="col">
-				<label for="start">End date: </label>
+			<!-- To date -->
+			<div class="col-3">
+				<label for="start">To date: </label>
 				<div class="input-group mb-3">
 					<input type="datetime-local" class="form-control" name="maxDate" id="maxDate"
 						value="{{ dates.get('maxDateValue') }}" min="{{ dates.get('minDate') }}"
 						max="{{ dates.get('maxDate') }}" aria-label="end_time">
 				</div>
-				<input type="button" id="reset" class="btn border text-white" onclick="resetDates('maxDate')" value="Reset">
+				<input type="button" id="reset" class="btn border text-white" onclick="resetDates('maxDate')" value="Default date">
 			</div>
+
+			<!-- From date -->
+			<div class="col-3">
+				<label for="start">From date: </label>
+				<div class="input-group mb-3">
+					<input type="datetime-local" class="form-control" name="minDate" id="minDate"
+						value="{{ dates.get('minDateValue') }}" min="{{ dates.get('minDate') }}"
+						max="{{ dates.get('maxDate') }}" aria-label="star_timet">
+				</div>
+				<input type="button" id="reset" class="btn border text-white" onclick="resetDates('minDate')" value="Default date">
+			</div>
+
+			<div class="col"></div>
 		</div>
 
 	</form>
