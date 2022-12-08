@@ -81,7 +81,7 @@ class APIv2:
     def setDatas(cls, query: str = None, tweetsLimit = None, start_time=None, end_time=None) -> None:
         if query is not None:
             cls.query = query
-        if tweetsLimit is not None and 10 <=tweetsLimit and tweetsLimit <= 100:
+        if tweetsLimit is not None and 10 <= int(tweetsLimit) and int(tweetsLimit) <= 100:
             cls.tweetsLimit = tweetsLimit
         # I parametri attuali {start|end}_time sono ritornati da HTML nella forma: YYYY-MM-DDTHH:DD e vanno
         # dunque fatte delle modifiche per adattarle al formato dell'API v2, ovvero:YYYY-MM-DDTHH:DD:SS:Z
@@ -101,7 +101,7 @@ class APIv2:
         validStartDate = validStartDate.strftime(dtformat)
         if cls.start_time < validStartDate:
             cls.start_time = validStartDate
-            
+
         match researchType:
             case 'researchByUser':
                 cls.getTweetByUser(username=cls.query, start_time=cls.start_time, end_time=cls.end_time)
