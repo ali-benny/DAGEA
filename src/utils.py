@@ -1,5 +1,9 @@
-import datetime
-from datetime import timedelta, datetime
+import os
+try:
+    import datetime
+    from datetime import timedelta, datetime
+except ModuleNotFoundError:
+    os.system('pip install datetime')
 
 # File adibito all'inizializzazione delle strutture dati che andranno a riempure i campi del filtri della GUI
 # File creato al fine di avere un app.py piu' pulito e senza codice riguardante il frontend

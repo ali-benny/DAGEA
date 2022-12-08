@@ -1,5 +1,6 @@
 import os
 from os import listdir
+import config
 try:
     import tweepy                  # Used for APIs
     import pandas as pd         # Used for data handling and debug
@@ -61,22 +62,20 @@ class APIv2:
     ################################ API SETUP ################################
     @classmethod
     def __init__(cls) -> None:
-        # TODO: Trovare un modo migliore per esportare questo token di mrd
-        cls.client = tweepy.Client(bearer_token='AAAAAAAAAAAAAAAAAAAAAC9YjAEAAAAA8mWmHYSXfAYFTtl2JTBaKP6SKac%3DvjWg4UEGQovjZMb5EBPmwjuIktxnOouIvBi0yUCjFZCWZEtW8q')
+        cls.client = tweepy.Client(bearer_token=config.BEARER_TOKEN)
         cls.__init__response()
+        cls.query = ''
+        cls.tweetsLimit = 10
+        cls.start_time = None
+        cls.end_time = None
+        cls.expansions = ['author_id','geo.place_id']
+        cls.tweet_fields=['created_at']
 
     @classmethod
     def __init__response(cls) -> None:
         cls.response = cls.client.get_user(id=0)    # Questa chiamata di get_user ritornera' un dato response vuoto (analogo ad una string avuota '')
 
     ################################  ATTRIBUTE SETTING   ################################
-    query = ''
-    tweetsLimit = 10
-    start_time = None
-    end_time = None
-    expansions = ['author_id','geo.place_id']
-    tweet_fields=['created_at']
-
     @classmethod
     # TODO: Credo proprio che esistano strumenti migliori per implementare la semantica di questa funzione
     def setDatas(cls, query: str = None, tweetsLimit = None, start_time=None, end_time=None) -> None:
