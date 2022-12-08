@@ -3,6 +3,8 @@
 {% block html_title %}Tweet Finder | DAGEA™{% endblock %}
 
 {% block main_content %}
+<script src="../static/js/index.js"></script>
+
 <!-- Title -->
 <div class="container p-3">
 	<div class="text-center">
@@ -68,21 +70,21 @@
 			<div class="col">
 				<label for="start">Start date: </label>
 				<div class="input-group mb-3">
-					<input type="datetime-local" class="form-control" name="minDate"
+					<input type="datetime-local" class="form-control" name="minDate" id="minDate"
 						value="{{ dates.get('minDateValue') }}" min="{{ dates.get('minDate') }}"
 						max="{{ dates.get('maxDate') }}" aria-label="star_timet">
 				</div>
-				<!-- <button id="reset" class="btn border text-white" onclick="resetDates('end_date')">Reset</button> -->
+				<input type="button" id="reset" class="btn border text-white" onclick="resetDates('minDate')" value="Reset">
 			</div>
 
 			<div class="col">
 				<label for="start">End date: </label>
 				<div class="input-group mb-3">
-					<input type="datetime-local" class="form-control" name="maxDate"
+					<input type="datetime-local" class="form-control" name="maxDate" id="maxDate"
 						value="{{ dates.get('maxDateValue') }}" min="{{ dates.get('minDate') }}"
 						max="{{ dates.get('maxDate') }}" aria-label="end_time">
 				</div>
-				<!-- <button id="reset" class="btn border text-white" onclick="resetDates('end_date')">Reset</button> -->
+				<input type="button" id="reset" class="btn border text-white" onclick="resetDates('maxDate')" value="Reset">
 			</div>
 		</div>
 
@@ -99,7 +101,7 @@
 				{% for tweet in tweetCards %}
 				<div class="col-lg-4">
 					<div class="card border-info" style="width: 90%; margin: 2%">
-						<div class="card-body">
+						<div class="card-body bg-dark text-light">
 							<div class="row">
 								<div class="col">
 									<h3 class="card-title">{{ tweet.username }}</h3>
