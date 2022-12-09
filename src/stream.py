@@ -1,7 +1,6 @@
 import datetime
 import sqlite3
 import tweepy
-import pandas as pd
 import configparser
 import os
 
@@ -15,7 +14,7 @@ def get_key(section, setting):
 	"""
 	
 	config = configparser.ConfigParser()
-	my_path = os.path.abspath('config.ini')
+	my_path = os.path.abspath('src/config.ini')
 	config.read(my_path)
 	try:
 		key = config.get(section, setting)
@@ -23,32 +22,6 @@ def get_key(section, setting):
 		key = None
 	return key
 
-
-def convertDF2SQL(dataframe, stream=False):
-	"""
-	The convertDF2SQL function takes a pandas dataframe and converts it to a SQL database.
-	The function can also take an optional location argument, which will add the latitude and longitude if the research is with located tweets.
-
-	Parameters
-	----------
-			dataframe
-					Store the data in a sql database
-			location
-					Specify if the dataframe is a list of tweets or a list of located tweets
-	"""
-	# -- connect to db --
-	connection = sqlite3.connect("database.db")
-	c = connection.cursor()
-	# - create table -
-	c.execute(
-		'CREATE TABLE IF NOT EXISTS all_tweets (user TEXT, text TEXT, date DATETIME)')
-	connection.commit()  # save my edits on connection
-	if stream:
-		dataframe.to_sql('all_tweets', connection, if_exists='append', index=False)
-	else:
-		dataframe.to_sql('all_tweets', connection, if_exists='replace', index=False)
-	# save dataframe as json
-	dataframe.to_json("all_tweets.json")
 
 class MyStream(tweepy.StreamingClient):
 	tweets = ([])
@@ -117,7 +90,7 @@ def StreamByKeyword(keywords, tweetsLimit):
 	"""
 	stream_tweet = MyStream(get_key('twitter','bearer_token'))
 	stream_tweet.main(tweetsLimit)
-	# for keyword in keywords:
-	# 	stream_tweet.add_rules(tweepy.StreamRule(keyword)) 	# add rules
-	stream_tweet.add_rules(tweepy.StreamRule(keywords)) 	# add rules
+	for keyword in keywords:
+		stream_tweet.add_rules(tweepy.StreamRule(keyword)) 	# add rules
+	# stream_tweet.add_rules(tweepy.StreamRule(keywords)) 	# add rules
 	stream_tweet.filter(expansions=['author_id','attachments.media_keys'])	# run the stream
