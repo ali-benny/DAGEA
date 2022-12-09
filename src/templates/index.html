@@ -46,7 +46,7 @@
 
 			<!-- Tweets limit -->
 			<div class="col-2">
-				<input class="form-control" id="tweetsLimitInput" value="{{ tweetsLimit }}" min="0" max="200"
+				<input required class="form-control" id="tweetsLimitInput" value="{{ tweetsLimit }}" min="0" max="200"
 					type="number" name="tweetsLimit">
 				<small class="form-text text-muted">Choose the number of tweets to display</small>
 			</div>
@@ -72,10 +72,13 @@
 				{% for tweet in tweetCards %}
 				<div class="col-lg-4">
 					<div class="card" style="width: 90%; margin: 2%">
+						<!-- {% if tweet.media != None %}
+						<img src="{{ tweet.media }}" class="card-img-top" alt="tweet media"/>
+						{% endif %} -->
 						<div class="card-body">
 							<h3 class="card-title">{{ tweet.user }}</h3>
+							<h5 class="card-text">{{ tweet.date }}</h5>
 							<p class="card-text">{{ tweet.text }}</p>
-							<p class="card-text">{{ tweet.date }}</p>
 						</div>
 					</div>
 				</div>

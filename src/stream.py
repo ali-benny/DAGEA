@@ -1,9 +1,9 @@
+import datetime
 import sqlite3
 import tweepy
 import pandas as pd
 import configparser
 import os
-import time
 
 def get_key(section, setting):
 	"""
@@ -52,43 +52,72 @@ def convertDF2SQL(dataframe, stream=False):
 
 class MyStream(tweepy.StreamingClient):
 	tweets = ([])
-	limit = 16
-	users = []
+	limit = 0
+
+	def main(self, limit=1):
+		self.limit = limit
 
 	def on_connect(self):
+		"""
+		The on_connect function is called when the bot connects to Twitter. It sets up a tweepy client, 
+		connects to the database, and prints a message indicating that it has connected.
+		
+		Parameters
+		----------
+			self
+				Reference the class instance
+		
+		Returns
+		-------
+			A connection to the twitter api
+		"""
 		self.client = tweepy.Client(get_key('twitter','bearer_token'))	# -- connect to twitter API --		
 		self.connection = sqlite3.connect("database.db")	# -- connect to db --
 		print('Connected!')
 
 	def on_response(self, response):
-		print('✨')
+		"""
+		The on_response function is called when a response is received from the stream.
+		It takes the response as an argument and adds it to our list of tweets.
+		
+		Parameters
+		----------
+			self
+				Access the attributes and methods of the class in python
+			response
+				Get the data of the tweet
+		
+		Returns
+		-------	
+			The tweets lists
+		"""
 		tweet = response.data
-		self.tweets.append(tweet)
-		tmp = self.client.get_user(id=tweet.author_id).data
-		username = tmp if tmp is not None else 'Unknown'
-		# save tweets in a db table
-		c = self.connection.cursor()
-		# c.execute("CREATE TABLE IF NOT EXISTS all_tweets (user TEXT, text TEXT, date DATETIME)")
-		c.execute(
-		"INSERT INTO all_tweets (user, text, date) VALUES (?, ?, ?)",(username, tweet.text, tweet.created_at))
-		self.connection.commit()  # save my edits on connection
-		# we have more than 100 tweets?
-		if len(self.tweets) == self.limit:
+		username = response.includes['users'][0].username
+		self.tweets.append({"user": username, "text": tweet.text, "date": datetime.date.today()})
+		# we have find some tweets?
+		if len(self.tweets) >= self.limit:
 			self.disconnect()
-		time.sleep(1)
+		return self.tweets
+
+
+def StreamByKeyword(keywords, tweetsLimit):
+	"""
+	The StreamByKeyword function takes a list of keywords and returns the tweets that contain those keywords.
 	
-	# def on_tweet(self, tweet):
-		# if tweet.refecenced_tweets == None:
-		# # if not tweet.truncated:
-		# self.tweets.append([tweet.user.screen_name, tweet.text, tweet.created_at])
-		# # else:
-		# # 	self.tweets.append([tweet.user.screen_name, tweet.extended_tweet['full_text'], tweet.created_at])
-		# convertDF2SQL(self.dataframe, stream=True)
-
-
-def StreamByKeyword(keywords):
+	Parameters
+	----------
+		keywords
+			Specify the keywords that you want to filter for
+		tweetsLimit
+			Limit the number of tweets that are streamed
+	
+	Returns
+	-------	
+		A list of tweets
+	"""
 	stream_tweet = MyStream(get_key('twitter','bearer_token'))
+	stream_tweet.main(tweetsLimit)
 	# for keyword in keywords:
 	# 	stream_tweet.add_rules(tweepy.StreamRule(keyword)) 	# add rules
 	stream_tweet.add_rules(tweepy.StreamRule(keywords)) 	# add rules
-	stream_tweet.filter(expansions='author_id')	# run the stream
+	stream_tweet.filter(expansions=['author_id','attachments.media_keys'])	# run the stream

@@ -1,6 +1,6 @@
 import TweetSearch as ts
 import os
-import TweetStream
+import stream
 
 try:
 	from flask import Flask, render_template, request
@@ -37,24 +37,22 @@ ts.APIv2.__init__()
 def homepage():
 	currentResearchMethod = ""							# the currently chosen search method
 	currentRange = ""							# the currently chosen search method
-	stream = False
+	is_stream = False
 	if request.method == 'POST':
 		tweets = []  # list of tweets
 		whatBtn = request.form['btnradio']
+		tweetsLimit = request.form['tweetsLimit']
+		query = request.form['keyword']
 		if whatBtn == 'Stream':
-			stream = True
+			is_stream = True
 			# getting stream tweets
-			TweetStream.StreamByKeyword(request.form['keyword'])
-			connection = sqlite3.connect('database.db')		# connecting to database
-			connection.row_factory = sqlite3.Row  # read row from database
-			# getting all tweet form db
-			tweets = connection.execute('SELECT * FROM all_tweets').fetchall()
-			connection.close()  # close connection to database
+			stream.StreamByKeyword(query, (int)(tweetsLimit))
+			tweets = stream.MyStream.tweets
 		elif whatBtn == 'Search':
 			# getting tweets from twitter API
-			ts.APIv2.setDatas(query=request.form['keyword'], tweetsLimit=request.form['tweetsLimit'])
+			ts.APIv2.setDatas(query, tweetsLimit = tweetsLimit)
 			currentResearchMethod = request.form.get('researchBy')
-			ts.APIv2.researchDecree(researchType=currentResearchMethod)
+			ts.APIv2.researchDecree(researchType = currentResearchMethod)
 			tweets = ts.APIv2.createCard()
 		else:
 			print('Error: unknown button')
@@ -67,14 +65,8 @@ def homepage():
 			currentResearchMethod=currentResearchMethod,
 			dataRangeInputs=dataRangeInputs,
 		)
-
-	# twitter.__init__()		# getTweet and save them into db
-	if stream:
-		connection = sqlite3.connect('database.db')		# connecting to database
-		connection.row_factory = sqlite3.Row  # read row from database
-		# getting all tweet form db
-		tweets = connection.execute('SELECT * FROM all_tweets').fetchall()
-		connection.close()  # close connection to database
+	if is_stream:
+		tweets = stream.MyStream.tweets
 	else:
 		ts.APIv2._APIv2__init__response()
 		tweets = ts.APIv2.createCard()
