@@ -1,17 +1,22 @@
 import os
 from os import listdir
+import config
 try:
     import tweepy                  # Used for APIs
     import pandas as pd         # Used for data handling and debug
     import configparser         # Used for APIv1 initialization
     import csv                        # Used for APIv2
     import json                      # Used for APIv2
+    import datetime
+    from datetime import timedelta, datetime
+    import js2py
 except ModuleNotFoundError:
     os.system('pip install tweepy')
     os.system('pip install pandas')
     os.system('pip install configparser')
     os.system('pip install csv')
     os.system('pip install json')
+    os.system('pip install js2py')
 
 class APIv1:
     ################################ API SETUP ################################
@@ -57,39 +62,49 @@ class APIv2:
     ################################ API SETUP ################################
     @classmethod
     def __init__(cls) -> None:
-        # TODO: Trovare un modo migliore per esportare questo token di mrd
-        cls.client = tweepy.Client(bearer_token='AAAAAAAAAAAAAAAAAAAAAC9YjAEAAAAA8mWmHYSXfAYFTtl2JTBaKP6SKac%3DvjWg4UEGQovjZMb5EBPmwjuIktxnOouIvBi0yUCjFZCWZEtW8q')
+        cls.client = tweepy.Client(bearer_token=config.BEARER_TOKEN)
         cls.__init__response()
+        cls.query = ''
+        cls.tweetsLimit = 10
+        cls.start_time = None
+        cls.end_time = None
+        cls.expansions = ['author_id','geo.place_id']
+        cls.tweet_fields=['created_at']
 
     @classmethod
     def __init__response(cls) -> None:
         cls.response = cls.client.get_user(id=0)    # Questa chiamata di get_user ritornera' un dato response vuoto (analogo ad una string avuota '')
 
     ################################  ATTRIBUTE SETTING   ################################
-    query = ''
-    tweetsLimit = 10
-    start_time = ''
-    end_time = ''
-    expansions = ['author_id','geo.place_id']
-
     @classmethod
     # TODO: Credo proprio che esistano strumenti migliori per implementare la semantica di questa funzione
     def setDatas(cls, query: str = None, tweetsLimit = None, start_time=None, end_time=None) -> None:
         if query is not None:
             cls.query = query
-        if tweetsLimit is not None:
+        if tweetsLimit is not None and 10 <= int(tweetsLimit) and int(tweetsLimit) <= 100:
             cls.tweetsLimit = tweetsLimit
+        # I parametri attuali {start|end}_time sono ritornati da HTML nella forma: YYYY-MM-DDTHH:DD e vanno
+        # dunque fatte delle modifiche per adattarle al formato dell'API v2, ovvero:YYYY-MM-DDTHH:DD:SS:Z
         if start_time is not None:
-            cls.start_time = start_time
+            cls.start_time = start_time + ':00Z'
         if end_time is not None:
-            cls.end_time = end_time
+            cls.end_time = end_time + ':00Z'
 
     ################################  RESEARCH  ################################
     @classmethod
     def researchDecree(cls, researchType: str) -> None:
+        # Quando si usa l'API v2 di twitter, twitter in automatico determina qual e' il valore limite del parametro start_time (ovvero: momento x in cui l'API v2 viene invocata - 7 giorni),
+        # e, onde evitare errori di valori di start_time non validi, lo si aggiorna (qualora fosse necessario) prima di chiamare la API v2
+        dtformat = '%Y-%m-%dT%H:%M:%SZ'
+        currentDate = datetime.utcnow()
+        validStartDate = currentDate - timedelta(days=7)
+        validStartDate = validStartDate.strftime(dtformat)
+        if cls.start_time < validStartDate:
+            cls.start_time = validStartDate
+
         match researchType:
             case 'researchByUser':
-                cls.getTweetByUser(username=cls.query)
+                cls.getTweetByUser(username=cls.query, start_time=cls.start_time, end_time=cls.end_time)
             case 'researchByKeyword':
                 cls.getTweetByKeyword(query=cls.query, tweetsLimit=cls.tweetsLimit, start_time=cls.start_time, end_time=cls.end_time)
             case 'researchByHashtag':
@@ -98,16 +113,17 @@ class APIv2:
                 raise ValueError("ERROR: APIv2 Class, researchDecree: match error")
  
     @classmethod
-    def getTweetByUser(cls, username: str) -> None:
+    def getTweetByUser(cls, username: str, tweetsLimit=None, start_time=None, end_time=None) -> None:
         userData = cls.client.get_user(username=username).data
         if (userData is not None):      # Entra nell'if sse trova almeno un utente con quell'username
             userId = userData.id
-            cls.response = cls.client.get_users_tweets(id=userId, expansions=cls.expansions)
+            cls.response = cls.client.get_users_tweets(id=userId, max_results=tweetsLimit, expansions=cls.expansions, tweet_fields=cls.tweet_fields, start_time=start_time, end_time=end_time)
 
     @classmethod
     def getTweetByKeyword(cls, query: str, tweetsLimit=None, start_time=None, end_time=None) -> None:
         #cls.response = cls.client.search_recent_tweets(query=query, max_results=tweetsLimit, start_time=start_time, end_time=end_time)
-        cls.response = cls.client.search_recent_tweets(query=query, max_results=tweetsLimit, expansions=cls.expansions)
+        cls.response = cls.client.search_recent_tweets(query=query, max_results=tweetsLimit, expansions=cls.expansions, tweet_fields=cls.tweet_fields, start_time=start_time, end_time=end_time)
+        #APIv2._createMarksJson()
 
     ################################  OTHER  ################################
     @classmethod
@@ -116,11 +132,12 @@ class APIv2:
             card=[]
             APIv1.__init__()
             for tweet in cls.response.data:
-                coordinates = APIv1.getCoordinates(tweet_id=tweet.id, client=cls.client)
-                text = tweet.text
                 tmp = cls.client.get_user(id=tweet.author_id).data
                 username = tmp if tmp is not None else 'Unknown'
-                card.append({"username": username, "text": text, "coordinates": coordinates})
+                text = tweet.text
+                createdAt = str(tweet.created_at)[0:16]     # Si taglia la parte della stringa contenente dai secondi in poi
+                coordinates = APIv1.getCoordinates(tweet_id=tweet.id, client=cls.client)
+                card.append({"username": username, "text": text, "createdAt": createdAt, "coordinates": coordinates})
             return card
         else:
             return ''
@@ -129,13 +146,14 @@ class APIv2:
     def _createMarksJson(cls):
         coordinates=[]
         APIv1.__init__()
-        for tweet in cls.response.data:
-            tweetCoordinates = APIv1.getCoordinates(tweet_id=tweet.id, client=cls.client)
-            coordinates.append({"latitude": tweetCoordinates[1], "longitude": tweetCoordinates[0]})
-        
-        # TODO: Questo file dovrebbe essere eliminato una volta compiuto il suo scopo?
-        with open('coordinates.json', 'w') as file:
-            file.write(json.dumps(coordinates))
+        if cls.response.data is not None:       # cls.response.data == None quando la ricerca fatta non ha prodotto risultati
+            for tweet in cls.response.data:
+                tweetCoordinates = APIv1.getCoordinates(tweet_id=tweet.id, client=cls.client)
+                coordinates.append({"latitude": tweetCoordinates[1], "longitude": tweetCoordinates[0]})
+            
+            # TODO: Questo file dovrebbe essere eliminato una volta compiuto il suo scopo?
+            with open('coordinates.json', 'w') as file:
+                file.write(json.dumps(coordinates))
 
     ################################  DEBUG  ################################
     @classmethod
@@ -151,7 +169,7 @@ class APIv2:
     
     @classmethod
     def _createCsvFiles(cls) -> None:
-        cls._deleteCsvFile()             # Si eliminano i .csv di ricerche passate
+        cls._deleteCsvFiles()             # Si eliminano i .csv di ricerche passate
         cls._createDataFrames()     # E si creano quelli coi nuovi dati
         try:
             cls.dataFrames[0].to_csv('response.csv')

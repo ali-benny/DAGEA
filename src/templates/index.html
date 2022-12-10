@@ -3,6 +3,8 @@
 {% block html_title %}Tweet Finder | DAGEA™{% endblock %}
 
 {% block main_content %}
+<script src="../static/js/index.js"></script>
+
 <!-- Title -->
 <div class="container p-3">
 	<div class="text-center">
@@ -58,6 +60,28 @@
 					<label class="form-check-label" for="flexSwitchCheckDefault">Location</label>
 				</div>
 			</div>
+
+			<!-- To date -->
+			<div class="col-3">
+				<label for="start">To date: </label>
+				<div class="input-group mb-3">
+					<input type="datetime-local" class="form-control" name="maxDate" id="maxDate"
+						value="{{ dates.get('maxDateValue') }}" min="{{ dates.get('minDate') }}"
+						max="{{ dates.get('maxDate') }}" aria-label="end_time">
+				</div>
+				<input type="button" id="reset" class="btn border text-white" onclick="resetDates('maxDate')" value="Default date">
+			</div>
+
+			<!-- From date -->
+			<div class="col-3">
+				<label for="start">From date: </label>
+				<div class="input-group mb-3">
+					<input type="datetime-local" class="form-control" name="minDate" id="minDate"
+						value="{{ dates.get('minDateValue') }}" min="{{ dates.get('minDate') }}"
+						max="{{ dates.get('maxDate') }}" aria-label="star_timet">
+				</div>
+				<input type="button" id="reset" class="btn border text-white" onclick="resetDates('minDate')" value="Default date">
+			</div>
 		</div>
 	</form>
 </div>
@@ -65,12 +89,13 @@
 
 
 <div class="row align-items-baseline justify-content-around h-100 w-100">
-	<div class="col d-flex">
+	<div class="col-7 d-flex">
 		<!-- Cards tweets -->
 		<div class="container d-flex h-100 pt-5 text-dark">
 			<div class="row justify-content-center mb-3">
 				{% for tweet in tweetCards %}
 				<div class="col-lg-4">
+<<<<<<< src/templates/index.html
 					<div class="card" style="width: 90%; margin: 2%">
 						<!-- {% if tweet.media != None %}
 						<img src="{{ tweet.media }}" class="card-img-top" alt="tweet media"/>
@@ -78,6 +103,17 @@
 						<div class="card-body">
 							<h3 class="card-title">{{ tweet.user }}</h3>
 							<h5 class="card-text">{{ tweet.date }}</h5>
+							<!-- WARNING: decidiamoci, continuiamo a cambiare le proprietà di tweet senza motivo -->
+					<!-- <div class="card border-info" style="width: 90%; margin: 2%">
+						<div class="card-body bg-dark text-light">
+							<div class="row">
+								<div class="col">
+									<h3 class="card-title">{{ tweet.username }}</h3>
+								</div>
+								<div class="col">
+									<small class="card-title">{{ tweet.createdAt }}</small>
+								</div>
+							</div> -->
 							<p class="card-text">{{ tweet.text }}</p>
 						</div>
 					</div>
@@ -86,6 +122,7 @@
 			</div>
 		</div>
 	</div>
+
 	<!-- Map -->
 	<div class="card col d-flex bg-secondary h-100" style="margin: 2pt">
 		<div class="card-body h-100">

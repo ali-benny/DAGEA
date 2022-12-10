@@ -1,7 +1,9 @@
 import TweetSearch as ts
 import os
 import stream
-
+import getTweet
+import twitter
+import utils
 try:
 	from flask import Flask, render_template, request
 	import sqlite3
@@ -11,35 +13,23 @@ except ModuleNotFoundError:
 from scacchi import scacchi_101
 from scacchi import scacchi_engine
 
-researchMethods = [
-	{'method':"", 'text':'Research by '},
-	{'method':'researchByUser', 'text':'Research by user'},
-	{'method':'researchByKeyword','text':'Research by keyword'},
-	{'method':'researchByHashtag','text':'Research by hashtag'}
-]	# A list containing all available search methods
-dataRangeInputs = [
-	{'value':"", 'text':'Search from '},
-	{'value':'today', 'text':'Search from today'},
-	{'value':'oneDayAgo', 'text':'Search from 1 day ago'},
-	{'value':'twoDaysAgo', 'text':'Search from 2 days ago'},
-	{'value':'threeDaysAgo', 'text':'Search from 3 days ago'},
-	{'value':'fourDaysAgo', 'text':'Search from 4 days ago'},
-	{'value':'fiveDaysAgo', 'text':'Search from 5 days ago'},
-	{'value':'sixDaysAgo', 'text':'Search from 6 days ago'},
-	{'value':'sevenDaysAgo', 'text':'Search from 7 days ago'},
-]
-
 app = Flask(__name__)
 
 ts.APIv2.__init__()
+researchMethods = utils.initializeResearchMethods()
 
 @app.route('/', methods=('GET', 'POST'))
 def homepage():
 	currentResearchMethod = ""							# the currently chosen search method
 	currentRange = ""							# the currently chosen search method
 	is_stream = False
+	dates = utils.initializeDates()
 	if request.method == 'POST':
 		tweets = []  # list of tweets
+		currentResearchMethod = request.form.get('researchBy')
+		dates['minDateValue']=request.form['minDate']
+		dates['maxDateValue']=request.form['maxDate']
+				
 		whatBtn = request.form['btnradio']
 		tweetsLimit = request.form['tweetsLimit']
 		query = request.form['keyword']
@@ -64,11 +54,14 @@ def homepage():
 			researchMethods=researchMethods,
 			currentResearchMethod=currentResearchMethod,
 			dataRangeInputs=dataRangeInputs,
+			dates=dates
 		)
 	if is_stream:
 		tweets = stream.MyStream.tweets
 	else:
+		# Reinizizalizzazione col fine di avere di avere un reset dei campi quanto si torna alla home
 		ts.APIv2._APIv2__init__response()
+		dates = utils.initializeDates()
 		tweets = ts.APIv2.createCard()
 
 	# rendering flask template 'index.html'
@@ -78,7 +71,8 @@ def homepage():
 		researchMethods=researchMethods,
 		currentResearchMethod=currentResearchMethod,
 		dataRangeInputs=dataRangeInputs,
-	)	
+		dates=dates
+	)
 
 @app.route('/explain')
 def explainPage():
@@ -90,7 +84,6 @@ def chessPage():
 
 @app.route('/startGame')
 def chessGame():
-	print('PRIMA: scacchi_101.__main__()')
 	scacchi_101.__main__()
 	# Va in loop perche' non esce mai dalla funzione __main__()
 	return render_template('chess.html')
