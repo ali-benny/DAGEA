@@ -1,21 +1,19 @@
 import unittest
+
 from src import stream
 
 class TestStream(unittest.TestCase):
 	def test_stream_one_tweet(self):
-		print('test_stream_one_tweet...')
-		stream.StreamByKeyword('test', 1)
-		if self.assertEqual(len(stream.MyStream.tweets), 1):
-			print('test_stream_one_tweet: OK')
+		stream.StreamByKeyword('cactus', 1)
+		self.assertEqual(len(stream.MyStream.tweets), 1)
 	
 	def test_stream_two_tweets(self):
-		print('test_stream_two_tweets...')
-		stream.StreamByKeyword('test', 2)
-		if self.assertEqual(len(stream.MyStream.tweets), 2):
-			print('test_stream_two_tweets: OK')
+		stream.StreamByKeyword('cactus', 2)
+		self.assertEqual(len(stream.MyStream.tweets), 2)
 	
 	def test_stream_three_keyword(self):
-		print('test_stream_three_keyword...')
-		stream.StreamByKeyword(['test', 'twitter', 'the'], 1)
-		if self.assertEqual(len(stream.MyStream.tweets), 1):
-			print('test_stream_three_keyword: OK')
+		stream.StreamByKeyword(['cactus', 'twitter', 'the'], 1)
+		self.assertEqual(len(stream.MyStream.tweets), 1)
+
+if __name__ == '__main__':
+	unittest.main()

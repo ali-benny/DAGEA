@@ -25,8 +25,6 @@ def get_key(section, setting):
 
 class MyStream(tweepy.StreamingClient):
 	tweets = ([])
-	limit = 0
-
 	def main(self, limit=1):
 		self.limit = limit
 
@@ -69,6 +67,7 @@ class MyStream(tweepy.StreamingClient):
 		self.tweets.append({"user": username, "text": tweet.text, "date": datetime.date.today()})
 		# we have find some tweets?
 		if len(self.tweets) >= self.limit:
+			# self.tweets = ([])
 			self.disconnect()
 		return self.tweets
 
@@ -93,4 +92,4 @@ def StreamByKeyword(keywords, tweetsLimit):
 	for keyword in keywords:
 		stream_tweet.add_rules(tweepy.StreamRule(keyword)) 	# add rules
 	# stream_tweet.add_rules(tweepy.StreamRule(keywords)) 	# add rules
-	stream_tweet.filter(expansions=['author_id','attachments.media_keys'])	# run the stream
+	stream_tweet.filter(expansions=['author_id'])	# run the stream
