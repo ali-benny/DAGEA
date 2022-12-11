@@ -49,9 +49,8 @@ class TestTweetSearch(unittest.TestCase):
         self.setUpClass()
 
         # Test dei casi in cui i parametri attuali == None
-        ts.APIv2.setDatas(query=None, username = None, tweetsLimit = None, start_time=None, end_time=None, expansions=None, tweet_fields=None)
+        ts.APIv2.setDatas(query=None, tweetsLimit = None, start_time=None, end_time=None, expansions=None, tweet_fields=None)
         self.assertEqual(ts.APIv2.query, '')
-        self.assertEqual(ts.APIv2.username, '')
         self.assertTrue(10 <= ts.APIv2.tweetsLimit and ts.APIv2.tweetsLimit <= 100)
         self.assertEqual(ts.APIv2.start_time, None)
         self.assertEqual(ts.APIv2.end_time, None)
@@ -59,10 +58,9 @@ class TestTweetSearch(unittest.TestCase):
         self.assertEqual(ts.APIv2.tweet_fields, ['created_at'])
 
         # Test dei casi in cui i parametri hanno valori corretti (ovvero in forma che non creera' problemi alle API call)
-        ts.APIv2.setDatas(query='#IngSw2022', username='_Bastia__', tweetsLimit = 50, start_time='2022-01-01T01:01', end_time='2022-02-02T02:02',
+        ts.APIv2.setDatas(query='#IngSw2022', tweetsLimit = 50, start_time='2022-01-01T01:01', end_time='2022-02-02T02:02',
             expansions=self.commonParameters['expansions'], tweet_fields=self.commonParameters['tweet_fields'])
         self.assertEqual(ts.APIv2.query, '#IngSw2022')
-        self.assertEqual(ts.APIv2.username, '_Bastia__')
         self.assertEqual(ts.APIv2.tweetsLimit, 50)
         self.assertEqual(ts.APIv2.start_time, '2022-01-01T01:01:00Z')
         self.assertEqual(ts.APIv2.end_time, '2022-02-02T02:02:00Z')
@@ -72,77 +70,47 @@ class TestTweetSearch(unittest.TestCase):
         self.assertTrue(10 <= ts.APIv2.tweetsLimit and ts.APIv2.tweetsLimit <= 100)     # Se si inserisce un valore non consentito tweetLimit non vario o ha il suo valore di inizializzaione
 
     def test_reserachDecree(self):
-        pass
-
-    def test_getTweetByUser(self):
+        # Caso researchByUser
         self.setUpClass()        
         # Se si cerca un utente che non esiste il response non varia
         tmpResponse = ts.APIv2.response
-        ts.APIv2.getTweetByUser(username='UsernameInesist')
+        ts.APIv2.setDatas(query='UsernameInesist')
+        ts.APIv2.researchDecree('researchByUser')
         self.assertEqual(ts.APIv2.response, tmpResponse)
 
         self.setUpClass()
-        ts.APIv2.setDatas(
-            tweetsLimit=self.commonParameters['tweetsLimit'],
-            start_time=self.commonParameters['start_time']['HTMLFormat'],
-            end_time=self.commonParameters['end_time']['HTMLFormat'],
-            expansions=self.commonParameters['expansions'],
-            tweet_fields=self.commonParameters['tweet_fields']
-        )
+        #ts.APIv2.setDatas(query=self.commonParameters['username'], tweetsLimit=self.commonParameters['tweetsLimit'], start_time=self.commonParameters['start_time']['HTMLFormat'], end_time=self.commonParameters['end_time']['HTMLFormat'], expansions=self.commonParameters['expansions'], tweet_fields=self.commonParameters['tweet_fields'])
+        ts.APIv2.setDatas(query=self.commonParameters['username'], tweetsLimit=self.commonParameters['tweetsLimit'], start_time=None, end_time=None, expansions=self.commonParameters['expansions'], tweet_fields=self.commonParameters['tweet_fields'])
         # Se si cerca un utente valido senza filtri temporali
-        #ts.APIv2.researchDecree('researchByUser')
-        ts.APIv2.getTweetByUser(username=self.commonParameters['username'])
+        ts.APIv2.researchDecree('researchByUser')
         userId = self.client.get_user(username=self.commonParameters['username']).data.id
-        tmpResponse = self.client.get_users_tweets(
-            id=userId,
-            max_results=self.commonParameters['tweetsLimit'],
-            start_time=None, end_time=None,
-            expansions=self.commonParameters['expansions'],
-            tweet_fields=self.commonParameters['tweet_fields']
-        )
+        tmpResponse = self.client.get_users_tweets(id=userId, max_results=self.commonParameters['tweetsLimit'], start_time=None, end_time=None, expansions=self.commonParameters['expansions'], tweet_fields=self.commonParameters['tweet_fields'])
         self.assertEqual(ts.APIv2.response, tmpResponse)
 
         # Se si cerca un utente valido con filtri temporali
         self.setUpClass()
-        ts.APIv2.setDatas(
-            tweetsLimit=self.commonParameters['tweetsLimit'],
-            start_time=self.commonParameters['start_time']['HTMLFormat'],
-            end_time=self.commonParameters['end_time']['HTMLFormat'],
-            expansions=self.commonParameters['expansions'],
-            tweet_fields=self.commonParameters['tweet_fields']
-        )
+        ts.APIv2.setDatas(query=self.commonParameters['username'], tweetsLimit=self.commonParameters['tweetsLimit'], start_time=self.commonParameters['start_time']['HTMLFormat'], end_time=self.commonParameters['end_time']['HTMLFormat'], expansions=self.commonParameters['expansions'], tweet_fields=self.commonParameters['tweet_fields'])
         # Se si cerca un utente valido
-        ts.APIv2.getTweetByUser(
-            username=self.commonParameters['username'],
-            start_time=self.commonParameters['start_time']['APIFormat'],
-            end_time=self.commonParameters['end_time']['APIFormat']
-        )
+        ts.APIv2.researchDecree('researchByUser')
         userId = self.client.get_user(username=self.commonParameters['username']).data.id
-        tmpResponse = self.client.get_users_tweets(
-            id=userId,
-            max_results=self.commonParameters['tweetsLimit'],
-            start_time=self.commonParameters['start_time']['APIFormat'],
-            end_time=self.commonParameters['end_time']['APIFormat'],
-            expansions=self.commonParameters['expansions'],
-            tweet_fields=self.commonParameters['tweet_fields']
-        )
+        tmpResponse = self.client.get_users_tweets(id=userId, max_results=self.commonParameters['tweetsLimit'], start_time=self.commonParameters['start_time']['APIFormat'], end_time=self.commonParameters['end_time']['APIFormat'], expansions=self.commonParameters['expansions'], tweet_fields=self.commonParameters['tweet_fields'])
         self.assertEqual(ts.APIv2.response, tmpResponse)
 
-    def test_getTweetByKeyword(self):
+        # Caso researchByKeyword
         self.setUpClass()
-        ts.APIv2.getTweetByKeyword(query=self.commonParameters['query'])
-
         self.commonParameters['start_time']['APIFormat'] = utils.updateTime(self.commonParameters['start_time']['APIFormat'])
-
-        tmpResponse = self.client.search_recent_tweets(
-            query=self.commonParameters['query'],
-            max_results=self.commonParameters['tweetsLimit'],
-            expansions=self.commonParameters['expansions'],
-            tweet_fields=self.commonParameters['tweet_fields'],
-            start_time=self.commonParameters['start_time']['APIFormat'],
-            end_time=self.commonParameters['end_time']['APIFormat']
-        )
+        ts.APIv2.setDatas(query=self.commonParameters['query'], tweetsLimit=self.commonParameters['tweetsLimit'], start_time=self.commonParameters['start_time']['HTMLFormat'], end_time=self.commonParameters['end_time']['HTMLFormat'], expansions=self.commonParameters['expansions'], tweet_fields=self.commonParameters['tweet_fields'])
+        ts.APIv2.researchDecree('researchByKeyword')
+        tmpResponse = self.client.search_recent_tweets(query=self.commonParameters['query'], max_results=self.commonParameters['tweetsLimit'], expansions=self.commonParameters['expansions'], tweet_fields=self.commonParameters['tweet_fields'], start_time=self.commonParameters['start_time']['APIFormat'], end_time=self.commonParameters['end_time']['APIFormat'])
         self.assertEqual(ts.APIv2.response, tmpResponse)
+        # Caso researchByHashtag
+        ts.APIv2.setDatas(query=self.commonParameters['query'][1:len(self.commonParameters['query'])])
+        ts.APIv2.researchDecree('researchByHashtag')
+        self.assertEqual(ts.APIv2.response, tmpResponse)
+        # Caso _
+        with self.assertRaises(ValueError) as exc:
+            ts.APIv2.researchDecree('')
+        self.assertEquals(str(exc.exception), "ERROR: APIv2 Class, researchDecree: match error")
 
 if __name__ == '__main__':
     unittest.main()

@@ -25,14 +25,17 @@ def initializeDates(returnCase: str):
             pass
 
 def updateTime(obsoleteStartTime):
-    # Quando si usa l'API v2 di twitter, twitter in automatico determina qual e' il valore limite del parametro start_time (ovvero: momento x in cui l'API v2 viene invocata - 7 giorni),
-    # e, onde evitare errori di valori di start_time non validi, lo si aggiorna (qualora fosse necessario) prima di chiamare la API v2
-    dtformat = '%Y-%m-%dT%H:%M:%SZ'
-    validStartDate = (datetime.utcnow() - timedelta(days=7)).strftime(dtformat)
-    if obsoleteStartTime < validStartDate:
-        return validStartDate
-    else:
-        return obsoleteStartTime
+    try:
+        # Quando si usa l'API v2 di twitter, twitter in automatico determina qual e' il valore limite del parametro start_time (ovvero: momento x in cui l'API v2 viene invocata - 7 giorni),
+        # e, onde evitare errori di valori di start_time non validi, lo si aggiorna (qualora fosse necessario) prima di chiamare la API v2
+        dtformat = '%Y-%m-%dT%H:%M:%SZ'
+        validStartDate = (datetime.utcnow() - timedelta(days=7)).strftime(dtformat)
+        if obsoleteStartTime < validStartDate:
+            return validStartDate
+        else:
+            return obsoleteStartTime
+    except TypeError:
+        pass
 
 def initializeResearchMethods():
     researchMethods = [
