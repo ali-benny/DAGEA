@@ -1,5 +1,6 @@
 import os
 from os import listdir
+import utils
 import config
 try:
     import tweepy                  # Used for APIs
@@ -69,7 +70,7 @@ class APIv2:
         cls.start_time = None
         cls.end_time = None
         cls.expansions = ['author_id','geo.place_id']
-        cls.tweet_fields=['created_at']
+        cls.tweet_fields = ['created_at']
 
     @classmethod
     def __init__response(cls) -> None:
@@ -78,7 +79,7 @@ class APIv2:
     ################################  ATTRIBUTE SETTING   ################################
     @classmethod
     # TODO: Credo proprio che esistano strumenti migliori per implementare la semantica di questa funzione
-    def setDatas(cls, query: str = None, tweetsLimit = None, start_time=None, end_time=None) -> None:
+    def setDatas(cls, query: str = None, tweetsLimit = None, start_time=None, end_time=None, expansions=None, tweet_fields=None) -> None:
         if query is not None:
             cls.query = query
         if tweetsLimit is not None and 10 <= int(tweetsLimit) and int(tweetsLimit) <= 100:
@@ -87,21 +88,25 @@ class APIv2:
         # dunque fatte delle modifiche per adattarle al formato dell'API v2, ovvero:YYYY-MM-DDTHH:DD:SS:Z
         if start_time is not None:
             cls.start_time = start_time + ':00Z'
+        else:
+            cls.start_time = None
         if end_time is not None:
             cls.end_time = end_time + ':00Z'
+        else:
+            cls.end_time = None
+        if expansions is not None and type(expansions) == type([]):
+            cls.expansions = expansions
+        else:
+            cls.expansions = ['author_id','geo.place_id']
+        if tweet_fields is not None and type(tweet_fields) == type([]):
+            cls.tweet_fields = tweet_fields
+        else:
+            cls.tweet_fields = ['created_at']
 
     ################################  RESEARCH  ################################
     @classmethod
     def researchDecree(cls, researchType: str) -> None:
-        # Quando si usa l'API v2 di twitter, twitter in automatico determina qual e' il valore limite del parametro start_time (ovvero: momento x in cui l'API v2 viene invocata - 7 giorni),
-        # e, onde evitare errori di valori di start_time non validi, lo si aggiorna (qualora fosse necessario) prima di chiamare la API v2
-        dtformat = '%Y-%m-%dT%H:%M:%SZ'
-        currentDate = datetime.utcnow()
-        validStartDate = currentDate - timedelta(days=7)
-        validStartDate = validStartDate.strftime(dtformat)
-        if cls.start_time < validStartDate:
-            cls.start_time = validStartDate
-
+        cls.start_time = utils.updateTime(cls.start_time)
         match researchType:
             case 'researchByUser':
                 cls.getTweetByUser(username=cls.query, start_time=cls.start_time, end_time=cls.end_time)
@@ -121,7 +126,6 @@ class APIv2:
 
     @classmethod
     def getTweetByKeyword(cls, query: str, tweetsLimit=None, start_time=None, end_time=None) -> None:
-        #cls.response = cls.client.search_recent_tweets(query=query, max_results=tweetsLimit, start_time=start_time, end_time=end_time)
         cls.response = cls.client.search_recent_tweets(query=query, max_results=tweetsLimit, expansions=cls.expansions, tweet_fields=cls.tweet_fields, start_time=start_time, end_time=end_time)
         #APIv2._createMarksJson()
 

@@ -20,7 +20,7 @@ researchMethods = utils.initializeResearchMethods()
 @app.route('/', methods=('GET', 'POST'))
 def homepage():
 	currentResearchMethod = ""							# the currently chosen search method
-	dates = utils.initializeDates()
+	dates = utils.initializeDates('HTMLFormat')
 	if request.method == 'POST':
 		currentResearchMethod = request.form.get('researchBy')
 		dates['minDateValue']=request.form['minDate']
@@ -66,7 +66,7 @@ def homepage():
 
 	# Reinizizalizzazione col fine di avere di avere un reset dei campi quanto si torna alla home
 	ts.APIv2._APIv2__init__response()
-	dates = utils.initializeDates()
+	dates = utils.initializeDates('HTMLFormat')
 	return render_template(
 		'index.html',
 		tweetCards=ts.APIv2.createCard(),

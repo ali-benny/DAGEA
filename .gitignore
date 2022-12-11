@@ -6,3 +6,6 @@
 localTests.py
 coordinates.json
 config.py
+.coverage
+launchTests.sh
+openGraph.sh
