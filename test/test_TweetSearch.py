@@ -59,7 +59,7 @@ class TestTweetSearch(unittest.TestCase):
         self.assertEqual(ts.APIv2.tweet_fields, ['created_at'])
 
         # Test dei casi in cui i parametri hanno valori corretti (ovvero in forma che non creera' problemi alle API call)
-        ts.APIv2.setDatas(query='#IngSw2022', username='', tweetsLimit = 50, start_time='2022-01-01T01:01', end_time='2022-02-02T02:02',
+        ts.APIv2.setDatas(query='#IngSw2022', username='_Bastia__', tweetsLimit = 50, start_time='2022-01-01T01:01', end_time='2022-02-02T02:02',
             expansions=self.commonParameters['expansions'], tweet_fields=self.commonParameters['tweet_fields'])
         self.assertEqual(ts.APIv2.query, '#IngSw2022')
         self.assertEqual(ts.APIv2.username, '_Bastia__')
@@ -90,7 +90,7 @@ class TestTweetSearch(unittest.TestCase):
             tweet_fields=self.commonParameters['tweet_fields']
         )
         # Se si cerca un utente valido senza filtri temporali
-        ts.APIv2.researchDecree('researchByUser')
+        #ts.APIv2.researchDecree('researchByUser')
         ts.APIv2.getTweetByUser(username=self.commonParameters['username'])
         userId = self.client.get_user(username=self.commonParameters['username']).data.id
         tmpResponse = self.client.get_users_tweets(

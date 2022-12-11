@@ -66,6 +66,7 @@ class APIv2:
         cls.client = tweepy.Client(bearer_token=config.BEARER_TOKEN)
         cls.__init__response()
         cls.query = ''
+        cls.username = ''
         cls.tweetsLimit = 10
         cls.start_time = None
         cls.end_time = None
@@ -79,14 +80,16 @@ class APIv2:
     ################################  ATTRIBUTE SETTING   ################################
     @classmethod
     # TODO: Credo proprio che esistano strumenti migliori per implementare la semantica di questa funzione
-    def setDatas(cls, query: str = None, tweetsLimit = None, start_time=None, end_time=None, expansions=None, tweet_fields=None) -> None:
+    def setDatas(cls, query: str = None, username: str = None, tweetsLimit = None, start_time=None, end_time=None, expansions=None, tweet_fields=None) -> None:
         if query is not None:
             cls.query = query
+        if username is not None and len(username) <= 15:
+            cls.username = username
         if tweetsLimit is not None and 10 <= int(tweetsLimit) and int(tweetsLimit) <= 100:
             cls.tweetsLimit = tweetsLimit
-        # I parametri attuali {start|end}_time sono ritornati da HTML nella forma: YYYY-MM-DDTHH:DD e vanno
-        # dunque fatte delle modifiche per adattarle al formato dell'API v2, ovvero:YYYY-MM-DDTHH:DD:SS:Z
         if start_time is not None:
+            # I parametri attuali {start|end}_time sono ritornati da HTML nella forma: YYYY-MM-DDTHH:DD e vanno
+            # dunque fatte delle modifiche per adattarle al formato dell'API v2, ovvero:YYYY-MM-DDTHH:DD:SS:Z
             cls.start_time = start_time + ':00Z'
         else:
             cls.start_time = None
