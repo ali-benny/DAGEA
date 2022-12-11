@@ -21,7 +21,7 @@ class TestUtils(unittest.TestCase):
 		
 		result = {"minDate":start_time, "minDateValue": start_time, "maxDate": end_time, "maxDateValue": end_time}
 
-		self.assertEqual(u.initializeDates(), result)
+		self.assertEqual(u.initializeDates('HTMLFormat'), result)
 
 	def test_initializeResearchMethods(self):
 		researchMethods = [

@@ -1,6 +1,8 @@
 import os
 from os import listdir
-import utils
+import sys
+sys.path.append("..")
+import src.utils as utils
 import config
 try:
     import tweepy                  # Used for APIs
@@ -8,8 +10,6 @@ try:
     import configparser         # Used for APIv1 initialization
     import csv                        # Used for APIv2
     import json                      # Used for APIv2
-    import datetime
-    from datetime import timedelta, datetime
     import js2py
 except ModuleNotFoundError:
     os.system('pip install tweepy')
