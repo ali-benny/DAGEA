@@ -10,11 +10,9 @@
 	<link rel='icon' href='../static/img/logo/favicon-transparent.ico' type='image/x-icon' sizes="16x16" />
 	<link rel="stylesheet" href="../static/css/location.css">
 	<link rel="stylesheet" href="../static/css/epic.css">
-	<link rel="stylesheet" href="../static/css/custom_bootstrap.css">
 
 	<!-- Bootstrap CSS and JS v5.2.2 -->
-	<link href="../node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet"
-		integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+	<link rel="stylesheet" href="../static/css/custom_bootstrap.css">
 	<script src="../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"
 		integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3"
 		crossorigin="anonymous"></script>
@@ -75,11 +73,11 @@
 					<div class="btn-group" role="group" aria-label="Basic radio toggle button group">
 						<input type="radio" class="btn-check" name="btnradio" id="searchBtn" autocomplete="off"
 							value="Search">
-						<label class="btn btn-outline-primary blue bi-search" for="searchBtn"  title="Search Tweets"></label>
+						<label class="btn btn-outline-primary bi-search" for="searchBtn"  title="Search Tweets"></label>
 
 						<input type="radio" class="btn-check" name="btnradio" id="streamBtn" autocomplete="off"
 							value="Stream">
-						<label class="btn btn-outline-danger purple bi-play-fill" for="streamBtn"
+						<label class="btn btn-outline-purple bi-play-fill" for="streamBtn"
 							title="Stream Tweets"></label>
 					</div>
 					<button type="submit"  class="btn btn-success orange" style="margin: 1px;"><a href="/search">Invia</a></button>
@@ -107,7 +105,7 @@
 				<!-- Select ranges -->
 				<div class="col d-flex">
 					<div class="btn-group dorpdown">
-						<button type="button" class="btn btn-outline-secondary pink dropdown-toggle" data-bs-toggle="dropdown">
+						<button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
 							Date range
 						</button>
 						<ul class="dropdown-menu">
@@ -138,7 +136,7 @@
 				<!-- Location check -->
 				<div class="col-2 d-flex justify-content-end align-items-center">
 					<div class="form-check form-switch">
-						<input class="form-check-input" type="checkbox" name="isLocated" />
+						<input class="form-check-input" type="checkbox" name="isLocated" data-onstyle="danger" />
 						<label class="form-check-label" for="flexSwitchCheckDefault">Locate Tweet</label>
 					</div>
 				</div>
