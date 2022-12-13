@@ -21,12 +21,10 @@ researchMethods = utils.initializeResearchMethods()
 @app.route('/', methods=('GET', 'POST'))
 def homepage():
 	currentResearchMethod = ""							# the currently chosen search method
-	currentRange = ""							# the currently chosen search method
 	is_stream = False
 	dates = utils.initializeDates('HTMLFormat')
 	if request.method == 'POST':
 		tweets = []  # list of tweets
-		currentResearchMethod = request.form.get('researchBy')
 		dates['minDateValue']=request.form['minDate']
 		dates['maxDateValue']=request.form['maxDate']
 				
@@ -40,8 +38,8 @@ def homepage():
 			tweets = stream.MyStream.tweets
 		elif whatBtn == 'Search':
 			# getting tweets from twitter API
-			ts.APIv2.setDatas(query, tweetsLimit = tweetsLimit)
 			currentResearchMethod = request.form.get('researchBy')
+			ts.APIv2.setDatas(query=query, tweetsLimit=tweetsLimit, start_time=dates['minDateValue'], end_time=dates['maxDateValue'])
 			ts.APIv2.researchDecree(researchType = currentResearchMethod)
 			tweets = ts.APIv2.createCard()
 		else:

@@ -35,7 +35,7 @@
 
 			<!-- Research by -->
 			<div class="d-flex">
-				<select name="researchBy" class="form-select" aria-label="Default select example">
+				<select required name="researchBy" class="form-select" aria-label="Default select example">
 					{% for method in researchMethods %}
 					{% if method.method == currentResearchMethod %}
 					<option selected value="{{ method.method }}">{{ method.text }}</option>
