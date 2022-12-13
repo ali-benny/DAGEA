@@ -5,7 +5,7 @@ e di disegnare ogni volta la scacchiera con tutti i pezzi necesssari
 import pygame as p
 import chess
 import sys
-import app
+# import app
 from . import scacchi_engine
 
 

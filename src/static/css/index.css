@@ -1,0 +1,42 @@
+:root {
+	--pink: #F800FE;
+	--blue: #004CFC;
+	--orange: #FFA217;
+	--purple: #8234FD;
+}
+
+.blue {
+	color: var(--blue)!important;
+	border-color: var(--blue)!important;
+}
+
+.pink {
+	color: var(--pink)!important;
+	border-color: var(--pink)!important;
+}
+
+.purple {
+	color: var(--purple)!important;
+	border-color: var(--purple)!important;
+}
+
+.orange {
+	color: var(--orange)!important;
+	border-color: var(--orange)!important;
+	background-color: var(--orange)!important;
+}
+.blueH:hover {
+	color: var(--blue)!important;
+}
+
+.pinkH:hover {
+	color: var(--pink)!important;
+}
+
+.purpleH:hover {
+	color: var(--purple)!important;
+}
+
+.orangeH:hover {
+	color: var(--orange)!important;
+}
