@@ -4,4 +4,27 @@
 
 {% block main_content %}
 <h1>L'Eredità</h1>
+
+<!-- Cards tweets -->
+<div class="container d-flex h-100 pt-5 text-dark">
+    <div class="row justify-content-center mb-3">
+        {% for tweet in tweetCards %}
+        <div class="col-lg-4">
+            <div class="card border-info" style="width: 90%; margin: 2%">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col">
+                            <h3 class="card-title">{{ tweet.username }}</h3>
+                        </div>
+                        <div class="col">
+                            <small class="card-title">{{ tweet.date }}</small>
+                        </div>
+                    </div>
+                    <p class="card-text">{{ tweet.text }}</p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
 {% endblock %}

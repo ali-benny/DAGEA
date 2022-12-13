@@ -93,9 +93,22 @@ def search():						# the currently chosen search method
 		dates=dates
 	)	# rendering flask template 'index.html'
 
-@app.route('/eredita')
+@app.route('/eredita', methods=('GET', 'POST'))
 def eredita():
+	tweets = []  # list of tweets
+	dates['minDateValue']=request.form['minDate']
+	dates['maxDateValue']=request.form['maxDate']
+	tweetsLimit = request.form['tweetsLimit']
+	query = request.form['keyword']
+
+	# getting tweets from twitter API
+	currentResearchMethod = request.form.get('researchBy')
+	ts.APIv2.setDatas(query=query, tweetsLimit=tweetsLimit, start_time=dates['minDateValue'], end_time=dates['maxDateValue'])
+	ts.APIv2.researchDecree(researchType = currentResearchMethod)
+	tweets = ts.APIv2.createCard()
+
 	return render_template('eredita.html', 
+		tweetCards=tweets,
 		researchMethods=researchMethods,
 		currentResearchMethod=currentResearchMethod,
 		dates=utils.initializeDates(), tweetsLimit=ts.APIv2.tweetsLimit)
