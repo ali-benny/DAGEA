@@ -69,7 +69,8 @@
 						value="{{ dates.get('maxDateValue') }}" min="{{ dates.get('minDate') }}"
 						max="{{ dates.get('maxDate') }}" aria-label="end_time">
 				</div>
-				<input type="button" id="reset" class="btn border text-white" onclick="resetDates('maxDate')" value="Default date">
+				<input type="button" id="reset" class="btn border text-white" onclick="resetDates('maxDate')"
+					value="Default date">
 			</div>
 
 			<!-- From date -->
@@ -80,7 +81,8 @@
 						value="{{ dates.get('minDateValue') }}" min="{{ dates.get('minDate') }}"
 						max="{{ dates.get('maxDate') }}" aria-label="star_timet">
 				</div>
-				<input type="button" id="reset" class="btn border text-white" onclick="resetDates('minDate')" value="Default date">
+				<input type="button" id="reset" class="btn border text-white" onclick="resetDates('minDate')"
+					value="Default date">
 			</div>
 		</div>
 	</form>
@@ -95,26 +97,21 @@
 			<div class="row justify-content-center mb-3">
 				{% for tweet in tweetCards %}
 				<div class="col-lg-4">
-<<<<<<< src/templates/index.html
-					<div class="card" style="width: 90%; margin: 2%">
+					<div class="card border-info" style="width: 90%; margin: 2%">
 						<!-- {% if tweet.media != None %}
 						<img src="{{ tweet.media }}" class="card-img-top" alt="tweet media"/>
 						{% endif %} -->
-						<div class="card-body">
-							<h3 class="card-title">{{ tweet.user }}</h3>
-							<h5 class="card-text">{{ tweet.date }}</h5>
-							<!-- WARNING: decidiamoci, continuiamo a cambiare le proprietà di tweet senza motivo -->
-					<!-- <div class="card border-info" style="width: 90%; margin: 2%">
 						<div class="card-body bg-dark text-light">
 							<div class="row">
 								<div class="col">
-									<h3 class="card-title">{{ tweet.username }}</h3>
+									<h3 class="card-title">{{ tweet.user }}</h3>
 								</div>
 								<div class="col">
-									<small class="card-title">{{ tweet.createdAt }}</small>
+									<small class="card-title">{{ tweet.date }}</small>
 								</div>
-							</div> -->
+							</div>
 							<p class="card-text">{{ tweet.text }}</p>
+							<p class="card-text">{{ tweet.coordinates }}</p>
 						</div>
 					</div>
 				</div>

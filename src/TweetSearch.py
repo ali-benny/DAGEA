@@ -133,7 +133,7 @@ class APIv2:
                 text = tweet.text
                 createdAt = str(tweet.created_at)[0:16]     # Si taglia la parte della stringa contenente dai secondi in poi
                 coordinates = APIv1.getCoordinates(tweet_id=tweet.id, client=cls.client)
-                card.append({"username": username, "text": text, "createdAt": createdAt, "coordinates": coordinates})
+                card.append({"user": username, "text": text, "date": createdAt, "coordinates": coordinates})
             return card
         else:
             return ''

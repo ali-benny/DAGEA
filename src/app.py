@@ -53,7 +53,6 @@ def homepage():
 			tweetsLimit=ts.APIv2.tweetsLimit,
 			researchMethods=researchMethods,
 			currentResearchMethod=currentResearchMethod,
-			dataRangeInputs=dataRangeInputs,
 			dates=dates
 		)
 	if is_stream:
@@ -61,16 +60,15 @@ def homepage():
 	else:
 		# Reinizizalizzazione col fine di avere di avere un reset dei campi quanto si torna alla home
 		ts.APIv2._APIv2__init__response()
-		dates = utils.initializeDates()
 		tweets = ts.APIv2.createCard()
 
 	# rendering flask template 'index.html'
 	return render_template(
 		'index.html',
 		tweetCards=tweets,
+		tweetsLimit=ts.APIv2.tweetsLimit,
 		researchMethods=researchMethods,
 		currentResearchMethod=currentResearchMethod,
-		dataRangeInputs=dataRangeInputs,
 		dates=dates
 	)
 
