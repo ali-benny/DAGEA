@@ -1,6 +1,6 @@
 import unittest
-import getTweet
-import twitter
+from src import getTweet
+from src import twitter
 
 
 class TestConversion(unittest.TestCase):
