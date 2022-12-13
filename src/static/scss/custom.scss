@@ -1,0 +1,18 @@
+$blue: #004CFC;	/* blue */
+$purple: #8234FD;	/* purple */
+$pink: #F800FE;	/* pink */
+$orange: #FFA217;	/* orange */
+
+// Merge the maps
+$theme-colors: (
+	'dark': #222529,
+	'primary': $blue,
+	'secondary': $purple,
+	'danger': $pink,
+	'success': $orange, 
+	'blue': $blue,
+	'purple': $purple,
+	'pink': $pink,
+	'orange': $orange
+);
+@import "../../node_modules/bootstrap/scss/bootstrap";
