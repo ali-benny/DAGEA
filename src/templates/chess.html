@@ -4,6 +4,8 @@
 
 {% block main_content %}
 
+<!-- ricopiare il main e aggiungere il file css se non si trovano altre soluzioni-->
+
 <div class="text-center">
     <h4>Per consultare le regole degli scacchi clicca il bottone sottostante</h4>
 </div>
@@ -28,8 +30,8 @@
 
 </div>
 
-<link rel="stylesheet" href="">
-<link rel="icon" type="image/png" href="">
+<!--<link rel="stylesheet" href="./style.css">  da controllare se giusta la chiamata dovrebbe essere fatta in head-->
+
 
 <div class="chess-table">
     <div id="h8" class="piece-box black-box"></div>
@@ -110,5 +112,5 @@
     <div class="black-wins check-mate-message fade-in">Black wins</div>
     <div class="white-wins check-mate-message fade-in">White wins</div>    
 </div>
-<script src="" defer type="module"></script>
+<script src="./app.js" defer type="module"></script>
 {% endblock %}

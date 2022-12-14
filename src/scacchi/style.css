@@ -1,0 +1,59 @@
+*{
+    user-select: none;
+}
+
+bbody{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100vw;
+    background: linear-gradient(#b1b1b1,white); /*da cambiare in base a preferenze*/
+    margin: 0;
+    padding: 0;
+}
+
+@keyframes fadeIn{
+    0%{opacity: 0}
+    100%{opacity: 1}
+}
+
+.fade-in{
+    animation: fadeIn 1s ease;
+}
+
+.chess-table{
+    height: 400px;
+    width: 400px;
+    display: flex;
+    border: 3px solid black;
+}
+
+.piece-box{
+    width: 50px;
+    height: 50px;
+    color: white;
+    font-size: 8px;
+    box-sizing: border-box;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.piece{
+    width: 45px;
+    height: 45px;
+}
+
+.piece-box-text{
+    display: none;
+    position: absolute;
+    bottom: 1px;
+    right: 2px;
+    font-size: 8px;
+    color: #444;
+    opacity: 0.9;
+}
+
+/*da terminare il css*/
