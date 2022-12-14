@@ -2,7 +2,7 @@
     user-select: none;
 }
 
-bbody{
+bbody{/* si riferisce al body della pagina di scacchi, non deve interferire con le altre pagine altrimenti sono guai*/
     display: flex;
     justify-content: center;
     align-items: center;
@@ -54,6 +54,60 @@ bbody{
     font-size: 8px;
     color: #444;
     opacity: 0.9;
+    font-family: Arial;
 }
 
-/*da terminare il css*/
+.piece-box.white-box{
+    background: #eeeed2;
+}
+
+.piece-box.black-box{
+    background: #769656;
+}
+
+.piece-box.piece-selected{
+    background: #f6f669;
+    cursor: pointer;
+}
+
+.piece-box.piece-ready{
+    background: greenyellow;
+}
+
+.piece-box.piece-potential{
+    background: lightskyblue;
+    border: 0.1px solid rgb(24,155,236);
+}
+
+.piece-box.piece-not-allowed{
+    background: coral;
+}
+
+.piece-box.piece-pointer{
+    cursor: pointer;
+}
+
+.chess-message .check-mate-message{
+    position: absolute;
+    width: 200px;
+    left: calc(-142px + 50vw);
+    top: calc(-10px + 50vh);
+    text-align: center;
+    padding: 10px 50px;
+}
+
+.chess-message .black-wins{
+    display: none;
+    background: black;
+    color: white;
+    box-shadow: 0 0 150px 75px white;
+}
+
+.chess-message .white-wins{
+    display: none;
+    background: white;
+    color: black;
+    box-shadow: 0 0 150px 75px black;
+}
+
+/*da terminare il css altrimenti sono guai ancora più seri*/
