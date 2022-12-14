@@ -152,11 +152,13 @@ def chessPage():
 		currentResearchMethod=currentResearchMethod,
 		dates=utils.initializeDates(), tweetsLimit=ts.APIv2.tweetsLimit)
 
-@app.route('/explain')
+@app.route('/explain', methods=('GET', 'POST'))
 def explainPage():
+	if request.method == 'POST':
+		global renderfilename
+		renderfilename = 'eredita.html'
+		method_post(request)
 	return render_template('howItWorks.html', 
-		tweetCards=tweets,
-		keyword = query,
 		tweetsLimit = 10,
 		researchMethods=researchMethods,
 		currentResearchMethod=currentResearchMethod,
@@ -167,19 +169,15 @@ def chessGame():
 	print('PRIMA: scacchi_101.__main__()')
 	scacchi_101.__main__()
 	# Va in loop perche' non esce mai dalla funzione __main__()
-	return render_template('chess.html', 
-		tweetCards=tweets,
-		keyword = query,
-		tweetsLimit = 10,
-		researchMethods=researchMethods,
-		currentResearchMethod=currentResearchMethod,
-		dates=dates)
+	return render_template('chess.html')
 
-@app.route('/credits')
+@app.route('/credits', methods = ('GET', 'POST'))
 def creditsPage():
+	if request.method == 'POST':
+		global renderfilename
+		renderfilename = 'eredita.html'
+		method_post(request)
 	return render_template('credits.html',
-		tweetCards=tweets,
-		keyword = query,
 		tweetsLimit = 10,
 		researchMethods=researchMethods,
 		currentResearchMethod=currentResearchMethod,
