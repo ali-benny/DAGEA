@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block html_title %}Play Chess{% endblock %}
+
+{% block main_content %}
+<div>
+    <div class="text-center">
+        <h3>Elenco dei pezzi della scacchiera e loro movimenti</h3>
+        <h5>La notazione utilizzata tra parentesi viene definita notazione algebrica</h5>
+    </div>
+</div>
+<div>
+    <ul>
+        <li>Re (K): Il re è il pezzo fondamentale, la sua caduta determinerà la perdita della partita. Si può
+        muovere solamente a distanza di una casella in qualsiasi direzione a patto che non vada sotto scacco.
+        Per esempio si può spostare dalla casella e1 alla casella f1/e2 ecc...</li>
+        <li>Regina (Q): Il secondo pezzo più importante in quanto molto versatile e dotata di incredible mobilità,
+         infatti si può muovere di tutte le caselle che vuole in ogni direzione. Per esempio dalla casella d1 
+         alla casella d8</li>
+        <li>Torre (R): Due a disposizione per ogni giocatore, si trovano ai lati della scacchiera e si possono 
+         muovere solamente a croce quante caselle vogliono. Ad esempio dalla casella a1 alla casella g1</li>
+        <li>Alfiere (B): Due a disposizione per ogni giocatore, si trovano vicino a re e regina e si possono muovere 
+        solamente in diagonale quante caselle vogliono. Ad esempio dalla casella c1 alla casella f4</li>
+        <li>Cavallo (N): Due a disposizione per ogni giocatore, si trovano tra torri e alfieri, si possono muovere 
+        in modo strano rispetto agli atri pezzi, cioè ad L di quattro caselle, contando anche quella di partenza. 
+        Ad esempio dalla casella b1 alla casella c3 </li>
+        <li>Pedone (p): Otto a disposizione per ogni giocatori, possono essere considerati come deboli ma in realtà 
+        tornano molto utili quando riescono a raggiungere il fondo della scacchiera. I pedoni si possono muovere solamente 
+        di una casella in avanti tranne che per la prima volte dove possono muoversi di due caselle. Il pedone può 
+        catturare i pezzi avversari solamente ad una casella di distanza solamente in diagonale avanti.
+        Ad esempio dalla casella a2 alla casella a3/a4</li>
+    </ul>
+</div>
+<div>
+    <h3>Elenco delle regole principali</h3>
+</div>
+<div>
+    <ul>
+        <li>Promozione: Quando un pedone riesce a raggiungere il fondo della scacchiera questo si può promuovere
+        diventando cavallo,alfiere,cavallo o regina in base alle necessità del giocatore (sempre regina a parte specifiche
+        occasioni)</li>
+        <li>Arrocco: L'arrocco consiste nello scambiare il re e la torre permettendo la nostro re di essere al 
+        sicuro. Esistono due tipi di arrocco quello normale e quello lungo. Quello normale avviene tra il re e la torre 
+        vicina (quella che si trova alla destra del giocatore), mentre quello lungo tr il re e la torre lontana (quella 
+        che si trova alla sinistra del giocatore). L'arrocco può avvenire solamete se non si è mosso il proprio re</li>
+        <li>En-passant: Avviene quando un pedone appena mosso affianca un pedone nemico, in questo caso il pedone avversario
+        può mangiare il pedone appena mosso anche se non in ina posizione consona</li>
+        <li>Scacco e Scacco matto: Lo scacco avviene qundo il re si trova sotto attacco nemico ma può evitare di essere 
+        catturato mentre con lo  scacco matto il re non può essere prottetto e questo comparta la perdita della sfida</li>
+        <li>Patta: In alcuni casi la partita si può concludere con il re non sotto scacco ma comunque non può muoversi 
+        in nessuna casella, in questo caso la partita termina in pareggio. Altri motivi per cui la partita può 
+        terminare in patta è quando le stesse mosse vengono ripetute 5 volte consecutive oppure quando vengono eseguite 
+        un numero numero di mosse senza catture.</li>
+    </ul>
+</div>
