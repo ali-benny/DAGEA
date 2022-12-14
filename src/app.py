@@ -40,40 +40,52 @@ def home():
 	return render_template('home.html', 
 		researchMethods=researchMethods,
 		currentResearchMethod=currentResearchMethod,
-		dates=utils.initializeDates(), tweetsLimit=ts.APIv2.tweetsLimit)	
+		dates=utils.initializeDates(), tweetsLimit=ts.APIv2.tweetsLimit)
+
+def method_post(request):	
+	"""
+	The method_post function is an auxiliar function called when the user clicks on a button.
+	It will call the research method of APIv2 and create cards with results.
+	
+	Parameters
+	----------
+		request
+			Get the data from the form
+	
+	Returns
+	-------
+		The html code of the index
+	"""
+	whatBtn = request.form['btnradio']
+	if whatBtn == 'Stream':
+		# stream 
+		twitter.StreamByKeyword(request.form['keyword'])
+	elif whatBtn == 'Search':			
+		# getting tweets from twitter API
+		currentResearchMethod = request.form.get('researchBy')
+		dates['minDateValue']=request.form['minDate']
+		dates['maxDateValue']=request.form['maxDate']
+		query=request.form['keyword']
+		tweetsLimit=request.form['tweetsLimit']
+		ts.APIv2.setDatas(query=query, tweetsLimit=tweetsLimit, start_time=dates['minDateValue'], end_time=dates['maxDateValue'])
+		ts.APIv2.researchDecree(researchType=currentResearchMethod)
+	else:
+		print('Error: unknown button')
+	
+	return render_template(
+		renderfilename,
+		tweetCards=ts.APIv2.createCard(),
+		tweetsLimit=ts.APIv2.tweetsLimit,
+		researchMethods=researchMethods,
+		currentResearchMethod=currentResearchMethod,
+		dates=dates
+	)	# rendering flask template 'index.html'
 
 @app.route('/search', methods=('GET', 'POST'))
 def search():						# the currently chosen search method
-	global currentResearchMethod, dates, query, tweetsLimit, start_time, end_time
-	if request.method == 'POST':		
-		whatBtn = request.form['btnradio']
-		if whatBtn == 'Stream':
-			# stream 
-			twitter.StreamByKeyword(request.form['keyword'])
-		elif whatBtn == 'Search':			
-			# getting tweets from twitter API
-			if query == '':
-				currentResearchMethod = request.form.get('researchBy')
-				dates['minDateValue']=request.form['minDate']
-				dates['maxDateValue']=request.form['maxDate']
-				query=request.form['keyword']
-				tweetsLimit=request.form['tweetsLimit']
-				start_time=dates['minDateValue']
-				end_time=dates['maxDateValue']
-			ts.APIv2.setDatas(query=query, tweetsLimit=tweetsLimit, start_time=dates['minDateValue'], end_time=dates['maxDateValue'])
-			ts.APIv2.researchDecree(researchType=currentResearchMethod)
-		else:
-			print('Error: unknown button')
-		
-		return render_template(
-			renderfilename,
-			tweetCards=ts.APIv2.createCard(),
-			tweetsLimit=ts.APIv2.tweetsLimit,
-			researchMethods=researchMethods,
-			currentResearchMethod=currentResearchMethod,
-			dates=dates
-		)	# rendering flask template 'index.html'
-
+	global currentResearchMethod, dates, query, tweetsLimit, start_time, end_time, renderfilename
+	if request.method == 'POST':	
+		method_post(request)			# set the current research method
 	# twitter.__init__()		# getTweet and save them into db
 	connection = sqlite3.connect('database.db')		# connecting to database
 	connection.row_factory = sqlite3.Row  # read row from database
@@ -93,12 +105,31 @@ def search():						# the currently chosen search method
 		dates=dates
 	)	# rendering flask template 'index.html'
 
-@app.route('/eredita')
+@app.route('/eredita', methods=('GET', 'POST'))
 def eredita():
+	"""
+	The eredita function is used to display the tweets of '#leredita' research.
+	"""
+	tweets = []  # list of tweets
+	query = '#leredita'
+	currentResearchMethod = 'researchByKeyword'
+	if request.method == 'POST':
+		global renderfilename
+		renderfilename = 'eredita.html'
+		method_post(request)
+		query = '' if request.form['keyword'] != '' else query
+	else:
+		# getting tweets from twitter API
+		ts.APIv2.setDatas(query = query, tweetsLimit=10)
+		ts.APIv2.researchDecree(researchType = currentResearchMethod)
+	tweets = ts.APIv2.createCard()
 	return render_template('eredita.html', 
+		tweetCards=tweets,
+		keyword = query,
+		tweetsLimit = 10,
 		researchMethods=researchMethods,
 		currentResearchMethod=currentResearchMethod,
-		dates=utils.initializeDates(), tweetsLimit=ts.APIv2.tweetsLimit)
+		dates=dates)
 
 @app.route('/reazioneacatena')
 def reazioneacatena():
@@ -121,9 +152,17 @@ def chessPage():
 		currentResearchMethod=currentResearchMethod,
 		dates=utils.initializeDates(), tweetsLimit=ts.APIv2.tweetsLimit)
 
-@app.route('/explain')
+@app.route('/explain', methods=('GET', 'POST'))
 def explainPage():
-	return render_template('howItWorks.html')
+	if request.method == 'POST':
+		global renderfilename
+		renderfilename = 'eredita.html'
+		method_post(request)
+	return render_template('howItWorks.html', 
+		tweetsLimit = 10,
+		researchMethods=researchMethods,
+		currentResearchMethod=currentResearchMethod,
+		dates=dates)
 
 @app.route('/startGame')
 def chessGame():
@@ -132,9 +171,17 @@ def chessGame():
 	# Va in loop perche' non esce mai dalla funzione __main__()
 	return render_template('chess.html')
 
-@app.route('/credits')
+@app.route('/credits', methods = ('GET', 'POST'))
 def creditsPage():
-	return render_template('credits.html')
+	if request.method == 'POST':
+		global renderfilename
+		renderfilename = 'eredita.html'
+		method_post(request)
+	return render_template('credits.html',
+		tweetsLimit = 10,
+		researchMethods=researchMethods,
+		currentResearchMethod=currentResearchMethod,
+		dates=dates)
 
 if __name__ == "__main__":
 	app.run(debug=True)

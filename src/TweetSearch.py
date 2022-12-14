@@ -13,6 +13,10 @@ except ModuleNotFoundError:
     os.system('pip install csv')
     os.system('pip install json')
 
+global config
+config = configparser.ConfigParser()
+config.read(os.path.abspath('config.ini'))
+
 class APIv1:
     ################################ API SETUP ################################
     section = 'twitter'		#! change it as your [param] on config.ini file 
@@ -20,8 +24,7 @@ class APIv1:
 
     @classmethod
     def __init__(cls) -> None:
-        config = configparser.ConfigParser()
-        config.read(os.path.abspath('config.ini'))
+        global config
         api_key = config[cls.section]['api_key']
         api_key_secret = config[cls.section]['api_key_secret']
         access_token = config[cls.section]['access_token']
@@ -57,13 +60,14 @@ class APIv2:
     ################################ API SETUP ################################
     @classmethod
     def __init__(cls) -> None:
-        # TODO: Trovare un modo migliore per esportare questo token di mrd
-        cls.client = tweepy.Client(bearer_token='AAAAAAAAAAAAAAAAAAAAAC9YjAEAAAAA8mWmHYSXfAYFTtl2JTBaKP6SKac%3DvjWg4UEGQovjZMb5EBPmwjuIktxnOouIvBi0yUCjFZCWZEtW8q')
+        global config
+        cls.client = tweepy.Client(bearer_token=config['twitter']['bearer_token'])
         cls.__init__response()
 
     @classmethod
     def __init__response(cls) -> None:
-        cls.response = cls.client.get_user(id=0)    # Questa chiamata di get_user ritornera' un dato response vuoto (analogo ad una string avuota '')
+        # cls.response = cls.client.get_user(id=0)    # Questa chiamata di get_user ritornera' un dato response vuoto (analogo ad una string avuota '')
+        cls.response = ''
 
     ################################  ATTRIBUTE SETTING   ################################
     query = ''
@@ -120,12 +124,13 @@ class APIv2:
             card=[]
             APIv1.__init__()
             for tweet in cls.response.data:
-                tmp = cls.client.get_user(id=tweet.author_id).data
-                username = tmp if tmp is not None else 'Unknown'
+                # tmp = cls.client.get_user(id=tweet.author_id).data
+                # username = tmp if tmp is not None else 'Unknown'
+                username = cls.response.includes['users'][0].username
                 text = tweet.text
                 createdAt = str(tweet.created_at)[0:16]     # Si taglia la parte della stringa contenente dai secondi in poi
-                coordinates = APIv1.getCoordinates(tweet_id=tweet.id, client=cls.client)
-                card.append({"username": username, "text": text, "createdAt": createdAt, "coordinates": coordinates})
+                # coordinates = APIv1.getCoordinates(tweet_id=tweet.id, client=cls.client)
+                card.append({"username": username, "text": text, "createdAt": createdAt})
             return card
         else:
             return ''
@@ -171,7 +176,7 @@ class APIv2:
             print("ATTENTION: currently there is no 'cls.dataFrames[i]' attribute in the APIv2 class.\nPossible causes:\n1) You haven't called any APIv2 method of the class yet --> Call one\n2) The call returned no results --> Try modifying the query")
 
     @classmethod
-    def _deleteCsvFiles(cll)-> None:
+    def _deleteCsvFiles(cls)-> None:
         myPath = os.path.dirname(os.path.abspath(__file__)) + '/'
         for file in listdir(myPath):
             if file.endswith('.csv'):
