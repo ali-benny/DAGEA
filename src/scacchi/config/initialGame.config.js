@@ -1,4 +1,4 @@
-export const potentialGame = {
+export const initialGame = {
     'a8':'black_rook',
     'b8':'black_knight',
     'c8':'black_bishop',

@@ -7,3 +7,5 @@ export const chessConfig = {
     whitePlaysDown:false,
     useInitialGame:false
 }
+
+window.chessConfig = chessConfig
