@@ -154,18 +154,36 @@ def chessPage():
 
 @app.route('/explain')
 def explainPage():
-	return render_template('howItWorks.html')
+	return render_template('howItWorks.html', 
+		tweetCards=tweets,
+		keyword = query,
+		tweetsLimit = 10,
+		researchMethods=researchMethods,
+		currentResearchMethod=currentResearchMethod,
+		dates=dates)
 
 @app.route('/startGame')
 def chessGame():
 	print('PRIMA: scacchi_101.__main__()')
 	scacchi_101.__main__()
 	# Va in loop perche' non esce mai dalla funzione __main__()
-	return render_template('chess.html')
+	return render_template('chess.html', 
+		tweetCards=tweets,
+		keyword = query,
+		tweetsLimit = 10,
+		researchMethods=researchMethods,
+		currentResearchMethod=currentResearchMethod,
+		dates=dates)
 
 @app.route('/credits')
 def creditsPage():
-	return render_template('credits.html')
+	return render_template('credits.html',
+		tweetCards=tweets,
+		keyword = query,
+		tweetsLimit = 10,
+		researchMethods=researchMethods,
+		currentResearchMethod=currentResearchMethod,
+		dates=dates)
 
 if __name__ == "__main__":
 	app.run(debug=True)
