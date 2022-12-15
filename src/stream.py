@@ -14,7 +14,7 @@ def get_key(section, setting):
 	"""
 	
 	config = configparser.ConfigParser()
-	my_path = os.path.abspath('src/config.ini')
+	my_path = os.path.abspath('config.ini')
 	config.read(my_path)
 	try:
 		key = config.get(section, setting)
