@@ -1,15 +1,17 @@
-import pawn from "./pieceDetermine/pawn.js"
-import knight from "./pieceDetermine/knight.js"
-import rook from "./pieceDetermine/rook.js"
-import bishop from "./pieceDetermine/bishop.js"
-import queen from "./pieceDetermine/queen.js"
-import king from "./pieceDetermine/king.js"
+import pawn from "./piecesDetermine/pawn.js"
+import knight from "./piecesDetermine/knight.js"
+import rook from "./piecesDetermine/rook.js"
+import bishop from "./piecesDetermine/bishop.js"
+import queen from "./piecesDetermine/queen.js"
+import king from "./piecesDetermine/king.js"
 import knightKingHelpers from "./pieceDetermine/helpers/knightKing.helpers.js"
 import {$, $$, $$$} from '../utils/utils.js'
 import {chessConfig} from '../config/chessConfig.config.js'
-import {playerTurn} from '../services/playerTurn.service.js'
+import {playerTurn} from './playerTurn.service.js'
 
-export const pieceDetermine = {
+export const piecesDetermine = {
+    determinationsSelector:'currentDeterminations',
+
     _determinations: {
         currentDeterminations: {},
         potentialDeterminations: {}
@@ -56,4 +58,45 @@ export const pieceDetermine = {
 
         return currentPieceboxPosition
     },
+
+    resetDeterminations() {
+        this.determinations = {}
+    },
+
+    itereateDetermine(pieceBoxPosition, callbackFn) {
+        const determinationPositions = this.determinations[pieceBoxPosition]
+        if(!determinationPositions || !Object.keys(determinationPositions).length) return
+        for(const determinationPosition in determinationPositions) {
+            const pieceBoxElement = $(`#${ determinationPosition }`)
+            callbackFn(pieceBoxElement)
+        }
+    },
+
+    hasPiecePotential(pieceBoxPosition, determinationPosition) {
+        return this.determinations[pieceBoxPosition]?.[determinationPosition] ?? false
+    },
+
+    hasPiecePotentials(pieceBoxPosition) {
+        return !(!this.determinations[pieceBoxPosition] || !Object.keys(this.determinations[pieceBoxPosition]).length)
+    },
+
+    ...knightKingHelpers,
+    ...pawn,
+    ...knight,
+    ...rook,
+    ...bishop,
+    ...queen,
+    ...king,
 }
+
+const pieceDetermineConfig = {
+    'pawn':'determinePawn',
+    'knight':'determineKnight',
+    'rook':'determineRook',
+    'bishop':'determineBishop',
+    'queen':'determineQueen',
+    'king':'determineKing',
+
+}
+
+window.piecesDetermine = piecesDetermine
