@@ -35,7 +35,7 @@ export const playerTurn = {
     isWhitePiece(pieceType){
         return !!pieceType.match(/white_/)
     },
-    isBlackPieces(pieceType){
+    isBlackPiece(pieceType){
         return !!pieceType.match(/black_/)
     }
 }
