@@ -37,6 +37,12 @@ def home():
 		tweetsLimit=request.form['tweetsLimit']
 		start_time=dates['minDateValue']
 		end_time=dates['maxDateValue']
+
+		return render_template('search.html', 
+			researchMethods=researchMethods,
+			currentResearchMethod=currentResearchMethod,
+			dates=utils.initializeDates(), tweetsLimit=ts.APIv2.tweetsLimit)
+		
 	return render_template('home.html', 
 		researchMethods=researchMethods,
 		currentResearchMethod=currentResearchMethod,
@@ -59,7 +65,7 @@ def method_post(request):
 	whatBtn = request.form['btnradio']
 	if whatBtn == 'Stream':
 		# stream 
-		twitter.StreamByKeyword(request.form['keyword'])
+		tweets = twitter.StreamByKeyword(request.form['keyword'])
 	elif whatBtn == 'Search':			
 		# getting tweets from twitter API
 		currentResearchMethod = request.form.get('researchBy')
@@ -69,12 +75,13 @@ def method_post(request):
 		tweetsLimit=request.form['tweetsLimit']
 		ts.APIv2.setDatas(query=query, tweetsLimit=tweetsLimit, start_time=dates['minDateValue'], end_time=dates['maxDateValue'])
 		ts.APIv2.researchDecree(researchType=currentResearchMethod)
+		tweets = 'Sorry, no tweets found in last 30 days' if ts.APIv2.createCard() == [] else ts.APIv2.createCard()
 	else:
-		print('Error: unknown button')
+		tweets = 'Please select a method of search'
 	
 	return render_template(
 		renderfilename,
-		tweetCards=ts.APIv2.createCard(),
+		tweetCards=tweets,
 		tweetsLimit=ts.APIv2.tweetsLimit,
 		researchMethods=researchMethods,
 		currentResearchMethod=currentResearchMethod,
@@ -131,12 +138,32 @@ def eredita():
 		currentResearchMethod=currentResearchMethod,
 		dates=dates)
 
-@app.route('/reazioneacatena')
+@app.route('/reazioneacatena', methods=('GET', 'POST'))
 def reazioneacatena():
+	"""
+	The reazioneacatena function is used to get the tweets from twitter API.
+	It returns a list of cards with the tweets and their information.
+	"""
+	tweets = []  # list of tweets
+	query = '#reazioneacatena'
+	currentResearchMethod = 'researchByKeyword'
+	if request.method == 'POST':
+		global renderfilename
+		renderfilename = 'reazioneacatena.html'
+		method_post(request)
+		query = '' if request.form['keyword'] != '' else query
+	else:
+		# getting tweets from twitter API
+		ts.APIv2.setDatas(query = query, tweetsLimit=10)
+		ts.APIv2.researchDecree(researchType = currentResearchMethod)
+	tweets = ts.APIv2.createCard()
 	return render_template('reazioneacatena.html', 
+		tweetCards=tweets,
+		keyword = query,
+		tweetsLimit = 10,
 		researchMethods=researchMethods,
 		currentResearchMethod=currentResearchMethod,
-		dates=utils.initializeDates(), tweetsLimit=ts.APIv2.tweetsLimit)
+		dates=dates)
 
 @app.route('/fantacitorio')
 def fantacitorio():
@@ -156,7 +183,7 @@ def chessPage():
 def explainPage():
 	if request.method == 'POST':
 		global renderfilename
-		renderfilename = 'eredita.html'
+		renderfilename = 'howItWorks.html'
 		method_post(request)
 	return render_template('howItWorks.html', 
 		tweetsLimit = 10,
@@ -175,7 +202,7 @@ def chessGame():
 def creditsPage():
 	if request.method == 'POST':
 		global renderfilename
-		renderfilename = 'eredita.html'
+		renderfilename = 'credits.html'
 		method_post(request)
 	return render_template('credits.html',
 		tweetsLimit = 10,
