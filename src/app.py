@@ -165,12 +165,28 @@ def reazioneacatena():
 		currentResearchMethod=currentResearchMethod,
 		dates=dates)
 
-@app.route('/fantacitorio')
+@app.route('/fantacitorio', methods=('GET', 'POST'))
 def fantacitorio():
+	tweets = []  # list of tweets
+	query = '#fantacitorio'
+	currentResearchMethod = 'researchByKeyword'
+	if request.method == 'POST':
+		global renderfilename
+		renderfilename = 'fantacitorio.html'
+		method_post(request)
+		query = '' if request.form['keyword'] != '' else query
+	else:
+		# getting tweets from twitter API
+		ts.APIv2.setDatas(query = query, tweetsLimit=10)
+		ts.APIv2.researchDecree(researchType = currentResearchMethod)
+	tweets = ts.APIv2.createCard()
 	return render_template('fantacitorio.html', 
+		tweetCards=tweets,
+		keyword = query,
+		tweetsLimit = 10,
 		researchMethods=researchMethods,
 		currentResearchMethod=currentResearchMethod,
-		dates=utils.initializeDates(), tweetsLimit=ts.APIv2.tweetsLimit)
+		dates=dates)
 
 @app.route('/chess')
 def chessPage():
