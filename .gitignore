@@ -9,3 +9,4 @@ config.py
 .coverage
 launchTests.sh
 openGraph.sh
+map.html

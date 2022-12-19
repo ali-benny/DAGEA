@@ -4,6 +4,7 @@ import sys
 sys.path.append("..")
 import src.utils as utils
 import config
+import sqlite3
 try:
     import tweepy                  # Used for APIs
     import pandas as pd         # Used for data handling and debug
@@ -47,12 +48,16 @@ class APIv1:
     
     ################################  RESEARCH  ################################
     @classmethod
-    def getCoordinates(cls, tweet_id, client):
+    def getGeoDatas(cls, tweet_id, client):
         tweetInfo = client.get_tweet(tweet_id, expansions=['geo.place_id'])
         try:
             place_id = tweetInfo.data.geo['place_id']
             placeObj = cls.api.geo_id(place_id)
-            return placeObj.centroid
+            geoDatas = {}
+            geoDatas.update({"latitude": placeObj.centroid[1]})
+            geoDatas.update({"longitude": placeObj.centroid[0]})
+            geoDatas.update({"taggedPlace": placeObj.full_name})
+            return geoDatas
             #print(f"tweetInfo (response):{tweetInfo}")
             #print(f"tweeet_id: {tweet_id}, place_id: {place_id}, api.geo_id(place_id).centroid: {placeObj.centroid}")
         except TypeError:       # Caso in cui nel tweet non e' stato taggato alcun luogo
@@ -132,24 +137,37 @@ class APIv2:
                 username = tmp if tmp is not None else 'Unknown'
                 text = tweet.text
                 createdAt = str(tweet.created_at)[0:16]     # Si taglia la parte della stringa contenente dai secondi in poi
-                coordinates = APIv1.getCoordinates(tweet_id=tweet.id, client=cls.client)
-                card.append({"user": username, "text": text, "date": createdAt, "coordinates": coordinates})
+                geoDatas = APIv1.getGeoDatas(tweet_id=tweet.id, client=cls.client)
+                card.append({"user": str(username), "text": text, "date": createdAt, "latitude": geoDatas.get('latitude'), "longitude": geoDatas.get('longitude'), "taggedPlace": geoDatas.get('taggedPlace')})
             return card
         else:
             return ''
 
     @classmethod
-    def _createMarksJson(cls):
-        coordinates=[]
-        APIv1.__init__()
+    def _createMarksJson(cls, formatType):
         if cls.response.data is not None:       # cls.response.data == None quando la ricerca fatta non ha prodotto risultati
+            coordinates=[]
+            APIv1.__init__()
             for tweet in cls.response.data:
                 tweetCoordinates = APIv1.getCoordinates(tweet_id=tweet.id, client=cls.client)
                 coordinates.append({"latitude": tweetCoordinates[1], "longitude": tweetCoordinates[0]})
-            
-            # TODO: Questo file dovrebbe essere eliminato una volta compiuto il suo scopo?
-            with open('coordinates.json', 'w') as file:
-                file.write(json.dumps(coordinates))
+                #coordinates.append([tweetCoordinates[1], tweetCoordinates[0]])
+            match formatType:
+                case 'json':
+                    # TODO: Questo file dovrebbe essere eliminato una volta compiuto il suo scopo?
+                    with open('coordinates.json', 'w') as file:
+                        file.write(json.dumps(coordinates))
+                case 'sql':
+                    print(f"COORDINATES: {coordinates}")
+                    connection = sqlite3.connect("marks.db")
+                    c = connection.cursor()
+                    tmp = pd.DataFrame(coordinates, columns=['lat', 'lon'])
+                    tmp.to_csv('marsk.csv')
+                    c.execute("CREATE TABLE IF NOT EXISTS marks (lat DOUBLE, lon DOUBLE)")
+                    connection.commit()
+                    tmp.to_sql('marks', connection, if_exists='replace', index=False)
+                case 'python':
+                    return coordinates
 
     ################################  DEBUG  ################################
     @classmethod

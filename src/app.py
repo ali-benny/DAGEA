@@ -4,11 +4,12 @@ import stream
 import getTweet
 import twitter
 import utils
+import map as m
 try:
 	from flask import Flask, render_template, request
 	import sqlite3
 except ModuleNotFoundError:
-    os.system('pip install flask')
+	os.system('pip install flask')
 
 from scacchi import scacchi_101
 from scacchi import scacchi_engine
@@ -23,6 +24,7 @@ def homepage():
 	currentResearchMethod = ""							# the currently chosen search method
 	is_stream = False
 	dates = utils.initializeDates('HTMLFormat')
+	m.Map.__init__()
 	if request.method == 'POST':
 		tweets = []  # list of tweets
 		dates['minDateValue']=request.form['minDate']
@@ -42,6 +44,7 @@ def homepage():
 			ts.APIv2.setDatas(query=query, tweetsLimit=tweetsLimit, start_time=dates['minDateValue'], end_time=dates['maxDateValue'])
 			ts.APIv2.researchDecree(researchType = currentResearchMethod)
 			tweets = ts.APIv2.createCard()
+			m.Map.addMarkers(tweets)	# Vengono aggiunti i mark per ogni coordinata trovata
 		else:
 			print('Error: unknown button')
 		# rendering flask template 'index.html'
@@ -51,7 +54,8 @@ def homepage():
 			tweetsLimit=ts.APIv2.tweetsLimit,
 			researchMethods=researchMethods,
 			currentResearchMethod=currentResearchMethod,
-			dates=dates
+			dates=dates,
+			mapVisibility = 'visible'
 		)
 	if is_stream:
 		tweets = stream.MyStream.tweets
@@ -67,8 +71,13 @@ def homepage():
 		tweetsLimit=ts.APIv2.tweetsLimit,
 		researchMethods=researchMethods,
 		currentResearchMethod=currentResearchMethod,
-		dates=dates
+		dates=dates,
+		mapVisibility = 'hidden'
 	)
+
+@app.route('/map')
+def mapInterface():
+	return render_template('mapInterface.html')
 
 @app.route('/explain')
 def explainPage():
