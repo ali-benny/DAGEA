@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block html_title %}L'Eredità | DAGEA™{% endblock %}
+
+{% block main_content %}
+<h1 style="text-shadow:
+      0 0 2px #fff,
+      0 0 10px var(--eredita);">L'Eredità</h1>
+
+<div class="row align-items-baseline justify-content-around h-100 w-100">
+    <div class="col d-flex">
+        <!-- Cards tweets -->
+        <div class="container d-flex h-100 pt-5 text-dark">
+            <div class="row justify-content-center mb-3">
+                {% for tweet in tweetCards %}
+                <div class="col-lg-4">
+                    <div class="card border-info" style="width: 90%; margin: 2%">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col">
+                                    <h3 class="card-title">{{ tweet.username }}</h3>
+                                </div>
+                                <div class="col">
+                                    <small class="card-title">{{ tweet.createdAt }}</small>
+                                </div>
+                            </div>
+                            <p class="card-text">{{ tweet.text }}</p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    {% for tweet in tweetCards %}
+    {% if tweet.coordinates != Null %}
+    <!-- Map -->
+    <div class="card col-3 d-flex bg-secondary h-100" style="margin: 2pt">
+        <div class="card-body h-100">
+            <h2 class="card-title">Tweet by Location</h2>
+            <div class="map-container h-100" style="position: relative">
+                <div id="map"></div>
+                <script>var exports = {};</script>
+                <script src="../static/js/map.js"></script>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    {% endfor %}
+</div>
+{% endblock %}

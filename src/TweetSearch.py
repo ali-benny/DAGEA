@@ -20,6 +20,10 @@ except ModuleNotFoundError:
     os.system('pip install json')
     os.system('pip install js2py')
 
+global config
+config = configparser.ConfigParser()
+config.read(os.path.abspath('config.ini'))
+
 class APIv1:
     ################################ API SETUP ################################
     section = 'twitter'		#! change it as your [param] on config.ini file 
@@ -27,8 +31,7 @@ class APIv1:
 
     @classmethod
     def __init__(cls) -> None:
-        config = configparser.ConfigParser()
-        config.read(os.path.abspath('config.ini'))
+        global config
         api_key = config[cls.section]['api_key']
         api_key_secret = config[cls.section]['api_key_secret']
         access_token = config[cls.section]['access_token']
@@ -68,7 +71,9 @@ class APIv2:
     ################################ API SETUP ################################
     @classmethod
     def __init__(cls) -> None:
-        cls.client = tweepy.Client(bearer_token=config.BEARER_TOKEN)
+        global config
+        # cls.client = tweepy.Client(bearer_token=config.BEARER_TOKEN)  #! EDIT: questo metodo non è corretto
+        cls.client = tweepy.Client(bearer_token=config['twitter']['bearer_token'])
         cls.__init__response()
         cls.query = ''
         cls.username = ''
@@ -80,7 +85,8 @@ class APIv2:
 
     @classmethod
     def __init__response(cls) -> None:
-        cls.response = cls.client.get_user(id=0)    # Questa chiamata di get_user ritornera' un dato response vuoto (analogo ad una string avuota '')
+        # cls.response = cls.client.get_user(id=0)    # Questa chiamata di get_user ritornera' un dato response vuoto (analogo ad una string avuota '')
+        cls.response = ''
 
     ################################  ATTRIBUTE SETTING   ################################
     @classmethod
@@ -133,12 +139,15 @@ class APIv2:
             card=[]
             APIv1.__init__()
             for tweet in cls.response.data:
-                tmp = cls.client.get_user(id=tweet.author_id).data
-                username = tmp if tmp is not None else 'Unknown'
+                # tmp = cls.client.get_user(id=tweet.author_id).data
+                # username = tmp if tmp is not None else 'Unknown'
+                username = cls.response.includes['users'][0].username
                 text = tweet.text
                 createdAt = str(tweet.created_at)[0:16]     # Si taglia la parte della stringa contenente dai secondi in poi
                 geoDatas = APIv1.getGeoDatas(tweet_id=tweet.id, client=cls.client)
-                card.append({"user": str(username), "text": text, "date": createdAt, "latitude": geoDatas.get('latitude'), "longitude": geoDatas.get('longitude'), "taggedPlace": geoDatas.get('taggedPlace')})
+                # card.append({"user": str(username), "text": text, "date": createdAt, "latitude": geoDatas.get('latitude'), "longitude": geoDatas.get('longitude'), "taggedPlace": geoDatas.get('taggedPlace')})   # NOTE: a noi non serve vedere le coordinate sulla card del tweet
+                # coordinates = APIv1.getCoordinates(tweet_id=tweet.id, client=cls.client)
+                card.append({"username": username, "text": text, "createdAt": createdAt})
             return card
         else:
             return ''
