@@ -70,7 +70,7 @@ class MyStream(tweepy.StreamingClient):
 			# self.tweets = ([])
 			self.disconnect()
 		return self.tweets
-
+rule_id = 0
 
 def StreamByKeyword(keywords, tweetsLimit):
 	"""
@@ -86,10 +86,13 @@ def StreamByKeyword(keywords, tweetsLimit):
 	Returns
 	-------	
 		A list of tweets
-	"""
+	"""	
+	global rule_id
 	stream_tweet = MyStream(get_key('twitter','bearer_token'))
 	stream_tweet.main(tweetsLimit)
-	for keyword in keywords:
-		stream_tweet.add_rules(tweepy.StreamRule(keyword)) 	# add rules
-	# stream_tweet.add_rules(tweepy.StreamRule(keywords)) 	# add rules
+	rule_id += 1
+	stream_tweet.add_rules(tweepy.StreamRule(keywords, id=(str)(rule_id))) 	# add rules
 	stream_tweet.filter(expansions=['author_id'])	# run the stream
+	rules = stream_tweet.get_rules()
+	if (rules != None) & (rule_id == tweetsLimit):
+		stream_tweet.delete_rules(ids=[rule.id for rule in rules.data])	
