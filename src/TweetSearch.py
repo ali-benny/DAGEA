@@ -3,7 +3,7 @@ from os import listdir
 import sys
 sys.path.append("..")
 import src.utils as utils
-import config
+import configparser # EDIT: era import config
 import sqlite3
 try:
     import tweepy                  # Used for APIs
