@@ -20,7 +20,7 @@ run tests:
   image: python:3
   script:
     - pip install coverage
-    - coverage run -m pytest test/"  # run all files in test directory
+    - coverage run -m pytest test/  # run all files in test directory
     - coverage report # report in text format
     - coverage xml     # report in .xml
   # coverage: '/(?i)total.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
