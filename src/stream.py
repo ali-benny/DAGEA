@@ -4,6 +4,9 @@ import tweepy
 import configparser
 import os
 
+global rule_id
+rule_id = 0
+
 def get_key(section, setting):
 	"""
 	The get_key function is a helper function that retrieves the value of a setting from the configuration file.
