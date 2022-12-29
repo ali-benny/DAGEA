@@ -21,7 +21,7 @@ tests & report:
   script:
     - pip install coverage
     - coverage run -m unittest discover -p "*_test.*" && coverage report && coverage xml
-  coverage: '/(?i)total.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
+  coverage: '/*TOTAL.*\s+(\d+%)$*/'
   artifacts:
     reports:
       coverage_report:
