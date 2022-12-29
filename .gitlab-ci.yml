@@ -20,11 +20,7 @@ tests & report:
   image: python:3
   script:
     - pip install coverage
-    - coverage run -m unittest discover -p "*_test.py"  # run all files with test pattern
-    - echo "-- Run all tests found --"
-    - coverage report # report in text format
-    - echo "-- Coverage Report.. converting into xml --"
-    - coverage xml     # report in .xml
+    - coverage run -m unittest discover -p "*_test.*" && coverage report && coverage xml
   coverage: '/(?i)total.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
   artifacts:
     reports:
