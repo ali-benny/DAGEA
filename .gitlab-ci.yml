@@ -21,7 +21,8 @@ tests & report:
   script:
     - 'pip install coverage'
     # - 'coverage run -m unittest discover -p "*_test.*"'
-    - 'coverage report --omit=src/node_modules/*'
+    - 'coverage run -m pytest discover test/"'
+    - 'coverage report --omit=test/__init__.py'
     - 'coverage xml'
   coverage: '/TOTAL.*\s+(\d+%)$/'
   artifacts:
