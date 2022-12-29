@@ -19,21 +19,25 @@ stages:
   - test
   - deploy
 
-run tests:
+run_tests:
   stage: test
   image: python:3
-  script:
+  before_script:
     - 'pip install coverage'
-    # - 'coverage run -m unittest discover -p "*_test.*"'
     - 'pip install pytest'
+  script:
+    # - 'coverage run -m unittest discover -p "*_test.*"'
     - 'coverage run -m pytest test/'
   allow_failure: true
 
 coverage report:
   stage: deploy
-  needs: [run tests]
-  script:
+  extends: run_tests
+  image: python:3
+  when: always
+  before_script:
     - 'pip install coverage'
+  script:
     - 'coverage report --omit=test/__init__.py'
     - 'coverage xml'
   coverage: '/TOTAL.*\s+(\d+%)$/'
