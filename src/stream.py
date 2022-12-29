@@ -28,10 +28,8 @@ def get_key(section, setting):
 
 class MyStream(tweepy.StreamingClient):
 	tweets = ([])
-	limit = 1
 	def main(self, limit):
 		self.limit = limit
-		self.tweets = ([])
 
 	def on_connect(self):
 		"""
@@ -72,11 +70,12 @@ class MyStream(tweepy.StreamingClient):
 		tweet = response.data
 		username = response.includes['users'][0].username
 		self.tweets.append({"user": username, "text": tweet.text, "date": datetime.date.today()})
+		all_tweets = self.tweets
 		if len(self.tweets) == self.limit:		# have we find enough tweets?
-			# -- yes: need to disconnect stream --
-			# self.tweets = ([])
-			self.disconnect()
-		return self.tweets
+			self.disconnect()	# -- yes: need to disconnect stream --
+			self.tweets = ([])
+			self.limit = 0
+		return all_tweets
 
 def StreamByKeyword(keywords, tweetsLimit):
 	"""
@@ -96,9 +95,10 @@ def StreamByKeyword(keywords, tweetsLimit):
 	global rule_id
 	stream_tweet = MyStream(get_key('twitter','bearer_token'))
 	stream_tweet.main(tweetsLimit)
-	rule_id += 1
-	stream_tweet.add_rules(tweepy.StreamRule(keywords, id=(str)(rule_id))) 	# add rules
+	# rule_id += 1
+	# stream_tweet.add_rules(tweepy.StreamRule(keywords, id=(str)(rule_id))) 	# add rules
+	stream_tweet.add_rules(tweepy.StreamRule(keywords)) 	# add rules
 	stream_tweet.filter(expansions=['author_id'])	# run the stream	
-	rules = stream_tweet.get_rules()
-	if rules != None and rule_id>=tweetsLimit:
-		stream_tweet.delete_rules(ids=[rule.id for rule in rules.data])	
+	# rules = stream_tweet.get_rules()
+	# if rules != None and rule_id>=tweetsLimit:
+	# 	stream_tweet.delete_rules(ids=[rule.id for rule in rules.data])	

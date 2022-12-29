@@ -2,7 +2,7 @@ import sys
 sys.path.append("..")
 import src.TweetSearch as ts
 import src.utils as utils
-import config
+import configparser
 
 import unittest
 import tweepy
