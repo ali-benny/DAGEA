@@ -28,8 +28,10 @@ def get_key(section, setting):
 
 class MyStream(tweepy.StreamingClient):
 	tweets = ([])
-	def main(self, limit=1):
+	limit = 1
+	def main(self, limit):
 		self.limit = limit
+		self.tweets = ([])
 
 	def on_connect(self):
 		"""
