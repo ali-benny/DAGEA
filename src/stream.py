@@ -70,7 +70,7 @@ class MyStream(tweepy.StreamingClient):
 		tweet = response.data
 		username = response.includes['users'][0].username
 		self.tweets.append({"user": username, "text": tweet.text, "date": datetime.date.today()})
-		if len(self.tweets) >= self.limit:		# have we find enough tweets?
+		if len(self.tweets) == self.limit:		# have we find enough tweets?
 			# -- yes: need to disconnect stream --
 			# self.tweets = ([])
 			self.disconnect()
