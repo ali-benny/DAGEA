@@ -15,16 +15,18 @@ sonarqube-check:
   only:
     - main # or the name of your main branch
 
-run tests:
+tests & report:
   stage: test
   image: python:3
   script:
-    - pip install coverage
-    - coverage run -m unittest discover -p "*_test.py"  # run all files with test pattern
-    # - coverage report # report in text format
-    - coverage xml     # report in .xml
-  # coverage: '/(?i)total.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
+    - 'pip install coverage'
+    - 'coverage run -m unittest discover -p "*_test.*"'
+    - 'coverage report --omit=src/node_modules/*'
+    - 'coverage xml'
+  coverage: '/TOTAL.*\s+(\d+%)$/'
   artifacts:
+    paths:
+      - coverage.xml
     reports:
       coverage_report:
         coverage_format: cobertura

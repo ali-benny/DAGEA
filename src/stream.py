@@ -4,6 +4,9 @@ import tweepy
 import configparser
 import os
 
+global rule_id
+rule_id = 0
+
 def get_key(section, setting):
 	"""
 	The get_key function is a helper function that retrieves the value of a setting from the configuration file.
@@ -25,8 +28,10 @@ def get_key(section, setting):
 
 class MyStream(tweepy.StreamingClient):
 	tweets = ([])
-	def main(self, limit=1):
+	limit = 1
+	def main(self, limit):
 		self.limit = limit
+		self.tweets = ([])
 
 	def on_connect(self):
 		"""
@@ -43,7 +48,9 @@ class MyStream(tweepy.StreamingClient):
 			A connection to the twitter api
 		"""
 		self.client = tweepy.Client(get_key('twitter','bearer_token'))	# -- connect to twitter API --		
-		self.connection = sqlite3.connect("database.db")	# -- connect to db --
+		# self.connection = sqlite3.connect("database.db")	# -- connect to db --
+		global rule_id
+		rule_id = 0
 		print('Connected!')
 
 	def on_response(self, response):
@@ -65,12 +72,11 @@ class MyStream(tweepy.StreamingClient):
 		tweet = response.data
 		username = response.includes['users'][0].username
 		self.tweets.append({"user": username, "text": tweet.text, "date": datetime.date.today()})
-		# we have find some tweets?
-		if len(self.tweets) >= self.limit:
+		if len(self.tweets) == self.limit:		# have we find enough tweets?
+			# -- yes: need to disconnect stream --
 			# self.tweets = ([])
 			self.disconnect()
 		return self.tweets
-
 
 def StreamByKeyword(keywords, tweetsLimit):
 	"""
@@ -86,10 +92,13 @@ def StreamByKeyword(keywords, tweetsLimit):
 	Returns
 	-------	
 		A list of tweets
-	"""
+	"""	
+	global rule_id
 	stream_tweet = MyStream(get_key('twitter','bearer_token'))
 	stream_tweet.main(tweetsLimit)
-	for keyword in keywords:
-		stream_tweet.add_rules(tweepy.StreamRule(keyword)) 	# add rules
-	# stream_tweet.add_rules(tweepy.StreamRule(keywords)) 	# add rules
-	stream_tweet.filter(expansions=['author_id'])	# run the stream
+	rule_id += 1
+	stream_tweet.add_rules(tweepy.StreamRule(keywords, id=(str)(rule_id))) 	# add rules
+	stream_tweet.filter(expansions=['author_id'])	# run the stream	
+	rules = stream_tweet.get_rules()
+	if rules != None and rule_id>=tweetsLimit:
+		stream_tweet.delete_rules(ids=[rule.id for rule in rules.data])	
