@@ -29,7 +29,9 @@ run tests:
         path: coverage.xml
 
 create report:
+  image: python:3
   script:
+    - pip install coverage
     - coverage report # report in text format
     - coverage xml     # report in .xml
   # - coverage: '/(?i)total.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
