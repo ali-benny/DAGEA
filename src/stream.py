@@ -73,9 +73,6 @@ class MyStream(tweepy.StreamingClient):
 		if len(self.tweets) >= self.limit:		# have we find enough tweets?
 			# -- yes: need to disconnect stream --
 			# self.tweets = ([])
-			rules = stream_tweet.get_rules()
-			if rules != None:
-				stream_tweet.delete_rules(ids=[rule.id for rule in rules.data])	
 			self.disconnect()
 		return self.tweets
 
@@ -99,4 +96,7 @@ def StreamByKeyword(keywords, tweetsLimit):
 	stream_tweet.main(tweetsLimit)
 	rule_id += 1
 	stream_tweet.add_rules(tweepy.StreamRule(keywords, id=(str)(rule_id))) 	# add rules
-	stream_tweet.filter(expansions=['author_id'])	# run the stream
+	stream_tweet.filter(expansions=['author_id'])	# run the stream	
+	rules = stream_tweet.get_rules()
+	if rules != None & rule_id>=tweetsLimit:
+		stream_tweet.delete_rules(ids=[rule.id for rule in rules.data])	
