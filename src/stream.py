@@ -43,7 +43,9 @@ class MyStream(tweepy.StreamingClient):
 			A connection to the twitter api
 		"""
 		self.client = tweepy.Client(get_key('twitter','bearer_token'))	# -- connect to twitter API --		
-		self.connection = sqlite3.connect("database.db")	# -- connect to db --
+		# self.connection = sqlite3.connect("database.db")	# -- connect to db --
+		global rule_id
+		rule_id = 0
 		print('Connected!')
 
 	def on_response(self, response):
@@ -65,12 +67,14 @@ class MyStream(tweepy.StreamingClient):
 		tweet = response.data
 		username = response.includes['users'][0].username
 		self.tweets.append({"user": username, "text": tweet.text, "date": datetime.date.today()})
-		# we have find some tweets?
-		if len(self.tweets) >= self.limit:
+		if len(self.tweets) >= self.limit:		# have we find enough tweets?
+			# -- yes: need to disconnect stream --
 			# self.tweets = ([])
+			rules = stream_tweet.get_rules()
+			if rules != None:
+				stream_tweet.delete_rules(ids=[rule.id for rule in rules.data])	
 			self.disconnect()
 		return self.tweets
-rule_id = 0
 
 def StreamByKeyword(keywords, tweetsLimit):
 	"""
@@ -93,6 +97,3 @@ def StreamByKeyword(keywords, tweetsLimit):
 	rule_id += 1
 	stream_tweet.add_rules(tweepy.StreamRule(keywords, id=(str)(rule_id))) 	# add rules
 	stream_tweet.filter(expansions=['author_id'])	# run the stream
-	rules = stream_tweet.get_rules()
-	if (rules != None) & (rule_id == tweetsLimit):
-		stream_tweet.delete_rules(ids=[rule.id for rule in rules.data])	
