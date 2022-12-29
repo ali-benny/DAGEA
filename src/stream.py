@@ -100,5 +100,5 @@ def StreamByKeyword(keywords, tweetsLimit):
 	stream_tweet.add_rules(tweepy.StreamRule(keywords, id=(str)(rule_id))) 	# add rules
 	stream_tweet.filter(expansions=['author_id'])	# run the stream	
 	rules = stream_tweet.get_rules()
-	if rules != None & rule_id>=tweetsLimit:
+	if rules != None and rule_id>=tweetsLimit:
 		stream_tweet.delete_rules(ids=[rule.id for rule in rules.data])	
