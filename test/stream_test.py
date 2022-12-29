@@ -11,8 +11,8 @@ class TestStream(unittest.TestCase):
 		stream.StreamByKeyword('hola', 2)
 		self.assertEqual(len(stream.MyStream.tweets), 2)
 	
-	def test_stream_3(self):	# test with 3 words
-		stream.StreamByKeyword('my twitter test', 1)
+	def test_stream_3(self):	# test with 2 words
+		stream.StreamByKeyword(['twitter','test'], 1)
 		self.assertEqual(len(stream.MyStream.tweets), 1)
 	
 	def test_get_key(self):
