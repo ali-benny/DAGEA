@@ -33,6 +33,7 @@ coverage report:
   stage: deploy
   needs: [run tests]
   script:
+    - 'pip install coverage'
     - 'coverage report --omit=test/__init__.py'
     - 'coverage xml'
   coverage: '/TOTAL.*\s+(\d+%)$/'
