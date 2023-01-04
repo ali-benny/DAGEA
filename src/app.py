@@ -61,12 +61,13 @@ def method_post(request):
 		ts.APIv2.researchDecree(researchType = currentResearchMethod)
 		tweets = ts.APIv2.createCard()
 		if request.form.get('isLocated') != None:	# ->see https://stackoverflow.com/questions/20941539/how-to-get-if-checkbox-is-checked-on-flask
+			map_vis = 'visible'
 			m.Map.__init__()
 			m.Map.addMarkers(tweets)	# Vengono aggiunti i mark per ogni coordinata trovata
-			map_vis = 'visible'
 	else:
 		print('Error: unknown button')
 	# rendering flask template 'index.html'
+	print(f"{map_vis}    {renderfilename}")
 	return render_template(
 		renderfilename,
 		tweetCards=tweets,
@@ -87,7 +88,10 @@ def homepage():
 	return render_template('home.html', 
 		researchMethods=researchMethods,
 		currentResearchMethod=currentResearchMethod,
-		dates=utils.initializeDates('HTMLFormat'), tweetsLimit=ts.APIv2.tweetsLimit)
+		dates=utils.initializeDates('HTMLFormat'),
+		tweetsLimit=ts.APIv2.tweetsLimit,
+		mapVisibility='hidden'
+	)
 
 @app.route('/search', methods=('GET', 'POST'))
 def search():						# the currently chosen search method
@@ -119,7 +123,14 @@ def search():						# the currently chosen search method
 
 @app.route('/map')
 def mapInterface():
-	return render_template('mapInterface.html')
+	dates = utils.initializeDates('HTMLFormat')
+	return render_template('mapInterface.html',
+		tweetCards=[],
+		keyword = query,
+		tweetsLimit = 10,
+		researchMethods=researchMethods,
+		currentResearchMethod=currentResearchMethod,
+		dates=dates)
 
 @app.route('/eredita', methods=('GET', 'POST'))
 def eredita():
@@ -131,7 +142,9 @@ def eredita():
 	currentResearchMethod = 'researchByKeyword'
 	global renderfilename, dates
 	renderfilename = 'eredita.html'
+	mapVisibility = 'hidden'
 	if request.method == 'POST':
+		mapVisibility = 'visible'
 		method_post(request)
 		query = '' if request.form['keyword'] != '' else query
 	else:
@@ -145,7 +158,9 @@ def eredita():
 		tweetsLimit = 10,
 		researchMethods=researchMethods,
 		currentResearchMethod=currentResearchMethod,
-		dates=dates)
+		dates=dates,
+		mapVisibility=mapVisibility
+	)
 
 @app.route('/reazioneacatena', methods=('GET', 'POST'))
 def reazioneacatena():
@@ -156,9 +171,11 @@ def reazioneacatena():
 	tweets = []  # list of tweets
 	query = '#reazioneacatena'
 	currentResearchMethod = 'researchByKeyword'
+	mapVisibility = 'hidden'
 	if request.method == 'POST':
 		global renderfilename
 		renderfilename = 'reazioneacatena.html'
+		mapVisibility = 'visible'
 		method_post(request)
 		query = '' if request.form['keyword'] != '' else query
 	else:
@@ -172,7 +189,9 @@ def reazioneacatena():
 		tweetsLimit = 10,
 		researchMethods=researchMethods,
 		currentResearchMethod=currentResearchMethod,
-		dates=dates)
+		dates=dates,
+		mapVisibility=mapVisibility
+	)
 
 # zip(), str() and type() are not defined in jinja2 templates so we add them to global jinja2 template via Flask.template_global() function
 @app.template_global(name='zip')

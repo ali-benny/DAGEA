@@ -27,6 +27,6 @@ class Map:
             folium.Marker(
                 [tweet['latitude'], tweet['longitude']],
                 # Vengono mostrati: posto taggato, nome utente e testo del tweet 
-                popup="<h5>" + tweet['taggedPlace'] + "</h5><h6>" + tweet['user'] + "</h6><p>" + tweet['text'] + "</p>"
+                popup="<h5>" + tweet['taggedPlace'] + "</h5><h6>" + tweet['username'] + "</h6><p>" + tweet['text'] + "</p>"
             ).add_to(cls.myMap)
         cls._saveMap()
