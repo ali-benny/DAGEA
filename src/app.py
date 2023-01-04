@@ -10,10 +10,15 @@ except ModuleNotFoundError:
 
 from scacchi import scacchi_101
 from scacchi import scacchi_engine
+from Fantacitorio import FantacitorioAnalysis as FA
+from Fantacitorio import FantacitorioTeams as FT
+
+import time
 
 app = Flask(__name__)
 
 ts.APIv2.__init__()
+FA.FantacitorioAnalysis.__init__(path='./Fantacitorio/punti.xlsx', numberOfTurns=7)
 
 researchMethods = utils.initializeResearchMethods()
 renderfilename = 'search.html'
@@ -169,28 +174,92 @@ def reazioneacatena():
 		currentResearchMethod=currentResearchMethod,
 		dates=dates)
 
+# zip(), str() and type() are not defined in jinja2 templates so we add them to global jinja2 template via Flask.template_global() function
+@app.template_global(name='zip')
+def _zip(*args, **kwargs): #to not overwrite builtin zip in globals
+    return __builtins__.zip(*args, **kwargs)
+
+@app.template_global(name='str')
+def _str(*args, **kwargs): #to not overwrite builtin str in globals
+    return __builtins__.str(*args, **kwargs)
+
+@app.template_global(name='type')
+def _type(*args, **kwargs): #to not overwrite builtin type in globals
+    return __builtins__.type(*args, **kwargs)
+
+@app.template_global(name='len')
+def _len(*args, **kwargs): #to not overwrite builtin len in globals
+    return __builtins__.len(*args, **kwargs)
+
+@app.template_global(name='enumerate')
+def _enumerate(*args, **kwargs): #to not overwrite builtin enumerate in globals
+    return __builtins__.enumerate(*args, **kwargs)
+
 @app.route('/fantacitorio', methods=('GET', 'POST'))
 def fantacitorio():
 	tweets = []  # list of tweets
 	query = '#fantacitorio'
 	currentResearchMethod = 'researchByKeyword'
+	numberOfGraphs = utils.numberOfFolderFiles('./static/img/fantacitorio/politiciansGroups/')
+	utils.deleteFolderFiles(path='./static/img/fantacitorio/userTeam/')
+	userTeamResearch = {'username' : '', 'imagePath': './', 'imageVisibility' : 'hidden' }
 	if request.method == 'POST':
-		global renderfilename
-		renderfilename = 'fantacitorio.html'
-		method_post(request)
-		query = '' if request.form['keyword'] != '' else query
-	else:
-		# getting tweets from twitter API
-		ts.APIv2.setDatas(query = query, tweetsLimit=10)
-		ts.APIv2.researchDecree(researchType = currentResearchMethod)
-	tweets = ts.APIv2.createCard()
+		if 'searchTeamByUserSubmit' in request.form:
+			username = request.form['usernameTextInput']
+			userTeamPath = './static/img/fantacitorio/userTeam/'
+			imageHasBeenSaved = FT.saveUserTeamImage(user=username, path=userTeamPath)
+			userTeamResearch = {'username' : username, 'imagePath': utils.getFolderFilesNames(userTeamPath), 'imageVisibility' : 'visible' if imageHasBeenSaved else 'hidden' }
+			return render_template('fantacitorio.html', 
+				tweetCards=tweets,
+				keyword = query,
+				tweetsLimit = 10,
+				researchMethods=researchMethods,
+				currentResearchMethod=currentResearchMethod,
+				dates=dates,
+				numberOfTurns=FA.FantacitorioAnalysis.numberOfTurns,
+				numberOfGraphs=numberOfGraphs,
+				turnsDataTable=FA.FantacitorioAnalysis.turns,
+				fantacitorioStats=FA.FantacitorioAnalysis.getStats(),
+				fantacitorioStandings=FA.FantacitorioAnalysis.getStandings(),
+				teamsImagesNames=utils.getFolderFilesNames('./static/img/fantacitorio/teams/'),
+				userTeamResearch=userTeamResearch
+			)
+		elif 'politicianScoreUpdateSubmit' in request.form:
+			politicianName = request.form['politicianName']
+			scoreToAdd = request.form['politicianScoreUpdate']
+			for politician in FA.FantacitorioAnalysis.simpleReport:
+				if politicianName == politician['name']: 
+					politician['totalScore'] += int(scoreToAdd)
+					return render_template('fantacitorio.html', 
+						tweetCards=tweets,
+						keyword = query,
+						tweetsLimit = 10,
+						researchMethods=researchMethods,
+						currentResearchMethod=currentResearchMethod,
+						dates=dates,
+						numberOfTurns=FA.FantacitorioAnalysis.numberOfTurns,
+						numberOfGraphs=numberOfGraphs,
+						turnsDataTable=FA.FantacitorioAnalysis.turns,
+						fantacitorioStats=FA.FantacitorioAnalysis.getStats(),
+						fantacitorioStandings=FA.FantacitorioAnalysis.getStandings(),
+						teamsImagesNames=utils.getFolderFilesNames('./static/img/fantacitorio/teams/'),
+						userTeamResearch=userTeamResearch
+					)
 	return render_template('fantacitorio.html', 
 		tweetCards=tweets,
 		keyword = query,
 		tweetsLimit = 10,
 		researchMethods=researchMethods,
 		currentResearchMethod=currentResearchMethod,
-		dates=dates)
+		dates=dates,
+		numberOfTurns=FA.FantacitorioAnalysis.numberOfTurns,
+		numberOfGraphs=numberOfGraphs,
+		turnsDataTable=FA.FantacitorioAnalysis.turns,
+		fantacitorioStats=FA.FantacitorioAnalysis.getStats(),
+		fantacitorioStandings=FA.FantacitorioAnalysis.getStandings(),
+		teamsImagesNames=utils.getFolderFilesNames('./static/img/fantacitorio/teams/'),
+		userTeamResearch=userTeamResearch
+	)
 
 @app.route('/chess')
 def chessPage():

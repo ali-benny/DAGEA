@@ -8,6 +8,27 @@ except ModuleNotFoundError:
 # File adibito all'inizializzazione delle strutture dati che andranno a riempure i campi del filtri della GUI
 # File creato al fine di avere un app.py piu' pulito e senza codice riguardante il frontend
 
+def getFolderFilesNames(path: str) -> list | str:
+    filesNames = []
+    for file in os.scandir(path):
+        if file.name != '.gitkeep':
+            filesNames.append(path + file.name)
+    if len(filesNames) == 1:
+        return filesNames[0]
+    else:
+        return filesNames
+
+def deleteFolderFiles(path: str) -> None:
+    for file in os.scandir(path):
+        if file.name != ".gitkeep":
+            os.remove(file)
+
+def numberOfFolderFiles(path: str) -> int:
+    fileCounter = 0
+    for file in os.scandir(path):
+        fileCounter += 1
+    return fileCounter
+
 def initializeDates(returnCase: str):
     dtformat = '%Y-%m-%dT%H:%M:%SZ'
     time = datetime.utcnow()
