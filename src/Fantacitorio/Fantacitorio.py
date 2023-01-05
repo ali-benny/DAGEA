@@ -3,7 +3,10 @@ from . import Sheet
 
 class Fantacitorio(Sheet.Sheet):
     # Fantacitorio parameters
-    turns = {}  # Dizionario contenente tutti i turni (le giornate) finora giocate
+    turns, turnsInTableFormat = (
+        {},
+        {},
+    )  # Dizionario contenente tutti i turni (le giornate) finora giocate
     names = set()  # Set contenente tutti i nomi dei politici presenti nelle giornate
     completeReport = (
         {}
@@ -14,6 +17,7 @@ class Fantacitorio(Sheet.Sheet):
     def __init__(cls, path: str, numberOfTurns: int):
         super().__init__(path, numberOfTurns)
         cls.turns = super().getTurnsFromSheet(tableFormat=False)
+        cls.turnsInTableFormat = super().getTurnsFromSheet(tableFormat=True)
         cls.names = cls.getTurnsNames()
         cls.completeReport = cls.getCompleteReport()  # TODO: E' mica superfluo?
         cls.simpleReport = cls.getSimpleReport()
