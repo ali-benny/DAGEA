@@ -134,7 +134,7 @@ class APIv2:
 
     ################################  OTHER  ################################
     @classmethod
-    def createCard(cls):
+    def createCard(cls) -> list:
         if cls.response.data is not None:
             card=[]
             APIv1.__init__()
@@ -146,11 +146,16 @@ class APIv2:
                 createdAt = str(tweet.created_at)[0:16]     # Si taglia la parte della stringa contenente dai secondi in poi
                 geoDatas = APIv1.getGeoDatas(tweet_id=tweet.id, client=cls.client)
                 card.append({"username": str(username), "text": text, "createdAt": createdAt, "latitude": geoDatas.get('latitude'), "longitude": geoDatas.get('longitude'), "taggedPlace": geoDatas.get('taggedPlace')})   # NOTE: a noi non serve vedere le coordinate sulla card del tweet
-                # coordinates = APIv1.getCoordinates(tweet_id=tweet.id, client=cls.client)
-                #card.append({"username": username, "text": text, "createdAt": createdAt})
             return card
         else:
             return ''
+
+    @classmethod
+    def hasCardsGeo(cls, cards: list) -> bool:
+        for card in cards:
+            if card['latitude'] != 0.0 or card['longitude'] != 0.0:
+                return True
+        return False
 
     ################################  DEBUG  ################################
     @classmethod

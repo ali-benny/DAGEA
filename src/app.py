@@ -22,11 +22,12 @@ FA.FantacitorioAnalysis.__init__(path='./Fantacitorio/punti.xlsx', numberOfTurns
 #m.Map.__init__()
 
 researchMethods = utils.initializeResearchMethods()
-renderfilename = 'search.html'
+renderfilename = 'index.html'
 currentResearchMethod = ''
 query = ''
 tweetsLimit = 10
 dates = utils.initializeDates('HTMLFormat')
+mapVisibility = 'hidden'
 
 def method_post(request):	
 	"""
@@ -50,7 +51,7 @@ def method_post(request):
 	currentResearchMethod = request.form.get('researchBy')
 	dates['minDateValue']=request.form['minDate']
 	dates['maxDateValue']=request.form['maxDate']
-	map_vis = 'hidden'
+	mapVisibility = 'hidden'
 	if whatBtn == 'Stream':
 		is_stream = True
 		# getting stream tweets
@@ -61,10 +62,10 @@ def method_post(request):
 		ts.APIv2.setDatas(query=query, tweetsLimit=tweetsLimit, start_time=dates['minDateValue'], end_time=dates['maxDateValue'])
 		ts.APIv2.researchDecree(researchType = currentResearchMethod)
 		tweets = ts.APIv2.createCard()
-		if request.form.get('isLocated') != None:	# ->see https://stackoverflow.com/questions/20941539/how-to-get-if-checkbox-is-checked-on-flask
-			map_vis = 'visible'
-			m.Map.__init__()
-			m.Map.addMarkers(tweets)	# Vengono aggiunti i mark per ogni coordinata trovata
+	if ts.APIv2.hasCardsGeo(tweets):
+		mapVisibility = 'visible'
+		m.Map.__init__()
+		m.Map.addMarkers(tweets)	# Vengono aggiunti i mark per ogni coordinata trovata
 	else:
 		print('Error: unknown button')
 	# rendering flask template 'index.html'
@@ -75,17 +76,15 @@ def method_post(request):
 		researchMethods=researchMethods,
 		currentResearchMethod=currentResearchMethod,
 		dates=dates,
-		mapVisibility = map_vis
+		mapVisibility = mapVisibility
 	)
 
 @app.route('/', methods=('GET', 'POST'))
 def homepage():
 	global currentResearchMethod, dates, query, tweetsLimit, start_time, end_time, renderfilename, whatBtn
 	if request.method == 'POST':
-		#renderfilename = 'index.html'
-		renderfilename = 'search.html'
+		renderfilename = 'index.html'
 		method_post(request)
-	# rendering flask template
 	return render_template('index.html', 
 		researchMethods=researchMethods,
 		currentResearchMethod=currentResearchMethod,
@@ -98,7 +97,7 @@ def homepage():
 def search():						# the currently chosen search method
 	global currentResearchMethod, dates, query, tweetsLimit, start_time, end_time, renderfilename, is_stream
 	is_stream = False
-	renderfilename = 'search.html'
+	renderfilename = 'index.html'
 	if request.method == 'POST':	
 		method_post(request)			# set the current research method
 	
@@ -122,17 +121,6 @@ def search():						# the currently chosen search method
 		# mapVisibility = 'hidden'
 	)
 
-@app.route('/map')
-def mapInterface():
-	dates = utils.initializeDates('HTMLFormat')
-	return render_template('mapInterface.html',
-		tweetCards=[],
-		keyword = query,
-		tweetsLimit = 10,
-		researchMethods=researchMethods,
-		currentResearchMethod=currentResearchMethod,
-		dates=dates)
-
 @app.route('/eredita', methods=('GET', 'POST'))
 def eredita():
 	"""
@@ -141,11 +129,10 @@ def eredita():
 	tweets = []  # list of tweets
 	query = '#leredita'
 	currentResearchMethod = 'researchByKeyword'
+	mapVisibility = 'hidden'
 	global renderfilename, dates
 	renderfilename = 'eredita.html'
-	mapVisibility = 'hidden'
 	if request.method == 'POST':
-		mapVisibility = 'visible'
 		method_post(request)
 		query = '' if request.form['keyword'] != '' else query
 	else:
@@ -153,6 +140,10 @@ def eredita():
 		ts.APIv2.setDatas(query = query, tweetsLimit=10)
 		ts.APIv2.researchDecree(researchType = currentResearchMethod)
 	tweets = ts.APIv2.createCard()
+	if ts.APIv2.hasCardsGeo(tweets):
+		mapVisibility = 'visible'
+		m.Map.__init__()
+		m.Map.addMarkers(tweets)	# Vengono aggiunti i mark per ogni coordinata trovata
 	return render_template(renderfilename, 
 		tweetCards=tweets,
 		keyword = query,
@@ -176,7 +167,6 @@ def reazioneacatena():
 	if request.method == 'POST':
 		global renderfilename
 		renderfilename = 'reazioneacatena.html'
-		mapVisibility = 'visible'
 		method_post(request)
 		query = '' if request.form['keyword'] != '' else query
 	else:
@@ -184,6 +174,10 @@ def reazioneacatena():
 		ts.APIv2.setDatas(query = query, tweetsLimit=10)
 		ts.APIv2.researchDecree(researchType = currentResearchMethod)
 	tweets = ts.APIv2.createCard()
+	if ts.APIv2.hasCardsGeo(tweets):
+		mapVisibility = 'visible'
+		m.Map.__init__()
+		m.Map.addMarkers(tweets)	# Vengono aggiunti i mark per ogni coordinata trovata
 	return render_template('reazioneacatena.html', 
 		tweetCards=tweets,
 		keyword = query,
@@ -197,23 +191,23 @@ def reazioneacatena():
 # zip(), str(), ... are not defined in jinja2 templates so we add them to global jinja2 template via Flask.template_global() function
 @app.template_global(name='zip')
 def _zip(*args, **kwargs): #to not overwrite builtin zip in globals
-    return __builtins__.zip(*args, **kwargs)
+	return __builtins__.zip(*args, **kwargs)
 
 @app.template_global(name='str')
 def _str(*args, **kwargs): #to not overwrite builtin str in globals
-    return __builtins__.str(*args, **kwargs)
+	return __builtins__.str(*args, **kwargs)
 
 @app.template_global(name='type')
 def _type(*args, **kwargs): #to not overwrite builtin type in globals
-    return __builtins__.type(*args, **kwargs)
+	return __builtins__.type(*args, **kwargs)
 
 @app.template_global(name='len')
 def _len(*args, **kwargs): #to not overwrite builtin len in globals
-    return __builtins__.len(*args, **kwargs)
+	return __builtins__.len(*args, **kwargs)
 
 @app.template_global(name='enumerate')
 def _enumerate(*args, **kwargs): #to not overwrite builtin enumerate in globals
-    return __builtins__.enumerate(*args, **kwargs)
+	return __builtins__.enumerate(*args, **kwargs)
 
 @app.route('/fantacitorio', methods=('GET', 'POST'))
 def fantacitorio():
@@ -267,6 +261,12 @@ def chessPage():
 		currentResearchMethod=currentResearchMethod,
 		dates=utils.initializeDates('HTMLFormat'), tweetsLimit=ts.APIv2.tweetsLimit)
 
+@app.route('/startGame')
+def chessGame():
+	scacchi_101.__main__()
+	# Va in loop perche' non esce mai dalla funzione __main__()
+	return render_template('chess.html')
+
 @app.route('/explain', methods=('GET', 'POST'))
 def explainPage():
 	if request.method == 'POST':
@@ -279,11 +279,17 @@ def explainPage():
 		currentResearchMethod=currentResearchMethod,
 		dates=dates)
 
-@app.route('/startGame')
-def chessGame():
-	scacchi_101.__main__()
-	# Va in loop perche' non esce mai dalla funzione __main__()
-	return render_template('chess.html')
+@app.route('/map')
+def mapInterface():
+	dates = utils.initializeDates('HTMLFormat')
+	return render_template('mapInterface.html',
+		tweetCards=[],
+		keyword = query,
+		tweetsLimit = 10,
+		researchMethods=researchMethods,
+		currentResearchMethod=currentResearchMethod,
+		dates=dates
+	)
 
 @app.route('/credits', methods = ('GET', 'POST'))
 def creditsPage():
