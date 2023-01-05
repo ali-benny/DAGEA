@@ -1,0 +1,27 @@
+<div class="container">
+    <div class="d-flex align-items-baseline justify-content-around h-100 w-100">
+        <div class="container h-100 pt-5 text-ligth">
+            <div class="row d-flex justify-content-center mb-3">
+                {% for tweet in tweetCards %}
+                <div class="col-lg-4">
+                    <div class="card border-info" style="width: 90%; margin: 2%">
+                        <div class="card-body bg-dark">
+                            <div class="row">
+                                <div class="col">
+                                    <h3 class="card-title">{{ tweet.username }}</h3>
+                                </div>
+                                <div class="col">
+                                    <small class="card-title">{{ tweet.createdAt }}</small>
+                                </div>
+                            </div>
+                            <p class="card-text">{{ tweet.text }}</p>
+                            <!-- <p class="card-text">[{{ tweet.latitude }}, {{ tweet.longitude }}]</p> -->
+                            <p class="card-text">{{ tweet.taggedPlace }}</p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
