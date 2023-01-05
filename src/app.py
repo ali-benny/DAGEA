@@ -229,12 +229,6 @@ def fantacitorio():
 			imageHasBeenSaved = FT.saveUserTeamImage(user=username, path=userTeamPath)
 			userTeamResearch = {'username' : username, 'imagePath': utils.getFolderFilesNames(userTeamPath), 'imageVisibility' : 'visible' if imageHasBeenSaved else 'hidden' }
 			return render_template('fantacitorio.html', 
-				tweetCards=tweets,
-				keyword = query,
-				tweetsLimit = 10,
-				researchMethods=researchMethods,
-				currentResearchMethod=currentResearchMethod,
-				dates=dates,
 				numberOfTurns=FA.FantacitorioAnalysis.numberOfTurns,
 				numberOfGraphs=numberOfGraphs,
 				turnsDataTable=FA.FantacitorioAnalysis.turnsInTableFormat,
@@ -250,12 +244,6 @@ def fantacitorio():
 				if politicianName == politician['name']: 
 					politician['totalScore'] += int(scoreToAdd)
 					return render_template('fantacitorio.html', 
-						tweetCards=tweets,
-						keyword = query,
-						tweetsLimit = 10,
-						researchMethods=researchMethods,
-						currentResearchMethod=currentResearchMethod,
-						dates=dates,
 						numberOfTurns=FA.FantacitorioAnalysis.numberOfTurns,
 						numberOfGraphs=numberOfGraphs,
 						turnsDataTable=FA.FantacitorioAnalysis.turnsInTableFormat,
@@ -264,13 +252,7 @@ def fantacitorio():
 						teamsImagesNames=utils.getFolderFilesNames('./static/img/fantacitorio/teams/'),
 						userTeamResearch=userTeamResearch
 					)
-	return render_template('fantacitorio.html', 
-		tweetCards=tweets,
-		keyword = query,
-		tweetsLimit = 10,
-		researchMethods=researchMethods,
-		currentResearchMethod=currentResearchMethod,
-		dates=dates,
+	return render_template('fantacitorio.html',
 		numberOfTurns=FA.FantacitorioAnalysis.numberOfTurns,
 		numberOfGraphs=numberOfGraphs,
 		turnsDataTable=FA.FantacitorioAnalysis.turnsInTableFormat,
