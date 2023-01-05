@@ -3,6 +3,8 @@ import shutil
 import os
 
 class Map:
+    #myMap = None
+
     @classmethod
     def __init__(cls):
         cls.myMap = folium.Map(
@@ -16,10 +18,10 @@ class Map:
     def _saveMap(cls):
         cls.myMap.save("map.html")
         try:
-            shutil.move("./map.html", "./templates")
+            shutil.move("./map.html", "./templates/components")
         except shutil.Error:
-            os.remove('./templates/map.html')
-            shutil.move("./map.html", "./templates")
+            os.remove('./templates/components/map.html')
+            shutil.move("./map.html", "./templates/components")
 
     @classmethod
     def addMarkers(cls, tweets):

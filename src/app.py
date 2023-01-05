@@ -19,6 +19,7 @@ app = Flask(__name__)
 
 ts.APIv2.__init__()
 FA.FantacitorioAnalysis.__init__(path='./Fantacitorio/punti.xlsx', numberOfTurns=7)
+#m.Map.__init__()
 
 researchMethods = utils.initializeResearchMethods()
 renderfilename = 'search.html'
@@ -67,7 +68,6 @@ def method_post(request):
 	else:
 		print('Error: unknown button')
 	# rendering flask template 'index.html'
-	print(f"{map_vis}    {renderfilename}")
 	return render_template(
 		renderfilename,
 		tweetCards=tweets,
@@ -82,10 +82,11 @@ def method_post(request):
 def homepage():
 	global currentResearchMethod, dates, query, tweetsLimit, start_time, end_time, renderfilename, whatBtn
 	if request.method == 'POST':
+		#renderfilename = 'index.html'
 		renderfilename = 'search.html'
 		method_post(request)
 	# rendering flask template
-	return render_template('home.html', 
+	return render_template('index.html', 
 		researchMethods=researchMethods,
 		currentResearchMethod=currentResearchMethod,
 		dates=utils.initializeDates('HTMLFormat'),
@@ -105,7 +106,7 @@ def search():						# the currently chosen search method
 		# getting stream tweets
 		tweets = stream.MyStream.tweets
 	else:
-		# Reinizizalizzazione col fine di avere di avere un reset dei campi quanto si torna alla home
+		# Reinizizalizzazione col fine di avere di avere un reset dei campi quanto si torna in index
 		ts.APIv2._APIv2__init__response()
 		# tweets = ts.APIv2.createCard()
 		# m.Map.addMarkers(tweets)	# Vengono aggiunti i mark per ogni coordinata trovata
@@ -193,7 +194,7 @@ def reazioneacatena():
 		mapVisibility=mapVisibility
 	)
 
-# zip(), str() and type() are not defined in jinja2 templates so we add them to global jinja2 template via Flask.template_global() function
+# zip(), str(), ... are not defined in jinja2 templates so we add them to global jinja2 template via Flask.template_global() function
 @app.template_global(name='zip')
 def _zip(*args, **kwargs): #to not overwrite builtin zip in globals
     return __builtins__.zip(*args, **kwargs)
@@ -216,9 +217,6 @@ def _enumerate(*args, **kwargs): #to not overwrite builtin enumerate in globals
 
 @app.route('/fantacitorio', methods=('GET', 'POST'))
 def fantacitorio():
-	tweets = []  # list of tweets
-	query = '#fantacitorio'
-	currentResearchMethod = 'researchByKeyword'
 	numberOfGraphs = utils.numberOfFolderFiles('./static/img/fantacitorio/politiciansGroups/')
 	utils.deleteFolderFiles(path='./static/img/fantacitorio/userTeam/')
 	userTeamResearch = {'username' : '', 'imagePath': './', 'imageVisibility' : 'hidden' }
