@@ -19,49 +19,6 @@ config = configparser.ConfigParser()
 config.read(os.path.abspath("config.ini"))
 
 
-class APIv1:
-    ################################ API SETUP ################################
-    section = "twitter"  #! change it as your [param] on config.ini file
-    APILabel = "APILabel"
-
-    @classmethod
-    def __init__(cls) -> None:
-        api_key = config[cls.section]["api_key"]
-        api_key_secret = config[cls.section]["api_key_secret"]
-        access_token = config[cls.section]["access_token"]
-        access_token_secret = config[cls.section]["access_token_secret"]
-
-        auth = tweepy.OAuthHandler(api_key, api_key_secret)
-        auth.set_access_token(access_token, access_token_secret)
-        cls.api = tweepy.API(auth)
-
-    @classmethod
-    def setSection(cls, section) -> None:
-        cls.section = section
-
-    @classmethod
-    def setAPILabel(cls, APILabel) -> None:
-        cls.APILabel = APILabel
-
-    ################################  RESEARCH  ################################
-    @classmethod
-    def getGeoDatas(cls, tweet_id, client):
-        tweetInfo = client.get_tweet(tweet_id, expansions=["geo.place_id"])
-        geoDatas = {"latitude": 0.0, "longitude": 0.0, "taggedPlace": ""}
-        try:
-            place_id = tweetInfo.data.geo["place_id"]
-            placeObj = cls.api.geo_id(place_id)
-            geoDatas.update({"latitude": placeObj.centroid[1]})
-            geoDatas.update({"longitude": placeObj.centroid[0]})
-            geoDatas.update({"taggedPlace": placeObj.full_name})
-            return geoDatas
-            # print(f"tweetInfo (response):{tweetInfo}")
-            # print(f"tweeet_id: {tweet_id}, place_id: {place_id}, api.geo_id(place_id).centroid: {placeObj.centroid}")
-        except TypeError:  # Caso in cui nel tweet non e' stato taggato alcun luogo
-            # print(f"tweeet_id: {tweet_id}, api.geo_id(place_id).centroid: NO GEO ATTRIBUTE --> NO COORDINATES")
-            return geoDatas
-
-
 class APIv2:
     query, username = "", ""
     tweetsLimit = 10
@@ -109,7 +66,7 @@ class APIv2:
         if tweet_fields is not None:
             cls.tweet_fields = tweet_fields
 
-    ################################  RESEARCH  ################################
+    ################################  OTHER  ################################
     @classmethod
     def researchDecree(cls, researchType: str) -> None:
         cls.start_time = utils.updateTime(cls.start_time)
@@ -151,7 +108,6 @@ class APIv2:
             case _:
                 raise ValueError("ERROR: APIv2 Class, researchDecree: match error")
 
-    ################################  OTHER  ################################
     @classmethod
     def createCard(cls) -> list:
         if cls.response.data is not None:
@@ -187,42 +143,6 @@ class APIv2:
             if card["latitude"] != None and card["longitude"] != None:
                 return True
         return False
-
-    ################################  DEBUG  ################################
-    @classmethod
-    def _createDataFrames(cls) -> None:
-        cls.dataFrames = []
-        cls.dataFrames.append(pd.DataFrame(cls.response))
-        cls.dataFrames.append(pd.DataFrame(cls.response.data))
-        try:
-            cls.dataFrames.append(pd.DataFrame(cls.response.includes))
-        except ValueError:  # Caso in cui i campi di response,includedes hanno lunghezze diverse (a causa della presenza di piu' valori nel campo extensions)
-            pass
-        cls.dataFrames.append(pd.DataFrame(cls.response.errors))
-
-    @classmethod
-    def _createCsvFiles(cls) -> None:
-        cls._deleteCsvFiles()  # Si eliminano i .csv di ricerche passate
-        cls._createDataFrames()  # E si creano quelli coi nuovi dati
-        try:
-            cls.dataFrames[0].to_csv("response.csv")
-            cls.dataFrames[1].to_csv("responseData.csv")
-            try:
-                cls.dataFrames[2].to_csv("responseIncludes.csv")
-                cls.dataFrames[3].to_csv("responseErrors.csv")
-            except IndexError:
-                cls.dataFrames[2].to_csv("responseErrors.csv")
-        except AttributeError:  # Caso in cui dataFrames[i] sia vuoto (non si sono chiamati i metodi del'API)
-            print(
-                "ATTENTION: currently there is no 'cls.dataFrames[i]' attribute in the APIv2 class.\nPossible causes:\n1) You haven't called any APIv2 method of the class yet --> Call one\n2) The call returned no results --> Try modifying the query"
-            )
-
-    @classmethod
-    def _deleteCsvFiles(cls) -> None:
-        myPath = os.path.dirname(os.path.abspath(__file__)) + "/"
-        for file in listdir(myPath):
-            if file.endswith(".csv"):
-                os.remove(myPath + file)
 
     @classmethod
     def getGeoDatasOfATweet(cls, tweet) -> dict:
