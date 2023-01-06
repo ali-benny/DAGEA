@@ -21,116 +21,60 @@ ts.APIv2.__init__()
 FA.FantacitorioAnalysis.__init__(path='./Fantacitorio/punti.xlsx', numberOfTurns=7)
 #m.Map.__init__()
 
-researchMethods = utils.initializeResearchMethods()
-renderfilename = 'index.html'
-currentResearchMethod = ''
-query = ''
-tweetsLimit = 10
-dates = utils.initializeDates('HTMLFormat')
-mapVisibility = 'hidden'
 
-def method_post(request):	
-	"""
-	The method_post function is an auxiliar function called when the user clicks on a button.
-	It will call the research method of APIv2 and create cards with results.
-	
-	Parameters
-	----------
-		request
-			Get the data from the form
-	
-	Returns
-	-------
-		The html code of the index
-	"""
-	global renderfilename, is_stream
-	tweets = []  # list of tweets
-	whatBtn = request.form['btnradio']
-	tweetsLimit = request.form['tweetsLimit']
-	query = request.form['keyword']
-	currentResearchMethod = request.form.get('researchBy')
-	dates['minDateValue']=request.form['minDate']
-	dates['maxDateValue']=request.form['maxDate']
-	mapVisibility = 'hidden'
-	if whatBtn == 'Stream':
-		is_stream = True
-		# getting stream tweets
-		stream.StreamByKeyword(query, (int)(tweetsLimit))
-		tweets = stream.MyStream.tweets
-	elif whatBtn == 'Search':
-		# getting tweets from twitter API
-		ts.APIv2.setDatas(query=query, tweetsLimit=tweetsLimit, start_time=dates['minDateValue'], end_time=dates['maxDateValue'])
-		ts.APIv2.researchDecree(researchType = currentResearchMethod)
-		tweets = ts.APIv2.createCard()
-		if ts.APIv2.hasCardsGeo(tweets):
-			mapVisibility = 'visible'
-			m.Map.__init__()
-			m.Map.addMarkers(tweets)
-	else:
-		print('Error: unknown button')
-	if ts.APIv2.hasCardsGeo(tweets):
-		mapVisibility = 'visible'
-		m.Map.__init__()
-		m.Map.addMarkers(tweets)	# Vengono aggiunti i mark per ogni coordinata trovata
-	# rendering flask template 'index.html'
-	return render_template(
-		renderfilename,
-		tweetCards=tweets,
-		tweetsLimit=ts.APIv2.tweetsLimit,
-		researchMethods=researchMethods,
-		currentResearchMethod=currentResearchMethod,
-		dates=dates,
-		mapVisibility = mapVisibility
-	)
+filterDatas = {'researchMethods': utils.initializeResearchMethods(),
+	'currentResearchMethod': '',
+	'query': '',
+	'tweetsLimit': 10,
+	'dates': utils.initializeDates('HTMLFormat'),
+	'mapVisibility': 'hidden'
+	}
 
 def renderSubmit(request, pageToRender: str):
 	whatBtn = request.form['btnradio']
-	tweetsLimit = request.form['tweetsLimit']
-	query = request.form['keyword']
+	filterDatas['tweetsLimit'] = request.form['tweetsLimit']
+	filterDatas['query'] = request.form['keyword']
 	currentResearchMethod = request.form.get('researchBy')
-	dates['minDateValue']=request.form['minDate']
-	dates['maxDateValue']=request.form['maxDate']
-	mapVisibility = 'hidden'
+	filterDatas['dates']['minDateValue']=request.form['minDate']
+	filterDatas['dates']['maxDateValue']=request.form['maxDate']
+	filterDatas['mapVisibility'] = 'hidden'
 	if whatBtn == 'Stream':
-		stream.StreamByKeyword(query, (int)(tweetsLimit))
+		stream.StreamByKeyword(filterDatas['query'], (int)(filterDatas['tweetsLimit']))
 		tweets = stream.MyStream.tweets
 	elif whatBtn == 'Search':
-		ts.APIv2.setDatas(query=query, tweetsLimit=tweetsLimit, start_time=dates['minDateValue'], end_time=dates['maxDateValue'])
+		ts.APIv2.setDatas(query=filterDatas['query'], tweetsLimit=filterDatas['tweetsLimit'], start_time=filterDatas['dates']['minDateValue'], end_time=filterDatas['dates']['maxDateValue'])
 		ts.APIv2.researchDecree(researchType = currentResearchMethod)
 		tweets = ts.APIv2.createCard()
 		if ts.APIv2.hasCardsGeo(tweets):
-			mapVisibility = 'visible'
+			filterDatas['mapVisibility'] = 'visible'
 			m.Map.__init__()
 			m.Map.addMarkers(tweets)
 	else:
 		print('Error: unknown button')
 	return render_template(pageToRender, 
 		tweetCards=tweets,
-		keyword = query,
-		tweetsLimit = 10,
-		researchMethods=researchMethods,
+		keyword = filterDatas['query'],
+		tweetsLimit = filterDatas['tweetsLimit'],
+		researchMethods=filterDatas['researchMethods'],
 		currentResearchMethod=currentResearchMethod,
-		dates=dates,
-		mapVisibility=mapVisibility
+		dates=filterDatas['dates'],
+		mapVisibility=filterDatas['mapVisibility']
 	)
 
 @app.route('/', methods=('GET', 'POST'))
 def homepage():
 	tweets = []  # list of tweets
-	query = ''
-	currentResearchMethod = ''
-	mapVisibility = 'hidden'
 	if request.method == 'POST':
 		if 'tweetResearchSubmit' in request.form:
 			return renderSubmit(request=request, pageToRender='index.html')
 	return render_template('index.html', 
 		tweetCards=tweets,
-		keyword = query,
-		tweetsLimit = 10,
-		researchMethods=researchMethods,
-		currentResearchMethod=currentResearchMethod,
-		dates=dates,
-		mapVisibility=mapVisibility
+		keyword = filterDatas['query'],
+		tweetsLimit = filterDatas['tweetsLimit'],
+		researchMethods=filterDatas['researchMethods'],
+		currentResearchMethod=filterDatas['currentResearchMethod'],
+		dates=filterDatas['dates'],
+		mapVisibility=filterDatas['mapVisibility']
 	)
 
 @app.route('/eredita', methods=('GET', 'POST'))
@@ -139,30 +83,27 @@ def eredita():
 	The eredita function is used to display the tweets of '#leredita' research.
 	"""
 	tweets = []  # list of tweets
-	query = '#leredita'
-	currentResearchMethod = 'researchByKeyword'
-	mapVisibility = 'hidden'
-	global renderfilename, dates
-	renderfilename = 'eredita.html'
+	filterDatas['query'] = '#leredita'
+	filterDatas['currentResearchMethod'] = 'researchByKeyword'
 	if request.method == 'POST':
 		return renderSubmit(request=request, pageToRender='eredita.html')
 	else:
 		# getting tweets from twitter API
-		ts.APIv2.setDatas(query = query, tweetsLimit=10)
-		ts.APIv2.researchDecree(researchType = currentResearchMethod)
+		ts.APIv2.setDatas(query = filterDatas['query'], tweetsLimit=10)
+		ts.APIv2.researchDecree(researchType = filterDatas['currentResearchMethod'])
 		tweets = ts.APIv2.createCard()
 		if ts.APIv2.hasCardsGeo(tweets):
-			mapVisibility = 'visible'
+			filterDatas['mapVisibility'] = 'visible'
 			m.Map.__init__()
 			m.Map.addMarkers(tweets)	# Vengono aggiunti i mark per ogni coordinata trovata
-	return render_template(renderfilename, 
+	return render_template('eredita.html', 
 		tweetCards=tweets,
-		keyword = query,
-		tweetsLimit = 10,
-		researchMethods=researchMethods,
-		currentResearchMethod=currentResearchMethod,
-		dates=dates,
-		mapVisibility=mapVisibility
+		keyword = filterDatas['query'],
+		tweetsLimit = filterDatas['tweetsLimit'],
+		researchMethods=filterDatas['researchMethods'],
+		currentResearchMethod=filterDatas['currentResearchMethod'],
+		dates=filterDatas['dates'],
+		mapVisibility=filterDatas['mapVisibility']
 	)
 
 @app.route('/reazioneacatena', methods=('GET', 'POST'))
@@ -172,30 +113,28 @@ def reazioneacatena():
 	It returns a list of cards with the tweets and their information.
 	"""
 	tweets = []  # list of tweets
-	query = '#reazioneacatena'
-	currentResearchMethod = 'researchByKeyword'
-	mapVisibility = 'hidden'
-	global renderfilename
-	renderfilename = 'reazioneacatena.html'
+	filterDatas['query'] = '#reazioneacatena'
+	filterDatas['currentResearchMethod'] = 'researchByKeyword'
+	filterDatas['mapVisibility'] = 'hidden'
 	if request.method == 'POST':
 		return renderSubmit(request=request, pageToRender='reazioneacatena.html')
 	else:
 		# getting tweets from twitter API
-		ts.APIv2.setDatas(query = query, tweetsLimit=10)
-		ts.APIv2.researchDecree(researchType = currentResearchMethod)
+		ts.APIv2.setDatas(query = filterDatas['query'], tweetsLimit=10)
+		ts.APIv2.researchDecree(researchType = filterDatas['currentResearchMethod'])
 		tweets = ts.APIv2.createCard()
 		if ts.APIv2.hasCardsGeo(tweets):
-			mapVisibility = 'visible'
+			filterDatas['mapVisibility'] = 'visible'
 			m.Map.__init__()
 			m.Map.addMarkers(tweets)	# Vengono aggiunti i mark per ogni coordinata trovata
 	return render_template('reazioneacatena.html', 
 		tweetCards=tweets,
-		keyword = query,
-		tweetsLimit = 10,
-		researchMethods=researchMethods,
-		currentResearchMethod=currentResearchMethod,
-		dates=dates,
-		mapVisibility=mapVisibility
+		keyword = filterDatas['query'],
+		tweetsLimit = filterDatas['tweetsLimit'],
+		researchMethods=filterDatas['researchMethods'],
+		currentResearchMethod=filterDatas['currentResearchMethod'],
+		dates=filterDatas['dates'],
+		mapVisibility=filterDatas['mapVisibility']
 	)
 
 @app.route('/fantacitorio', methods=('GET', 'POST'))
@@ -245,10 +184,7 @@ def fantacitorio():
 
 @app.route('/chess')
 def chessPage():
-	return render_template('chess.html', 
-		researchMethods=researchMethods,
-		currentResearchMethod=currentResearchMethod,
-		dates=utils.initializeDates('HTMLFormat'), tweetsLimit=ts.APIv2.tweetsLimit)
+	return render_template('chess.html')
 
 @app.route('/startGame')
 def chessGame():
@@ -258,39 +194,15 @@ def chessGame():
 
 @app.route('/explain', methods=('GET', 'POST'))
 def explainPage():
-	if request.method == 'POST':
-		global renderfilename
-		renderfilename = 'howItWorks.html'
-		method_post(request)
-	return render_template('howItWorks.html', 
-		tweetsLimit = 10,
-		researchMethods=researchMethods,
-		currentResearchMethod=currentResearchMethod,
-		dates=dates)
+	return render_template('howItWorks.html')
 
 @app.route('/map')
 def mapInterface():
-	dates = utils.initializeDates('HTMLFormat')
-	return render_template('mapInterface.html',
-		tweetCards=[],
-		keyword = query,
-		tweetsLimit = 10,
-		researchMethods=researchMethods,
-		currentResearchMethod=currentResearchMethod,
-		dates=dates
-	)
+	return render_template('mapInterface.html')
 
 @app.route('/credits', methods = ('GET', 'POST'))
 def creditsPage():
-	if request.method == 'POST':
-		global renderfilename
-		renderfilename = 'credits.html'
-		method_post(request)
-	return render_template('credits.html',
-		tweetsLimit = 10,
-		researchMethods=researchMethods,
-		currentResearchMethod=currentResearchMethod,
-		dates=dates)
+	return render_template('credits.html')
 
 
 # zip(), str(), ... are not defined in jinja2 templates so we add them to global jinja2 template via Flask.template_global() function
