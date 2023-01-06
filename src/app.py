@@ -1,7 +1,8 @@
 import TweetSearch as ts
 import os
 import stream
-import utils
+import utils as utils
+import utils_filtersbar as filtersbar
 import map as m
 try:
 	from flask import Flask, render_template, request
@@ -21,12 +22,11 @@ ts.APIv2.__init__()
 FA.FantacitorioAnalysis.__init__(path='./Fantacitorio/punti.xlsx', numberOfTurns=7)
 #m.Map.__init__()
 
-
-filterDatas = {'researchMethods': utils.initializeResearchMethods(),
+filterDatas = {'researchMethods': filtersbar.initializeResearchMethods(),
 	'currentResearchMethod': '',
 	'query': '',
 	'tweetsLimit': 10,
-	'dates': utils.initializeDates('HTMLFormat'),
+	'dates': filtersbar.initializeDates('HTMLFormat'),
 	'mapVisibility': 'hidden'
 	}
 
@@ -53,28 +53,17 @@ def renderSubmit(request, pageToRender: str):
 		print('Error: unknown button')
 	return render_template(pageToRender, 
 		tweetCards=tweets,
-		keyword = filterDatas['query'],
-		tweetsLimit = filterDatas['tweetsLimit'],
-		researchMethods=filterDatas['researchMethods'],
-		currentResearchMethod=currentResearchMethod,
-		dates=filterDatas['dates'],
-		mapVisibility=filterDatas['mapVisibility']
+		filterDatas=filterDatas
 	)
 
 @app.route('/', methods=('GET', 'POST'))
 def homepage():
-	tweets = []  # list of tweets
 	if request.method == 'POST':
 		if 'tweetResearchSubmit' in request.form:
 			return renderSubmit(request=request, pageToRender='index.html')
 	return render_template('index.html', 
-		tweetCards=tweets,
-		keyword = filterDatas['query'],
-		tweetsLimit = filterDatas['tweetsLimit'],
-		researchMethods=filterDatas['researchMethods'],
-		currentResearchMethod=filterDatas['currentResearchMethod'],
-		dates=filterDatas['dates'],
-		mapVisibility=filterDatas['mapVisibility']
+		tweetCards=[],
+		filterDatas=filterDatas
 	)
 
 @app.route('/eredita', methods=('GET', 'POST'))
@@ -88,7 +77,6 @@ def eredita():
 	if request.method == 'POST':
 		return renderSubmit(request=request, pageToRender='eredita.html')
 	else:
-		# getting tweets from twitter API
 		ts.APIv2.setDatas(query = filterDatas['query'], tweetsLimit=10)
 		ts.APIv2.researchDecree(researchType = filterDatas['currentResearchMethod'])
 		tweets = ts.APIv2.createCard()
@@ -98,12 +86,7 @@ def eredita():
 			m.Map.addMarkers(tweets)	# Vengono aggiunti i mark per ogni coordinata trovata
 	return render_template('eredita.html', 
 		tweetCards=tweets,
-		keyword = filterDatas['query'],
-		tweetsLimit = filterDatas['tweetsLimit'],
-		researchMethods=filterDatas['researchMethods'],
-		currentResearchMethod=filterDatas['currentResearchMethod'],
-		dates=filterDatas['dates'],
-		mapVisibility=filterDatas['mapVisibility']
+		filterDatas=filterDatas
 	)
 
 @app.route('/reazioneacatena', methods=('GET', 'POST'))
@@ -129,12 +112,7 @@ def reazioneacatena():
 			m.Map.addMarkers(tweets)	# Vengono aggiunti i mark per ogni coordinata trovata
 	return render_template('reazioneacatena.html', 
 		tweetCards=tweets,
-		keyword = filterDatas['query'],
-		tweetsLimit = filterDatas['tweetsLimit'],
-		researchMethods=filterDatas['researchMethods'],
-		currentResearchMethod=filterDatas['currentResearchMethod'],
-		dates=filterDatas['dates'],
-		mapVisibility=filterDatas['mapVisibility']
+		filterDatas=filterDatas
 	)
 
 @app.route('/fantacitorio', methods=('GET', 'POST'))

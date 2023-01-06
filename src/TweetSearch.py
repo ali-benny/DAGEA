@@ -3,7 +3,7 @@ from os import listdir
 import sys
 
 sys.path.append("..")
-import src.utils as utils
+import src.utils_filtersbar as filtersbar
 import configparser  # EDIT: era import config
 
 try:
@@ -69,7 +69,7 @@ class APIv2:
     ################################  OTHER  ################################
     @classmethod
     def researchDecree(cls, researchType: str) -> None:
-        cls.start_time = utils.updateTime(cls.start_time)
+        cls.start_time = filtersbar.updateTime(cls.start_time)
         match researchType:
             case "researchByUser":
                 userData = cls.client.get_user(username=cls.query).data
