@@ -72,10 +72,8 @@ class APIv2:
         cls.start_time = filtersbar.updateTime(cls.start_time)
         match researchType:
             case "researchByUser":
-                userData = cls.client.get_user(username=cls.query).data
-                if (
-                    userData is not None
-                ):  # Entra nell'if sse trova un utente con quell'username
+                try:
+                    userData = cls.client.get_user(username=cls.query).data
                     cls.response = cls.client.get_users_tweets(
                         id=userData.id,
                         max_results=cls.tweetsLimit,
@@ -85,32 +83,40 @@ class APIv2:
                         start_time=cls.start_time,
                         end_time=cls.end_time,
                     )
+                except tweepy.errors.NotFound:
+                    cls.response = None
             case "researchByKeyword":
-                cls.response = cls.client.search_recent_tweets(
-                    query=cls.query,
-                    max_results=cls.tweetsLimit,
-                    expansions=cls.expansions,
-                    tweet_fields=cls.tweet_fields,
-                    place_fields=cls.place_fields,
-                    start_time=cls.start_time,
-                    end_time=cls.end_time,
-                )
+                try:
+                    cls.response = cls.client.search_recent_tweets(
+                        query=cls.query,
+                        max_results=cls.tweetsLimit,
+                        expansions=cls.expansions,
+                        tweet_fields=cls.tweet_fields,
+                        place_fields=cls.place_fields,
+                        start_time=cls.start_time,
+                        end_time=cls.end_time,
+                    )
+                except tweepy.errors.NotFound:
+                    cls.response = None
             case "researchByHashtag":
-                cls.response = cls.client.search_recent_tweets(
-                    query="#" + cls.query,
-                    max_results=cls.tweetsLimit,
-                    expansions=cls.expansions,
-                    tweet_fields=cls.tweet_fields,
-                    place_fields=cls.place_fields,
-                    start_time=cls.start_time,
-                    end_time=cls.end_time,
-                )
+                try:
+                    cls.response = cls.client.search_recent_tweets(
+                        query="#" + cls.query,
+                        max_results=cls.tweetsLimit,
+                        expansions=cls.expansions,
+                        tweet_fields=cls.tweet_fields,
+                        place_fields=cls.place_fields,
+                        start_time=cls.start_time,
+                        end_time=cls.end_time,
+                    )
+                except tweepy.errors.NotFound:
+                    cls.response = None
             case _:
                 raise ValueError("ERROR: APIv2 Class, researchDecree: match error")
 
     @classmethod
     def createCard(cls) -> list:
-        if cls.response.data is not None:
+        if cls.response != None and cls.response.data is not None:
             card = []
             for tweet in cls.response.data:
                 # tmp = cls.client.get_user(id=tweet.author_id).data

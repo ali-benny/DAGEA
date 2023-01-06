@@ -34,7 +34,7 @@ def renderSubmit(request, pageToRender: str):
 	whatBtn = request.form['btnradio']
 	filterDatas['tweetsLimit'] = request.form['tweetsLimit']
 	filterDatas['query'] = request.form['keyword']
-	currentResearchMethod = request.form.get('researchBy')
+	filterDatas['currentResearchMethod'] = request.form.get('researchBy')
 	filterDatas['dates']['minDateValue']=request.form['minDate']
 	filterDatas['dates']['maxDateValue']=request.form['maxDate']
 	filterDatas['mapVisibility'] = 'hidden'
@@ -43,7 +43,7 @@ def renderSubmit(request, pageToRender: str):
 		tweets = stream.MyStream.tweets
 	elif whatBtn == 'Search':
 		ts.APIv2.setDatas(query=filterDatas['query'], tweetsLimit=filterDatas['tweetsLimit'], start_time=filterDatas['dates']['minDateValue'], end_time=filterDatas['dates']['maxDateValue'])
-		ts.APIv2.researchDecree(researchType = currentResearchMethod)
+		ts.APIv2.researchDecree(researchType = filterDatas['currentResearchMethod'])
 		tweets = ts.APIv2.createCard()
 		if ts.APIv2.hasCardsGeo(tweets):
 			filterDatas['mapVisibility'] = 'visible'
