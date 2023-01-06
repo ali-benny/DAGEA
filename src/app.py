@@ -83,6 +83,37 @@ def method_post(request):
 		mapVisibility = mapVisibility
 	)
 
+def renderSubmit(request, pageToRender: str):
+	whatBtn = request.form['btnradio']
+	tweetsLimit = request.form['tweetsLimit']
+	query = request.form['keyword']
+	currentResearchMethod = request.form.get('researchBy')
+	dates['minDateValue']=request.form['minDate']
+	dates['maxDateValue']=request.form['maxDate']
+	mapVisibility = 'hidden'
+	if whatBtn == 'Stream':
+		stream.StreamByKeyword(query, (int)(tweetsLimit))
+		tweets = stream.MyStream.tweets
+	elif whatBtn == 'Search':
+		ts.APIv2.setDatas(query=query, tweetsLimit=tweetsLimit, start_time=dates['minDateValue'], end_time=dates['maxDateValue'])
+		ts.APIv2.researchDecree(researchType = currentResearchMethod)
+		tweets = ts.APIv2.createCard()
+		if ts.APIv2.hasCardsGeo(tweets):
+			mapVisibility = 'visible'
+			m.Map.__init__()
+			m.Map.addMarkers(tweets)
+	else:
+		print('Error: unknown button')
+	return render_template(pageToRender, 
+		tweetCards=tweets,
+		keyword = query,
+		tweetsLimit = 10,
+		researchMethods=researchMethods,
+		currentResearchMethod=currentResearchMethod,
+		dates=dates,
+		mapVisibility=mapVisibility
+	)
+
 @app.route('/', methods=('GET', 'POST'))
 def homepage():
 	tweets = []  # list of tweets
@@ -90,41 +121,8 @@ def homepage():
 	currentResearchMethod = ''
 	mapVisibility = 'hidden'
 	if request.method == 'POST':
-		#renderfilename = 'index.html'
-		#method_post(request)whatBtn = request.form['btnradio']
-		whatBtn = request.form['btnradio']
-		tweetsLimit = request.form['tweetsLimit']
-		query = request.form['keyword']
-		currentResearchMethod = request.form.get('researchBy')
-		dates['minDateValue']=request.form['minDate']
-		dates['maxDateValue']=request.form['maxDate']
-		mapVisibility = 'hidden'
-		if whatBtn == 'Stream':
-			is_stream = True
-			# getting stream tweets
-			stream.StreamByKeyword(query, (int)(tweetsLimit))
-			tweets = stream.MyStream.tweets
-		elif whatBtn == 'Search':
-			# getting tweets from twitter API
-			ts.APIv2.setDatas(query=query, tweetsLimit=tweetsLimit, start_time=dates['minDateValue'], end_time=dates['maxDateValue'])
-			ts.APIv2.researchDecree(researchType = currentResearchMethod)
-			tweets = ts.APIv2.createCard()
-			if ts.APIv2.hasCardsGeo(tweets):
-				mapVisibility = 'visible'
-				m.Map.__init__()
-				m.Map.addMarkers(tweets)
-		else:
-			print('Error: unknown button')
-		return render_template(renderfilename, 
-			tweetCards=tweets,
-			keyword = query,
-			tweetsLimit = 10,
-			researchMethods=researchMethods,
-			currentResearchMethod=currentResearchMethod,
-			dates=dates,
-			mapVisibility=mapVisibility
-		)
-	
+		if 'tweetResearchSubmit' in request.form:
+			return renderSubmit(request=request, pageToRender='index.html')
 	return render_template('index.html', 
 		tweetCards=tweets,
 		keyword = query,
@@ -147,49 +145,16 @@ def eredita():
 	global renderfilename, dates
 	renderfilename = 'eredita.html'
 	if request.method == 'POST':
-		#method_post(request)
-		#query = '' if request.form['keyword'] != '' else query
-		whatBtn = request.form['btnradio']
-		tweetsLimit = request.form['tweetsLimit']
-		query = request.form['keyword']
-		currentResearchMethod = request.form.get('researchBy')
-		dates['minDateValue']=request.form['minDate']
-		dates['maxDateValue']=request.form['maxDate']
-		mapVisibility = 'hidden'
-		if whatBtn == 'Stream':
-			is_stream = True
-			# getting stream tweets
-			stream.StreamByKeyword(query, (int)(tweetsLimit))
-			tweets = stream.MyStream.tweets
-		elif whatBtn == 'Search':
-			# getting tweets from twitter API
-			ts.APIv2.setDatas(query=query, tweetsLimit=tweetsLimit, start_time=dates['minDateValue'], end_time=dates['maxDateValue'])
-			ts.APIv2.researchDecree(researchType = currentResearchMethod)
-			tweets = ts.APIv2.createCard()
-			if ts.APIv2.hasCardsGeo(tweets):
-				mapVisibility = 'visible'
-				m.Map.__init__()
-				m.Map.addMarkers(tweets)
-		else:
-			print('Error: unknown button')
-		return render_template(renderfilename, 
-			tweetCards=tweets,
-			keyword = query,
-			tweetsLimit = 10,
-			researchMethods=researchMethods,
-			currentResearchMethod=currentResearchMethod,
-			dates=dates,
-			mapVisibility=mapVisibility
-		)
+		return renderSubmit(request=request, pageToRender='eredita.html')
 	else:
 		# getting tweets from twitter API
 		ts.APIv2.setDatas(query = query, tweetsLimit=10)
 		ts.APIv2.researchDecree(researchType = currentResearchMethod)
-	tweets = ts.APIv2.createCard()
-	if ts.APIv2.hasCardsGeo(tweets):
-		mapVisibility = 'visible'
-		m.Map.__init__()
-		m.Map.addMarkers(tweets)	# Vengono aggiunti i mark per ogni coordinata trovata
+		tweets = ts.APIv2.createCard()
+		if ts.APIv2.hasCardsGeo(tweets):
+			mapVisibility = 'visible'
+			m.Map.__init__()
+			m.Map.addMarkers(tweets)	# Vengono aggiunti i mark per ogni coordinata trovata
 	return render_template(renderfilename, 
 		tweetCards=tweets,
 		keyword = query,
@@ -213,38 +178,16 @@ def reazioneacatena():
 	global renderfilename
 	renderfilename = 'reazioneacatena.html'
 	if request.method == 'POST':
-		#method_post(request)
-		#query = '' if request.form['keyword'] != '' else query
-		whatBtn = request.form['btnradio']
-		tweetsLimit = request.form['tweetsLimit']
-		query = request.form['keyword']
-		currentResearchMethod = request.form.get('researchBy')
-		dates['minDateValue']=request.form['minDate']
-		dates['maxDateValue']=request.form['maxDate']
-		mapVisibility = 'hidden'
-		if whatBtn == 'Stream':
-			is_stream = True
-			# getting stream tweets
-			stream.StreamByKeyword(query, (int)(tweetsLimit))
-			tweets = stream.MyStream.tweets
-		elif whatBtn == 'Search':
-			# getting tweets from twitter API
-			ts.APIv2.setDatas(query=query, tweetsLimit=tweetsLimit, start_time=dates['minDateValue'], end_time=dates['maxDateValue'])
-			ts.APIv2.researchDecree(researchType = currentResearchMethod)
-			tweets = ts.APIv2.createCard()
-			if ts.APIv2.hasCardsGeo(tweets):
-				mapVisibility = 'visible'
-				m.Map.__init__()
-				m.Map.addMarkers(tweets)
+		return renderSubmit(request=request, pageToRender='reazioneacatena.html')
 	else:
 		# getting tweets from twitter API
 		ts.APIv2.setDatas(query = query, tweetsLimit=10)
 		ts.APIv2.researchDecree(researchType = currentResearchMethod)
-	tweets = ts.APIv2.createCard()
-	if ts.APIv2.hasCardsGeo(tweets):
-		mapVisibility = 'visible'
-		m.Map.__init__()
-		m.Map.addMarkers(tweets)	# Vengono aggiunti i mark per ogni coordinata trovata
+		tweets = ts.APIv2.createCard()
+		if ts.APIv2.hasCardsGeo(tweets):
+			mapVisibility = 'visible'
+			m.Map.__init__()
+			m.Map.addMarkers(tweets)	# Vengono aggiunti i mark per ogni coordinata trovata
 	return render_template('reazioneacatena.html', 
 		tweetCards=tweets,
 		keyword = query,
@@ -254,27 +197,6 @@ def reazioneacatena():
 		dates=dates,
 		mapVisibility=mapVisibility
 	)
-
-# zip(), str(), ... are not defined in jinja2 templates so we add them to global jinja2 template via Flask.template_global() function
-@app.template_global(name='zip')
-def _zip(*args, **kwargs): #to not overwrite builtin zip in globals
-	return __builtins__.zip(*args, **kwargs)
-
-@app.template_global(name='str')
-def _str(*args, **kwargs): #to not overwrite builtin str in globals
-	return __builtins__.str(*args, **kwargs)
-
-@app.template_global(name='type')
-def _type(*args, **kwargs): #to not overwrite builtin type in globals
-	return __builtins__.type(*args, **kwargs)
-
-@app.template_global(name='len')
-def _len(*args, **kwargs): #to not overwrite builtin len in globals
-	return __builtins__.len(*args, **kwargs)
-
-@app.template_global(name='enumerate')
-def _enumerate(*args, **kwargs): #to not overwrite builtin enumerate in globals
-	return __builtins__.enumerate(*args, **kwargs)
 
 @app.route('/fantacitorio', methods=('GET', 'POST'))
 def fantacitorio():
@@ -369,6 +291,29 @@ def creditsPage():
 		researchMethods=researchMethods,
 		currentResearchMethod=currentResearchMethod,
 		dates=dates)
+
+
+# zip(), str(), ... are not defined in jinja2 templates so we add them to global jinja2 template via Flask.template_global() function
+@app.template_global(name='zip')
+def _zip(*args, **kwargs): #to not overwrite builtin zip in globals
+	return __builtins__.zip(*args, **kwargs)
+
+@app.template_global(name='str')
+def _str(*args, **kwargs): #to not overwrite builtin str in globals
+	return __builtins__.str(*args, **kwargs)
+
+@app.template_global(name='type')
+def _type(*args, **kwargs): #to not overwrite builtin type in globals
+	return __builtins__.type(*args, **kwargs)
+
+@app.template_global(name='len')
+def _len(*args, **kwargs): #to not overwrite builtin len in globals
+	return __builtins__.len(*args, **kwargs)
+
+@app.template_global(name='enumerate')
+def _enumerate(*args, **kwargs): #to not overwrite builtin enumerate in globals
+	return __builtins__.enumerate(*args, **kwargs)
+
 
 if __name__ == "__main__":
 	app.run(debug=True)

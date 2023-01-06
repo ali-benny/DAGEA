@@ -1,6 +1,6 @@
 <div class="container">
     <script src="../static/js/index.js"></script>
-    
+
     <!-- Title -->
     <div class="container p-3">
         <div class="text-center">
@@ -25,7 +25,7 @@
                         value="Stream">
                     <label class="btn btn-outline-purple bi-play-fill" for="streamBtn" title="Stream Tweets"></label>
                 </div>
-                <button type="submit" class="btn btn-success orange" style="margin: 1px;">Invia</button>
+                <button type="submit" class="btn btn-success orange" id="tweetResearchSubmit" name="tweetResearchSubmit" style="margin: 1px;">Invia</button>
                 <!-- <button type="submit"  class="btn btn-success orange" style="margin: 1px;"><a href="/search">Invia</a></button> -->
             </div>
 
@@ -83,7 +83,7 @@
             </div>
 
             <!-- Location check -->
-            <div class="col-2 d-flex justify-content-end align-items-center">
+            <div class="col-2 d-flex justify-content-end align-items-center"  style="visibility: hidden">
                 <div class="form-check form-switch">
                     <input class="form-check-input" type="checkbox" id="isLocated" name="isLocated" value="on"
                         data-onstyle="danger" />
@@ -97,8 +97,7 @@
             <!-- See map button -->
             <div class="col-4">
                 <a href="/map" class="btn border text-white bg-dark" style="visibility:{{ mapVisibility }}">See tweets
-                    on a
-                    map</a>
+                    on a map</a>
             </div>
             <div class="col"></div>
         </div>
