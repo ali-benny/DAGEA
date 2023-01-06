@@ -62,12 +62,16 @@ def method_post(request):
 		ts.APIv2.setDatas(query=query, tweetsLimit=tweetsLimit, start_time=dates['minDateValue'], end_time=dates['maxDateValue'])
 		ts.APIv2.researchDecree(researchType = currentResearchMethod)
 		tweets = ts.APIv2.createCard()
+		if ts.APIv2.hasCardsGeo(tweets):
+			mapVisibility = 'visible'
+			m.Map.__init__()
+			m.Map.addMarkers(tweets)
+	else:
+		print('Error: unknown button')
 	if ts.APIv2.hasCardsGeo(tweets):
 		mapVisibility = 'visible'
 		m.Map.__init__()
 		m.Map.addMarkers(tweets)	# Vengono aggiunti i mark per ogni coordinata trovata
-	else:
-		print('Error: unknown button')
 	# rendering flask template 'index.html'
 	return render_template(
 		renderfilename,
@@ -133,8 +137,40 @@ def eredita():
 	global renderfilename, dates
 	renderfilename = 'eredita.html'
 	if request.method == 'POST':
-		method_post(request)
-		query = '' if request.form['keyword'] != '' else query
+		#method_post(request)
+		#query = '' if request.form['keyword'] != '' else query
+		whatBtn = request.form['btnradio']
+		tweetsLimit = request.form['tweetsLimit']
+		query = request.form['keyword']
+		currentResearchMethod = request.form.get('researchBy')
+		dates['minDateValue']=request.form['minDate']
+		dates['maxDateValue']=request.form['maxDate']
+		mapVisibility = 'hidden'
+		if whatBtn == 'Stream':
+			is_stream = True
+			# getting stream tweets
+			stream.StreamByKeyword(query, (int)(tweetsLimit))
+			tweets = stream.MyStream.tweets
+		elif whatBtn == 'Search':
+			# getting tweets from twitter API
+			ts.APIv2.setDatas(query=query, tweetsLimit=tweetsLimit, start_time=dates['minDateValue'], end_time=dates['maxDateValue'])
+			ts.APIv2.researchDecree(researchType = currentResearchMethod)
+			tweets = ts.APIv2.createCard()
+			if ts.APIv2.hasCardsGeo(tweets):
+				mapVisibility = 'visible'
+				m.Map.__init__()
+				m.Map.addMarkers(tweets)
+		else:
+			print('Error: unknown button')
+		return render_template(renderfilename, 
+			tweetCards=tweets,
+			keyword = query,
+			tweetsLimit = 10,
+			researchMethods=researchMethods,
+			currentResearchMethod=currentResearchMethod,
+			dates=dates,
+			mapVisibility=mapVisibility
+		)
 	else:
 		# getting tweets from twitter API
 		ts.APIv2.setDatas(query = query, tweetsLimit=10)
@@ -164,11 +200,32 @@ def reazioneacatena():
 	query = '#reazioneacatena'
 	currentResearchMethod = 'researchByKeyword'
 	mapVisibility = 'hidden'
+	global renderfilename
+	renderfilename = 'reazioneacatena.html'
 	if request.method == 'POST':
-		global renderfilename
-		renderfilename = 'reazioneacatena.html'
-		method_post(request)
-		query = '' if request.form['keyword'] != '' else query
+		#method_post(request)
+		#query = '' if request.form['keyword'] != '' else query
+		whatBtn = request.form['btnradio']
+		tweetsLimit = request.form['tweetsLimit']
+		query = request.form['keyword']
+		currentResearchMethod = request.form.get('researchBy')
+		dates['minDateValue']=request.form['minDate']
+		dates['maxDateValue']=request.form['maxDate']
+		mapVisibility = 'hidden'
+		if whatBtn == 'Stream':
+			is_stream = True
+			# getting stream tweets
+			stream.StreamByKeyword(query, (int)(tweetsLimit))
+			tweets = stream.MyStream.tweets
+		elif whatBtn == 'Search':
+			# getting tweets from twitter API
+			ts.APIv2.setDatas(query=query, tweetsLimit=tweetsLimit, start_time=dates['minDateValue'], end_time=dates['maxDateValue'])
+			ts.APIv2.researchDecree(researchType = currentResearchMethod)
+			tweets = ts.APIv2.createCard()
+			if ts.APIv2.hasCardsGeo(tweets):
+				mapVisibility = 'visible'
+				m.Map.__init__()
+				m.Map.addMarkers(tweets)
 	else:
 		# getting tweets from twitter API
 		ts.APIv2.setDatas(query = query, tweetsLimit=10)

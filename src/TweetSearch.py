@@ -15,7 +15,6 @@ except ModuleNotFoundError:
     os.system("pip install pandas")
     os.system("pip install configparser")
 
-global config
 config = configparser.ConfigParser()
 config.read(os.path.abspath("config.ini"))
 
@@ -27,7 +26,6 @@ class APIv1:
 
     @classmethod
     def __init__(cls) -> None:
-        global config
         api_key = config[cls.section]["api_key"]
         api_key_secret = config[cls.section]["api_key_secret"]
         access_token = config[cls.section]["access_token"]
@@ -65,37 +63,28 @@ class APIv1:
 
 
 class APIv2:
-    ################################ API SETUP ################################
-    @classmethod
-    def __init__(cls) -> None:
-        global config
-        # cls.client = tweepy.Client(bearer_token=config.BEARER_TOKEN)  #! EDIT: questo metodo non è corretto
-        cls.client = tweepy.Client(bearer_token=config["twitter"]["bearer_token"])
-        cls.__init__response()
-        cls.query = ""
-        cls.username = ""
-        cls.tweetsLimit = 10
-        cls.start_time = None
-        cls.end_time = None
-        cls.expansions = ["author_id", "geo.place_id"]
-        cls.tweet_fields = ["created_at"]
+    query, username = "", ""
+    tweetsLimit = 10
+    start_time, end_time = None, None
+    expansions = ["author_id", "geo.place_id"]
+    tweet_fields = ["created_at"]
+    place_fields = ["geo"]
+    response = None
 
     @classmethod
-    def __init__response(cls) -> None:
-        # cls.response = cls.client.get_user(id=0)    # Questa chiamata di get_user ritornera' un dato response vuoto (analogo ad una string avuota '')
-        cls.response = ""
+    def __init__(cls) -> None:
+        cls.client = tweepy.Client(bearer_token=config["twitter"]["bearer_token"])
 
     ################################  ATTRIBUTE SETTING   ################################
     @classmethod
-    # TODO: Credo proprio che esistano strumenti migliori per implementare la semantica di questa funzione
     def setDatas(
         cls,
         query: str = None,
-        tweetsLimit=None,
+        tweetsLimit: int = None,
         start_time=None,
         end_time=None,
-        expansions=None,
-        tweet_fields=None,
+        expansions: list = None,
+        tweet_fields: list = None,
     ) -> None:
         if query is not None:
             cls.query = query
@@ -105,9 +94,9 @@ class APIv2:
             and int(tweetsLimit) <= 100
         ):
             cls.tweetsLimit = tweetsLimit
+        # I parametri attuali {start|end}_time sono ritornati da HTML nella forma: YYYY-MM-DDTHH:DD e vanno
+        # dunque fatte delle modifiche per adattarle al formato dell'API v2, ovvero:YYYY-MM-DDTHH:DD:SS:Z
         if start_time is not None:
-            # I parametri attuali {start|end}_time sono ritornati da HTML nella forma: YYYY-MM-DDTHH:DD e vanno
-            # dunque fatte delle modifiche per adattarle al formato dell'API v2, ovvero:YYYY-MM-DDTHH:DD:SS:Z
             cls.start_time = start_time + ":00Z"
         else:
             cls.start_time = None
@@ -115,14 +104,10 @@ class APIv2:
             cls.end_time = end_time + ":00Z"
         else:
             cls.end_time = None
-        if expansions is not None and type(expansions) == type([]):
+        if expansions is not None:
             cls.expansions = expansions
-        else:
-            cls.expansions = ["author_id", "geo.place_id"]
-        if tweet_fields is not None and type(tweet_fields) == type([]):
+        if tweet_fields is not None:
             cls.tweet_fields = tweet_fields
-        else:
-            cls.tweet_fields = ["created_at"]
 
     ################################  RESEARCH  ################################
     @classmethod
@@ -133,13 +118,13 @@ class APIv2:
                 userData = cls.client.get_user(username=cls.query).data
                 if (
                     userData is not None
-                ):  # Entra nell'if sse trova almeno un utente con quell'username
-                    userId = userData.id
+                ):  # Entra nell'if sse trova un utente con quell'username
                     cls.response = cls.client.get_users_tweets(
-                        id=userId,
+                        id=userData.id,
                         max_results=cls.tweetsLimit,
                         expansions=cls.expansions,
                         tweet_fields=cls.tweet_fields,
+                        place_fields=cls.place_fields,
                         start_time=cls.start_time,
                         end_time=cls.end_time,
                     )
@@ -149,6 +134,7 @@ class APIv2:
                     max_results=cls.tweetsLimit,
                     expansions=cls.expansions,
                     tweet_fields=cls.tweet_fields,
+                    place_fields=cls.place_fields,
                     start_time=cls.start_time,
                     end_time=cls.end_time,
                 )
@@ -158,6 +144,7 @@ class APIv2:
                     max_results=cls.tweetsLimit,
                     expansions=cls.expansions,
                     tweet_fields=cls.tweet_fields,
+                    place_fields=cls.place_fields,
                     start_time=cls.start_time,
                     end_time=cls.end_time,
                 )
@@ -169,7 +156,6 @@ class APIv2:
     def createCard(cls) -> list:
         if cls.response.data is not None:
             card = []
-            APIv1.__init__()
             for tweet in cls.response.data:
                 # tmp = cls.client.get_user(id=tweet.author_id).data
                 # username = tmp if tmp is not None else 'Unknown'
@@ -178,7 +164,9 @@ class APIv2:
                 createdAt = str(tweet.created_at)[
                     0:16
                 ]  # Si taglia la parte della stringa contenente dai secondi in poi
-                geoDatas = APIv1.getGeoDatas(tweet_id=tweet.id, client=cls.client)
+
+                geoDatas = cls.getGeoDatasOfATweet(tweet=tweet)
+
                 card.append(
                     {
                         "username": str(username),
@@ -188,7 +176,7 @@ class APIv2:
                         "longitude": geoDatas.get("longitude"),
                         "taggedPlace": geoDatas.get("taggedPlace"),
                     }
-                )  # NOTE: a noi non serve vedere le coordinate sulla card del tweet
+                )
             return card
         else:
             return ""
@@ -196,7 +184,7 @@ class APIv2:
     @classmethod
     def hasCardsGeo(cls, cards: list) -> bool:
         for card in cards:
-            if card["latitude"] != 0.0 or card["longitude"] != 0.0:
+            if card["latitude"] != None and card["longitude"] != None:
                 return True
         return False
 
@@ -235,3 +223,27 @@ class APIv2:
         for file in listdir(myPath):
             if file.endswith(".csv"):
                 os.remove(myPath + file)
+
+    @classmethod
+    def getGeoDatasOfATweet(cls, tweet) -> dict:
+        geoDatas = {"latitude": None, "longitude": None, "taggedPlace": ""}
+        if tweet["geo"] != None:  # Entra solo se nel tweet e' stato taggato un posto
+            tweetPlaceId = tweet["geo"]["place_id"]
+            for place in cls.response.includes["places"]:
+                if (
+                    tweetPlaceId == place.id
+                ):  # Se il place_id del tweet viene trovato tra i place_id di response.includes
+                    geoDatas["taggedPlace"] = place.full_name
+                    bbox = place.geo["bbox"]
+                    if (
+                        bbox[0] != bbox[2] or bbox[1] != bbox[3]
+                    ):  # Se si hanno due punti con coordinate diverse
+                        latitudes = [bbox[1], bbox[3]]
+                        longitudes = [bbox[0], bbox[2]]
+                        geoDatas["latitude"] = sum(latitudes) / len(latitudes)
+                        geoDatas["longitude"] = sum(longitudes) / len(longitudes)
+                    else:  # Se i punti hanni identiche coordinate
+                        geoDatas["latitude"] = bbox[0]
+                        geoDatas["longitude"] = bbox[1]
+                    return geoDatas
+        return geoDatas
