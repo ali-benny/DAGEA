@@ -1,9 +1,10 @@
 import TweetSearch as ts
 import os
 import stream
-import utils as utils
-import utils_filtersbar as filtersbar
+import utils.folders as folders
+import utils.filtersbar as filtersbar
 import map as m
+import time
 
 try:
     from flask import Flask, render_template, request
@@ -15,21 +16,12 @@ from scacchi import scacchi_engine
 from Fantacitorio import FantacitorioAnalysis as FA
 from Fantacitorio import FantacitorioTeams as FT
 
-import time
-
 app = Flask(__name__)
 
 ts.APIv2.__init__()
 FA.FantacitorioAnalysis.__init__(path="./Fantacitorio/punti.xlsx", numberOfTurns=7)
 
-filterDatas = {
-    "researchMethods": filtersbar.initializeResearchMethods(),
-    "currentResearchMethod": "",
-    "query": "",
-    "tweetsLimit": 10,
-    "dates": filtersbar.initializeDates("HTMLFormat"),
-    "mapVisibility": "hidden",
-}
+filterDatas = filtersbar.initFilterDatas()
 
 
 def renderSubmit(request, pageToRender: str):
@@ -125,10 +117,10 @@ def reazioneacatena():
 
 @app.route("/fantacitorio", methods=("GET", "POST"))
 def fantacitorio():
-    numberOfGraphs = utils.numberOfFolderFiles(
+    numberOfGraphs = folders.numberOfFolderFiles(
         "./static/img/fantacitorio/politiciansGroups/"
     )
-    utils.deleteFolderFiles(path="./static/img/fantacitorio/userTeam/")
+    folders.deleteFolderFiles(path="./static/img/fantacitorio/userTeam/")
     userTeamResearch = {"username": "", "imagePath": "./", "imageVisibility": "hidden"}
     if request.method == "POST":
         if "searchTeamByUserSubmit" in request.form:
@@ -137,7 +129,7 @@ def fantacitorio():
             imageHasBeenSaved = FT.saveUserTeamImage(user=username, path=userTeamPath)
             userTeamResearch = {
                 "username": username,
-                "imagePath": utils.getFolderFilesNames(userTeamPath),
+                "imagePath": folders.getFolderFilesNames(userTeamPath),
                 "imageVisibility": "visible" if imageHasBeenSaved else "hidden",
             }
             return render_template(
@@ -147,7 +139,7 @@ def fantacitorio():
                 turnsDataTable=FA.FantacitorioAnalysis.turnsInTableFormat,
                 fantacitorioStats=FA.FantacitorioAnalysis.getStats(),
                 fantacitorioStandings=FA.FantacitorioAnalysis.getStandings(),
-                teamsImagesNames=utils.getFolderFilesNames(
+                teamsImagesNames=folders.getFolderFilesNames(
                     "./static/img/fantacitorio/teams/"
                 ),
                 userTeamResearch=userTeamResearch,
@@ -165,7 +157,7 @@ def fantacitorio():
                         turnsDataTable=FA.FantacitorioAnalysis.turnsInTableFormat,
                         fantacitorioStats=FA.FantacitorioAnalysis.getStats(),
                         fantacitorioStandings=FA.FantacitorioAnalysis.getStandings(),
-                        teamsImagesNames=utils.getFolderFilesNames(
+                        teamsImagesNames=folders.getFolderFilesNames(
                             "./static/img/fantacitorio/teams/"
                         ),
                         userTeamResearch=userTeamResearch,
@@ -177,7 +169,7 @@ def fantacitorio():
         turnsDataTable=FA.FantacitorioAnalysis.turnsInTableFormat,
         fantacitorioStats=FA.FantacitorioAnalysis.getStats(),
         fantacitorioStandings=FA.FantacitorioAnalysis.getStandings(),
-        teamsImagesNames=utils.getFolderFilesNames("./static/img/fantacitorio/teams/"),
+        teamsImagesNames=folders.getFolderFilesNames("./static/img/fantacitorio/teams/"),
         userTeamResearch=userTeamResearch,
     )
 

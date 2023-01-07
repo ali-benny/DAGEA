@@ -2,7 +2,7 @@ import os
 import sys
 
 sys.path.append("..")
-import src.utils_filtersbar as filtersbar
+import src.utils.filtersbar as filtersbar
 
 try:
     import tweepy  # Used for APIs

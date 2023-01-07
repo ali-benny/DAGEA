@@ -1,6 +1,6 @@
 import sys
 sys.path.append("..")
-import utils_filtersbar as u
+import utils.filtersbar as u
 import unittest
 import os
 try:

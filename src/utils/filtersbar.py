@@ -8,6 +8,17 @@ except ModuleNotFoundError:
 
 # File adibito all'inizializzazione delle strutture dati che andranno a riempure i campi del filtri della GUI
 
+def initFilterDatas() -> dict:
+    filterDatas = {
+        "researchMethods": initializeResearchMethods(),
+        "currentResearchMethod": "",
+        "query": "",
+        "tweetsLimit": 10,
+        "dates": initializeDates("HTMLFormat"),
+        "mapVisibility": "hidden",
+    }
+    return filterDatas
+
 
 def initializeDates(returnCase: str):
     dtformat = "%Y-%m-%dT%H:%M:%SZ"
@@ -39,6 +50,16 @@ def initializeDates(returnCase: str):
             pass
 
 
+def initializeResearchMethods():
+    researchMethods = [
+        {"method": "", "text": "Research by "},
+        {"method": "researchByUser", "text": "Research by user"},
+        {"method": "researchByKeyword", "text": "Research by keyword"},
+        {"method": "researchByHashtag", "text": "Research by hashtag"},
+    ]  # A list containing all available search methods
+    return researchMethods
+
+
 def updateTime(obsoleteStartTime):
     try:
         # Quando si usa l'API v2 di twitter, twitter in automatico determina qual e' il valore limite del parametro start_time (ovvero: momento x in cui l'API v2 viene invocata - 7 giorni),
@@ -51,13 +72,3 @@ def updateTime(obsoleteStartTime):
             return obsoleteStartTime
     except TypeError:
         pass
-
-
-def initializeResearchMethods():
-    researchMethods = [
-        {"method": "", "text": "Research by "},
-        {"method": "researchByUser", "text": "Research by user"},
-        {"method": "researchByKeyword", "text": "Research by keyword"},
-        {"method": "researchByHashtag", "text": "Research by hashtag"},
-    ]  # A list containing all available search methods
-    return researchMethods
