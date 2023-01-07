@@ -1,18 +1,14 @@
 import os
-from os import listdir
 import sys
 
 sys.path.append("..")
 import src.utils_filtersbar as filtersbar
-import configparser  # EDIT: era import config
 
 try:
     import tweepy  # Used for APIs
-    import pandas as pd  # Used for data handling and debug
     import configparser  # Used for APIv1 initialization
 except ModuleNotFoundError:
     os.system("pip install tweepy")
-    os.system("pip install pandas")
     os.system("pip install configparser")
 
 config = configparser.ConfigParser()
@@ -115,7 +111,7 @@ class APIv2:
                 raise ValueError("ERROR: APIv2 Class, researchDecree: match error")
 
     @classmethod
-    def createCard(cls) -> list:
+    def createCard(cls) -> list | str:
         if cls.response != None and cls.response.data is not None:
             card = []
             for tweet in cls.response.data:
@@ -126,9 +122,7 @@ class APIv2:
                 createdAt = str(tweet.created_at)[
                     0:16
                 ]  # Si taglia la parte della stringa contenente dai secondi in poi
-
                 geoDatas = cls.getGeoDatasOfATweet(tweet=tweet)
-
                 card.append(
                     {
                         "username": str(username),
@@ -144,7 +138,7 @@ class APIv2:
             return ""
 
     @classmethod
-    def hasCardsGeo(cls, cards: list) -> bool:
+    def cardHaveCoordinates(cls, cards: list) -> bool:
         for card in cards:
             if card["latitude"] != None and card["longitude"] != None:
                 return True

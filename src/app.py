@@ -20,7 +20,6 @@ app = Flask(__name__)
 
 ts.APIv2.__init__()
 FA.FantacitorioAnalysis.__init__(path='./Fantacitorio/punti.xlsx', numberOfTurns=7)
-#m.Map.__init__()
 
 filterDatas = {'researchMethods': filtersbar.initializeResearchMethods(),
 	'currentResearchMethod': '',
@@ -35,26 +34,30 @@ def renderSubmit(request, pageToRender: str):
 	filterDatas['tweetsLimit'] = request.form['tweetsLimit']
 	filterDatas['query'] = request.form['keyword']
 	filterDatas['currentResearchMethod'] = request.form.get('researchBy')
-	filterDatas['dates']['minDateValue']=request.form['minDate']
-	filterDatas['dates']['maxDateValue']=request.form['maxDate']
+	filterDatas['dates']['minDateValue'] = request.form['minDate']
+	filterDatas['dates']['maxDateValue'] = request.form['maxDate']
 	filterDatas['mapVisibility'] = 'hidden'
 	if whatBtn == 'Stream':
 		stream.StreamByKeyword(filterDatas['query'], (int)(filterDatas['tweetsLimit']))
-		tweets = stream.MyStream.tweets
+		tweetCards = stream.MyStream.tweets
 	elif whatBtn == 'Search':
 		ts.APIv2.setDatas(query=filterDatas['query'], tweetsLimit=filterDatas['tweetsLimit'], start_time=filterDatas['dates']['minDateValue'], end_time=filterDatas['dates']['maxDateValue'])
-		ts.APIv2.researchDecree(researchType = filterDatas['currentResearchMethod'])
-		tweets = ts.APIv2.createCard()
-		if ts.APIv2.hasCardsGeo(tweets):
-			filterDatas['mapVisibility'] = 'visible'
-			m.Map.__init__()
-			m.Map.addMarkers(tweets)
+		tweetCards = loadResearch(researchMethod=filterDatas['currentResearchMethod'])
 	else:
-		print('Error: unknown button')
+		raise ValueError("ERROR: Unknown button")
 	return render_template(pageToRender, 
-		tweetCards=tweets,
+		tweetCards=tweetCards,
 		filterDatas=filterDatas
 	)
+
+def loadResearch(researchMethod: str):
+	ts.APIv2.researchDecree(researchType=researchMethod)
+	tweetCards = ts.APIv2.createCard()
+	if ts.APIv2.cardHaveCoordinates(tweetCards):
+		filterDatas['mapVisibility'] = 'visible'
+		m.Map.__init__()
+		m.Map.addMarkers(tweetCards)	# Vengono aggiunti i mark per ogni coordinata trovata
+	return tweetCards
 
 @app.route('/', methods=('GET', 'POST'))
 def homepage():
@@ -69,25 +72,19 @@ def homepage():
 @app.route('/eredita', methods=('GET', 'POST'))
 def eredita():
 	"""
-	The eredita function is used to display the tweets of '#leredita' research.
+	The eredita function is used to display the tweetCards of '#leredita' research.
 	"""
-	tweets = []  # list of tweets
 	filterDatas['query'] = '#leredita'
 	filterDatas['currentResearchMethod'] = 'researchByKeyword'
+	filterDatas['mapVisibility'] = 'hidden'
 	if request.method == 'POST':
 		return renderSubmit(request=request, pageToRender='eredita.html')
 	else:
-		ts.APIv2.setDatas(query = filterDatas['query'], tweetsLimit=10)
-		ts.APIv2.researchDecree(researchType = filterDatas['currentResearchMethod'])
-		tweets = ts.APIv2.createCard()
-		if ts.APIv2.hasCardsGeo(tweets):
-			filterDatas['mapVisibility'] = 'visible'
-			m.Map.__init__()
-			m.Map.addMarkers(tweets)	# Vengono aggiunti i mark per ogni coordinata trovata
-	return render_template('eredita.html', 
-		tweetCards=tweets,
-		filterDatas=filterDatas
-	)
+		ts.APIv2.setDatas(query=filterDatas['query'], tweetsLimit=filterDatas['tweetsLimit'])
+		return render_template('eredita.html', 
+			tweetCards=loadResearch(researchMethod=filterDatas['currentResearchMethod']),
+			filterDatas=filterDatas
+		)
 
 @app.route('/reazioneacatena', methods=('GET', 'POST'))
 def reazioneacatena():
@@ -95,25 +92,17 @@ def reazioneacatena():
 	The reazioneacatena function is used to get the tweets from twitter API.
 	It returns a list of cards with the tweets and their information.
 	"""
-	tweets = []  # list of tweets
 	filterDatas['query'] = '#reazioneacatena'
 	filterDatas['currentResearchMethod'] = 'researchByKeyword'
 	filterDatas['mapVisibility'] = 'hidden'
 	if request.method == 'POST':
 		return renderSubmit(request=request, pageToRender='reazioneacatena.html')
 	else:
-		# getting tweets from twitter API
-		ts.APIv2.setDatas(query = filterDatas['query'], tweetsLimit=10)
-		ts.APIv2.researchDecree(researchType = filterDatas['currentResearchMethod'])
-		tweets = ts.APIv2.createCard()
-		if ts.APIv2.hasCardsGeo(tweets):
-			filterDatas['mapVisibility'] = 'visible'
-			m.Map.__init__()
-			m.Map.addMarkers(tweets)	# Vengono aggiunti i mark per ogni coordinata trovata
-	return render_template('reazioneacatena.html', 
-		tweetCards=tweets,
-		filterDatas=filterDatas
-	)
+		ts.APIv2.setDatas(query=filterDatas['query'], tweetsLimit=filterDatas['tweetsLimit'])
+		return render_template('reazioneacatena.html', 
+			tweetCards=loadResearch(researchMethod=filterDatas['currentResearchMethod']),
+			filterDatas=filterDatas
+		)
 
 @app.route('/fantacitorio', methods=('GET', 'POST'))
 def fantacitorio():
@@ -178,7 +167,7 @@ def explainPage():
 def mapInterface():
 	return render_template('mapInterface.html')
 
-@app.route('/credits', methods = ('GET', 'POST'))
+@app.route('/credits', methods=('GET', 'POST'))
 def creditsPage():
 	return render_template('credits.html')
 
