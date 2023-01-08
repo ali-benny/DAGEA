@@ -17,6 +17,7 @@ def initFilterDatas() -> dict:
         "tweetsLimit": 10,
         "dates": initializeDates("HTMLFormat"),
         "mapVisibility": "hidden",
+        "SAGraphsVisibility": "hidden",
     }
     return filterDatas
 

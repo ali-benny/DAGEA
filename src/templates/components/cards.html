@@ -1,4 +1,11 @@
 <div class="container">
+    <div class="d-flex justify-content-center">
+        <p> {{ SAGraphsVisibility }}</p>
+        <img src="../../static/img/graphs/cakeGraph.svg" alt="sentimentalGraph" style="visibility: {{ filterDatas['SAGraphsVisibility'] }};">
+    </div>
+</div>
+
+<div class="container">
     <div class="d-flex align-items-baseline justify-content-around h-100 w-100">
         <div class="container h-100 pt-5 text-ligth">
             <div class="row d-flex justify-content-center mb-3">
@@ -15,7 +22,7 @@
                                 </div>
                             </div>
                             <p class="card-text">{{ tweet.text }}</p>
-                            <!-- <p class="card-text">[{{ tweet.latitude }}, {{ tweet.longitude }}]</p> -->
+                            <p class="card-text">[{{ tweet.latitude }}, {{ tweet.longitude }}]</p>
                             <p class="card-text">{{ tweet.taggedPlace }}</p>
                         </div>
                     </div>

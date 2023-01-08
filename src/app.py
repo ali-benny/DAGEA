@@ -24,9 +24,19 @@ app = Flask(__name__)
 config = configparser.ConfigParser()
 config.read(os.path.abspath("../config.ini"))
 
+print(f"Initialize TweetSearch from app.py")
 TweetSearch.__init__(BEARER_TOKEN=config["twitter"]["bearer_token"])
+print(f"Initialize SentimentalAnalysis from app.py")
+SentimentalAnalysis.__init__(
+    BEARER_TOKEN=config["twitter"]["bearer_token"],
+    path="./static/img/graphs/",
+)
+print(f"Initialize FantacitorioAnalysis from app.py")
 FA.FantacitorioAnalysis.__init__(path="./Fantacitorio/punti.xlsx", numberOfTurns=7)
+print(f"Initialize filtersbar from app.py")
 filterDatas = filtersbar.initFilterDatas()
+
+folders.deleteFolderFiles("./static/img/graphs/")
 
 
 def renderSubmit(request, pageToRender: str):
@@ -37,6 +47,7 @@ def renderSubmit(request, pageToRender: str):
     filterDatas["dates"]["minDateValue"] = request.form["minDate"]
     filterDatas["dates"]["maxDateValue"] = request.form["maxDate"]
     filterDatas["mapVisibility"] = "hidden"
+    filterDatas["SAGraphsVisibility"] = "hidden"
     if whatBtn == "Stream":
         stream.StreamByKeyword(filterDatas["query"], (int)(filterDatas["tweetsLimit"]))
         tweetCards = stream.MyStream.tweets
@@ -50,18 +61,26 @@ def renderSubmit(request, pageToRender: str):
         tweetCards = loadResearch(researchMethod=filterDatas["currentResearchMethod"])
     else:
         raise ValueError("ERROR: Unknown button")
-    return render_template(pageToRender, tweetCards=tweetCards, filterDatas=filterDatas)
+    return render_template(
+        pageToRender,
+        tweetCards=tweetCards,
+        filterDatas=filterDatas,
+    )
 
 
 def loadResearch(researchMethod: str):
     TweetSearch.researchDecree(researchType=researchMethod)
+    SentimentalAnalysis.SentimentalAnalysis(TweetSearch.response)
     tweetCards = TweetSearch.createCard()
+    filterDatas["SAGraphsVisibility"] = "visible"
     if TweetSearch.cardHaveCoordinates(tweetCards):
         filterDatas["mapVisibility"] = "visible"
         m.Map.__init__()
         m.Map.addMarkers(
             tweetCards
         )  # Vengono aggiunti i mark per ogni coordinata trovata
+    else:
+        filterDatas["mapVisibility"] = "hidden"
     return tweetCards
 
 
@@ -70,7 +89,11 @@ def homepage():
     if request.method == "POST":
         if "tweetResearchSubmit" in request.form:
             return renderSubmit(request=request, pageToRender="index.html")
-    return render_template("index.html", tweetCards=[], filterDatas=filterDatas)
+    return render_template(
+        "index.html",
+        tweetCards=[],
+        filterDatas=filterDatas,
+    )
 
 
 @app.route("/eredita", methods=("GET", "POST"))
@@ -174,7 +197,9 @@ def fantacitorio():
         turnsDataTable=FA.FantacitorioAnalysis.turnsInTableFormat,
         fantacitorioStats=FA.FantacitorioAnalysis.getStats(),
         fantacitorioStandings=FA.FantacitorioAnalysis.getStandings(),
-        teamsImagesNames=folders.getFolderFilesNames("./static/img/fantacitorio/teams/"),
+        teamsImagesNames=folders.getFolderFilesNames(
+            "./static/img/fantacitorio/teams/"
+        ),
         userTeamResearch=userTeamResearch,
     )
 
