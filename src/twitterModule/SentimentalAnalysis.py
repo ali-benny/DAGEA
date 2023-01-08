@@ -1,4 +1,4 @@
-import os
+import sys
 import tweepy
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -9,7 +9,9 @@ import nltk
 nltk.downloader.download("vader_lexicon")
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 
-from twitterModule.TweetSearch import APIv2
+sys.path.append("..")
+from twitterModule.TweetSearch import TweetSearch
+
 
 """
 import sys
@@ -27,17 +29,15 @@ from sklearn.feature_extraction.text import CountVectorizer
 """
 
 
-class SentimentalAnalysis(APIv2):
+class SentimentalAnalysis(TweetSearch):
     positive, negative, neutral, polarity = 0, 0, 0, 0
     tweet_list, neutral_list, negative_list, positive_list = [], [], [], []
     query, numberOfTweets = "", 0
-    responses = None
     path = "./"  # path to store created graphs
 
     @classmethod
-    # def __init__(cls, BEARER_TOKEN: str) -> None:
-    def __init__(cls, path: str = "./") -> None:
-        super().__init__()
+    def __init__(cls, BEARER_TOKEN: str, path: str = "./") -> None:
+        super().__init__(BEARER_TOKEN=BEARER_TOKEN)
         cls.path = path
 
     @classmethod
@@ -47,7 +47,7 @@ class SentimentalAnalysis(APIv2):
 
     @classmethod
     def _getResponse(cls):
-        cls.responses = tweepy.Paginator(
+        cls.response = tweepy.Paginator(
             method=cls.client.search_recent_tweets, query=cls.query, max_results=100
         ).flatten(limit=cls.numberOfTweets)
 
@@ -57,7 +57,7 @@ class SentimentalAnalysis(APIv2):
 
     @classmethod
     def _analyzeResponse(cls):
-        for tweet in cls.responses:
+        for tweet in cls.response:
             cls.tweet_list.append(tweet.text)
             analysis = TextBlob(tweet.text)
             score = SentimentIntensityAnalyzer().polarity_scores(tweet.text)
@@ -117,10 +117,10 @@ class SentimentalAnalysis(APIv2):
         return sentimentalDatas
 
     @classmethod
-    def SentimentalAnalysis(cls, ) -> dict:
+    def SentimentalAnalysis(cls) -> dict:
         cls._getResponse()
         cls._analyzeResponse()
-        cls._buildResponseGraph(graphName='cakeGraph')
+        cls._buildResponseGraph(graphName="cakeGraph")
         return cls.getSentimentalDatas()
 
     @classmethod
@@ -131,9 +131,11 @@ class SentimentalAnalysis(APIv2):
         cls.positive_list = pd.DataFrame(cls.positive_list)
 
 
+"""
 if __name__ == "__main__":
     numberOfTweets = 100
     query = "qatar"
-    SentimentalAnalysis.__init__(path="./static/img/graphs/")
+    SentimentalAnalysis.__init__(path="./static/img/graphs/", BEARER_TOKEN='AAAAAAAAAAAAAAAAAAAAAPSFiQEAAAAA8yfpslIXzOvrsW4jlsONfcyNwG0%%3DgzAnNymJyhLA7XLydjqR558uf6kec4W4aH4NvaZwY7qkOqyoeS')
     SentimentalAnalysis.setResearchDatas(query=query, numberOfTweets=numberOfTweets)
     SentimentalAnalysis.SentimentalAnalysis()
+"""

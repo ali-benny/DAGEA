@@ -1,4 +1,3 @@
-import TweetSearch as ts
 import os
 import stream
 import utils.folders as folders
@@ -8,19 +7,25 @@ import time
 
 try:
     from flask import Flask, render_template, request
+    import configparser  # Used for APIv1 initialization
 except ModuleNotFoundError:
     os.system("pip install flask")
+    os.system("pip install configparser")
 
 from scacchi import scacchi_101
 from scacchi import scacchi_engine
 from Fantacitorio import FantacitorioAnalysis as FA
 from Fantacitorio import FantacitorioTeams as FT
+from twitterModule.TweetSearch import TweetSearch
+from twitterModule.SentimentalAnalysis import SentimentalAnalysis
 
 app = Flask(__name__)
 
-ts.APIv2.__init__()
-FA.FantacitorioAnalysis.__init__(path="./Fantacitorio/punti.xlsx", numberOfTurns=7)
+config = configparser.ConfigParser()
+config.read(os.path.abspath("../config.ini"))
 
+TweetSearch.__init__(BEARER_TOKEN=config["twitter"]["bearer_token"])
+FA.FantacitorioAnalysis.__init__(path="./Fantacitorio/punti.xlsx", numberOfTurns=7)
 filterDatas = filtersbar.initFilterDatas()
 
 
@@ -36,7 +41,7 @@ def renderSubmit(request, pageToRender: str):
         stream.StreamByKeyword(filterDatas["query"], (int)(filterDatas["tweetsLimit"]))
         tweetCards = stream.MyStream.tweets
     elif whatBtn == "Search":
-        ts.APIv2.setDatas(
+        TweetSearch.setDatas(
             query=filterDatas["query"],
             tweetsLimit=filterDatas["tweetsLimit"],
             start_time=filterDatas["dates"]["minDateValue"],
@@ -49,9 +54,9 @@ def renderSubmit(request, pageToRender: str):
 
 
 def loadResearch(researchMethod: str):
-    ts.APIv2.researchDecree(researchType=researchMethod)
-    tweetCards = ts.APIv2.createCard()
-    if ts.APIv2.cardHaveCoordinates(tweetCards):
+    TweetSearch.researchDecree(researchType=researchMethod)
+    tweetCards = TweetSearch.createCard()
+    if TweetSearch.cardHaveCoordinates(tweetCards):
         filterDatas["mapVisibility"] = "visible"
         m.Map.__init__()
         m.Map.addMarkers(
@@ -79,7 +84,7 @@ def eredita():
     if request.method == "POST":
         return renderSubmit(request=request, pageToRender="eredita.html")
     else:
-        ts.APIv2.setDatas(
+        TweetSearch.setDatas(
             query=filterDatas["query"], tweetsLimit=filterDatas["tweetsLimit"]
         )
         return render_template(
@@ -103,7 +108,7 @@ def reazioneacatena():
     if request.method == "POST":
         return renderSubmit(request=request, pageToRender="reazioneacatena.html")
     else:
-        ts.APIv2.setDatas(
+        TweetSearch.setDatas(
             query=filterDatas["query"], tweetsLimit=filterDatas["tweetsLimit"]
         )
         return render_template(

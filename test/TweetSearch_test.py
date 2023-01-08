@@ -1,6 +1,6 @@
 import sys
 sys.path.append("..")
-import src.TweetSearch as ts
+import twitter.TweetSearch as ts
 import src.utils_filtersbar as filtersbar
 import config
 
