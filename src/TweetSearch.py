@@ -16,13 +16,13 @@ config.read(os.path.abspath("config.ini"))
 
 
 class APIv2:
+    client, response = None, None
     query, username = "", ""
     tweetsLimit = 10
     start_time, end_time = None, None
     expansions = ["author_id", "geo.place_id"]
     tweet_fields = ["created_at"]
     place_fields = ["geo"]
-    response = None
 
     @classmethod
     def __init__(cls) -> None:

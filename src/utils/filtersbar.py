@@ -8,6 +8,7 @@ except ModuleNotFoundError:
 
 # File adibito all'inizializzazione delle strutture dati che andranno a riempure i campi del filtri della GUI
 
+
 def initFilterDatas() -> dict:
     filterDatas = {
         "researchMethods": initializeResearchMethods(),

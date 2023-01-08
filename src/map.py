@@ -4,8 +4,6 @@ import os
 
 
 class Map:
-    # myMap = None
-
     @classmethod
     def __init__(cls):
         cls.myMap = folium.Map(
