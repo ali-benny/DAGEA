@@ -86,6 +86,7 @@ def loadResearch(researchMethod: str):
 
 @app.route("/", methods=("GET", "POST"))
 def homepage():
+    filterDatas = filtersbar.initFilterDatas()
     if request.method == "POST":
         if "tweetResearchSubmit" in request.form:
             return renderSubmit(request=request, pageToRender="index.html")
@@ -101,6 +102,7 @@ def eredita():
     """
     The eredita function is used to display the tweetCards of '#leredita' research.
     """
+    filterDatas = filtersbar.initFilterDatas()
     filterDatas["query"] = "#leredita"
     filterDatas["currentResearchMethod"] = "researchByKeyword"
     filterDatas["mapVisibility"] = "hidden"
@@ -125,6 +127,7 @@ def reazioneacatena():
     The reazioneacatena function is used to get the tweets from twitter API.
     It returns a list of cards with the tweets and their information.
     """
+    filterDatas = filtersbar.initFilterDatas()
     filterDatas["query"] = "#reazioneacatena"
     filterDatas["currentResearchMethod"] = "researchByKeyword"
     filterDatas["mapVisibility"] = "hidden"
