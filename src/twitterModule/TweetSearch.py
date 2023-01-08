@@ -15,7 +15,6 @@ class TweetSearch(APIv2):
     @classmethod
     def __init__(cls, BEARER_TOKEN: str) -> None:
         super().__init__(BEARER_TOKEN=BEARER_TOKEN)
-        print("INIZIALIZATION: TweetSearch")
 
     @classmethod
     def researchDecree(cls, researchType: str) -> None:
