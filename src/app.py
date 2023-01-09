@@ -57,12 +57,14 @@ def renderSubmit(request, pageToRender: str):
             end_time=filterDatas["dates"]["maxDateValue"],
         )
         tweetCards = loadResearch(researchMethod=filterDatas["currentResearchMethod"])
+        sentimentalAnalysisDatas = SentimentalAnalysis.analysisDatas
     else:
         raise ValueError("ERROR: Unknown button")
     return render_template(
         pageToRender,
         tweetCards=tweetCards,
         filterDatas=filterDatas,
+        sentimentalAnalysisDatas=sentimentalAnalysisDatas
     )
 
 
@@ -92,6 +94,7 @@ def homepage():
         "index.html",
         tweetCards=[],
         filterDatas=filterDatas,
+        sentimentalAnalysisDatas={}
     )
 
 
@@ -111,10 +114,12 @@ def eredita():
         )
         tweetCards = loadResearch(researchMethod=filterDatas["currentResearchMethod"])
         filterDatas["SAGraphsVisibility"] = "visible"
+        sentimentalAnalysisDatas = SentimentalAnalysis.analysisDatas
         return render_template(
             "eredita.html",
             tweetCards=tweetCards,
             filterDatas=filterDatas,
+            sentimentalAnalysisDatas=sentimentalAnalysisDatas
         )
 
 
@@ -135,10 +140,12 @@ def reazioneacatena():
         )
         tweetCards = loadResearch(researchMethod=filterDatas["currentResearchMethod"])
         filterDatas["SAGraphsVisibility"] = "visible"
+        sentimentalAnalysisDatas = SentimentalAnalysis.percentages
         return render_template(
             "reazioneacatena.html",
             tweetCards=tweetCards,
             filterDatas=filterDatas,
+            sentimentalAnalysisDatas=sentimentalAnalysisDatas
         )
 
 

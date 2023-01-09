@@ -10,11 +10,14 @@ from twitterModule.APIv2 import APIv2
 
 class SentimentalAnalysis(APIv2):
     path = "./"  # path to store created graphs
+    analysisDatas = {}  # Percentuali delle analisi
 
     @classmethod
     def __init__(cls, BEARER_TOKEN: str, path: str = "./") -> None:
         super().__init__(BEARER_TOKEN)
         cls.path = path
+
+    ############################## GETTING DATA METHODS ##############################
 
     @classmethod
     def _cleanText(cls, text):
@@ -86,25 +89,7 @@ class SentimentalAnalysis(APIv2):
         }
         return sentimentsCounter
 
-    @classmethod
-    def _getPercentage(cls, whole, part) -> float:
-        return (100 * float(part)) / float(whole)
-
-    @classmethod
-    def getPercentages(cls, sentimentsCounter: dict) -> dict:
-        totalCount = sum(sentimentsCounter.values())
-        percentages = {
-            "positivePercentage": cls._getPercentage(
-                totalCount, sentimentsCounter["positiveCounter"]
-            ),
-            "neutralPercentage": cls._getPercentage(
-                totalCount, sentimentsCounter["neutralCounter"]
-            ),
-            "negativePercentage": cls._getPercentage(
-                totalCount, sentimentsCounter["positiveCounter"]
-            ),
-        }
-        return percentages
+    ############################## GRAPHS METHODS ##############################
 
     @classmethod
     def _saveGraph(cls, fig, graphName: str, savePath: str = "./") -> None:
@@ -140,6 +125,29 @@ class SentimentalAnalysis(APIv2):
         plt.axis("off")
         wordcloud = wordcloud.to_file(cls.path + graphName + ".png")
 
+    ############################## STATS METHODS ##############################
+
+    @classmethod
+    def _getPercentage(cls, total, part) -> int:
+        return int((100 * float(part)) / float(total))
+
+    @classmethod
+    def getAnalisysDatas(cls, sentimentsCounter: dict) -> dict:
+        totalCount = sum(sentimentsCounter.values())
+        analisysDatas = {
+            "analyzedTweets": totalCount,
+            "positivePercentage": cls._getPercentage(
+                total=totalCount, part=sentimentsCounter["positiveCounter"]
+            ),
+            "neutralPercentage": cls._getPercentage(
+                total=totalCount, part=sentimentsCounter["neutralCounter"]
+            ),
+            "negativePercentage": cls._getPercentage(
+                total=totalCount, part=sentimentsCounter["negativeCounter"]
+            ),
+        }
+        return analisysDatas
+
     @classmethod
     def getDataFrame(cls, users: list, texts: list, polarities: list, sentiments: list):
         sentimentalAnalysisDatas = {
@@ -151,8 +159,9 @@ class SentimentalAnalysis(APIv2):
         dataFrame = pd.DataFrame(
             data=sentimentalAnalysisDatas, columns=sentimentalAnalysisDatas.keys()
         )
-        # print(dataFrame)
         return dataFrame
+
+    ##############################  ##############################
 
     @classmethod
     def SentimentalAnalysis(cls, response):
@@ -161,12 +170,14 @@ class SentimentalAnalysis(APIv2):
         polarities = cls.getPolarities(textsAnalysis=textsAnalysis)
         sentiments = cls.getSentiments(polarities=polarities)
         sentimentsCounter = cls.getSentimentsCounters(polarities=polarities)
+        cls.analysisDatas = cls.getAnalisysDatas(sentimentsCounter=sentimentsCounter)
+        """
         cls.getDataFrame(
             users=users, texts=texts, polarities=polarities, sentiments=sentiments
         )
+        """
         cls.createCakeGraph(
             sentimentsCounter=sentimentsCounter,
             graphName="cakeGraph",
         )
         cls.createWordCloud(texts=texts, graphName="wordCloud")
-
