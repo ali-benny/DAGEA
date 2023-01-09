@@ -3,7 +3,8 @@
 .vscode/
 *.db
 *.csv
-*.svg
+src/static/img/graphs/*.svg
+src/static/img/graphs/*.png
 localTests.py
 coordinates.json
 config.py

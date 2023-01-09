@@ -46,8 +46,6 @@ def renderSubmit(request, pageToRender: str):
     filterDatas["currentResearchMethod"] = request.form.get("researchBy")
     filterDatas["dates"]["minDateValue"] = request.form["minDate"]
     filterDatas["dates"]["maxDateValue"] = request.form["maxDate"]
-    filterDatas["mapVisibility"] = "hidden"
-    filterDatas["SAGraphsVisibility"] = "hidden"
     if whatBtn == "Stream":
         stream.StreamByKeyword(filterDatas["query"], (int)(filterDatas["tweetsLimit"]))
         tweetCards = stream.MyStream.tweets
@@ -105,18 +103,17 @@ def eredita():
     filterDatas = filtersbar.initFilterDatas()
     filterDatas["query"] = "#leredita"
     filterDatas["currentResearchMethod"] = "researchByKeyword"
-    filterDatas["mapVisibility"] = "hidden"
     if request.method == "POST":
         return renderSubmit(request=request, pageToRender="eredita.html")
     else:
         TweetSearch.setDatas(
             query=filterDatas["query"], tweetsLimit=filterDatas["tweetsLimit"]
         )
+        tweetCards = loadResearch(researchMethod=filterDatas["currentResearchMethod"])
+        filterDatas["SAGraphsVisibility"] = "visible"
         return render_template(
             "eredita.html",
-            tweetCards=loadResearch(
-                researchMethod=filterDatas["currentResearchMethod"]
-            ),
+            tweetCards=tweetCards,
             filterDatas=filterDatas,
         )
 
@@ -128,20 +125,19 @@ def reazioneacatena():
     It returns a list of cards with the tweets and their information.
     """
     filterDatas = filtersbar.initFilterDatas()
-    filterDatas["query"] = "#reazioneacatena"
+    filterDatas["query"] = "#leredita"
     filterDatas["currentResearchMethod"] = "researchByKeyword"
-    filterDatas["mapVisibility"] = "hidden"
     if request.method == "POST":
         return renderSubmit(request=request, pageToRender="reazioneacatena.html")
     else:
         TweetSearch.setDatas(
             query=filterDatas["query"], tweetsLimit=filterDatas["tweetsLimit"]
         )
+        tweetCards = loadResearch(researchMethod=filterDatas["currentResearchMethod"])
+        filterDatas["SAGraphsVisibility"] = "visible"
         return render_template(
             "reazioneacatena.html",
-            tweetCards=loadResearch(
-                researchMethod=filterDatas["currentResearchMethod"]
-            ),
+            tweetCards=tweetCards,
             filterDatas=filterDatas,
         )
 

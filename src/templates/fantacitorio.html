@@ -65,35 +65,34 @@
 
 <!-- Fantacitorio teams images -->
 <div class="container py-2 pb-5">
-    <h2 class="my-3 display-5 py-2 pb-4 text-center"><b>Fantacitorio teams</b></h3>
-        <div id="fantacitorioTeamsImages" class="carousel slide" data-bs-ride="carousel">
-            <div class="carousel-inner">
-                <div class="carousel-item active">
-                    <div class="d-flex justify-content-center">
-                        <img src="{{ teamsImagesNames[0] }}" class="d-block figure-img img-fluid rounded" alt="..."
-                            width="80%">
-                    </div>
+    <h2 class="my-3 display-5 py-2 pb-4 text-center"><b>Fantacitorio teams</b></h2>
+    <div id="fantacitorioTeamsImages" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <div class="d-flex justify-content-center">
+                    <img src="{{ teamsImagesNames[0] }}" class="d-block img-fluid rounded" alt="..." width="80%">
                 </div>
-                {% for i in range(1, len(teamsImagesNames)) %}
-                <div class="carousel-item">
-                    <div class="d-flex justify-content-center">
-                        <img src="{{ teamsImagesNames[i] }}" class="d-block"
-                            alt="Fantacitorio team image {{ teamsImagesNames[i] }}" width="80%">
-                    </div>
-                </div>
-                {% endfor %}
             </div>
-            <button class="carousel-control-prev" type="button" data-bs-target="#fantacitorioTeamsImages"
-                data-bs-slide="prev">
-                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Previous</span>
-            </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#fantacitorioTeamsImages"
-                data-bs-slide="next">
-                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Next</span>
-            </button>
+            {% for i in range(1, len(teamsImagesNames)) %}
+            <div class="carousel-item">
+                <div class="d-flex justify-content-center">
+                    <img src="{{ teamsImagesNames[i] }}" class="d-block img-fluid rounded"
+                        alt="Fantacitorio team image {{ teamsImagesNames[i] }}" width="80%">
+                </div>
+            </div>
+            {% endfor %}
         </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#fantacitorioTeamsImages"
+            data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#fantacitorioTeamsImages"
+            data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
+    </div>
 </div>
 
 {% endblock %}
