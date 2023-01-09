@@ -11,7 +11,7 @@ class APIv2:
     query, username = "", ""
     tweetsLimit = 10
     start_time, end_time = None, None
-    expansions = ["author_id", "geo.place_id"]
+    expansions = ["author_id","geo.place_id"]
     tweet_fields = ["created_at"]
     place_fields = ["geo"]
 

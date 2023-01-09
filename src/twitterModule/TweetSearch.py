@@ -68,9 +68,7 @@ class TweetSearch(APIv2):
         if cls.response != None and cls.response.data is not None:
             cards = []
             for tweet in cls.response.data:
-                # tmp = cls.client.get_user(id=tweet.author_id).data
-                # username = tmp if tmp is not None else 'Unknown'
-                username = cls.response.includes["users"][0].username
+                username = cls.client.get_user(id=tweet.author_id).data['username']
                 text = tweet.text
                 createdAt = str(tweet.created_at)[
                     0:16
