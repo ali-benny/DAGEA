@@ -1,108 +1,172 @@
-import matplotlib.pyplot as plt
 from textblob import TextBlob
-import nltk
+import re
+from better_profanity import profanity
+from wordcloud import WordCloud
+import pandas as pd
+import matplotlib.pyplot as plt
 
-nltk.downloader.download("vader_lexicon")
-from nltk.sentiment.vader import SentimentIntensityAnalyzer
-
-from twitterModule.TweetSearch import TweetSearch
+from twitterModule.APIv2 import APIv2
 
 
-class SentimentalAnalysis(TweetSearch):
-    positive, negative, neutral, polarity = 0, 0, 0, 0
-    tweet_list, neutral_list, negative_list, positive_list = [], [], [], []
+class SentimentalAnalysis(APIv2):
     path = "./"  # path to store created graphs
 
     @classmethod
     def __init__(cls, BEARER_TOKEN: str, path: str = "./") -> None:
-        super().__init__(BEARER_TOKEN=BEARER_TOKEN)
+        super().__init__(BEARER_TOKEN)
         cls.path = path
 
     @classmethod
-    def _percentage(cls, part, whole) -> float:
-        return 100 * float(part) / float(whole)
+    def _cleanText(cls, text):
+        if type(text) == float():
+            return ""
+        r = text.lower()
+        r = profanity.censor(r)
+        r = re.sub("'", "", r)  # This is to avoid removing contractions in english
+        r = re.sub("@[A-Za-z0-9_]+", "", r)
+        r = re.sub("#[A-Za-z0-9_]+", "", r)
+        r = re.sub(r"http\S+", "", r)
+        r = re.sub("[()!?]", " ", r)
+        r = re.sub("\[.*?\]", " ", r)
+        r = re.sub("[^a-z0-9]", " ", r)
+        r = r.split()
+        stopwords = ["for", "on", "an", "a", "of", "and", "in", "the", "to", "from"]
+        r = [w for w in r if not w in stopwords]
+        r = " ".join(word for word in r)
+        return r
 
     @classmethod
-    def _analyzeResponse(cls) -> None:
-        for tweet in cls.response.data:
-            cls.tweet_list.append(tweet.text)
-            analysis = TextBlob(tweet.text)
-            score = SentimentIntensityAnalyzer().polarity_scores(tweet.text)
-            neg = score["neg"]
-            neu = score["neu"]
-            pos = score["pos"]
-            comp = score["compound"]
-            cls.polarity += analysis.sentiment.polarity
-            if neg > pos:
-                cls.negative_list.append(tweet.text)
-                if type(cls.negative) == type(str()):
-                    cls.negative = float(cls.negative)
-                cls.negative += 1
-            elif pos > neg:
-                cls.positive_list.append(tweet.text)
-                if type(cls.positive) == type(str()):
-                    cls.positive = float(cls.positive)
-                cls.positive += 1
-            elif pos == neg:
-                cls.neutral_list.append(tweet.text)
-                if type(cls.neutral) == type(str()):
-                    cls.neutral = float(cls.neutral)
-                cls.neutral += 1
-
-        cls.positive = cls._percentage(part=cls.positive, whole=cls.tweetsLimit)
-        cls.negative = cls._percentage(part=cls.negative, whole=cls.tweetsLimit)
-        cls.neutral = cls._percentage(part=cls.neutral, whole=cls.tweetsLimit)
-        cls.polarity = cls._percentage(part=cls.polarity, whole=cls.tweetsLimit)
-        cls.positive = format(cls.positive, ".1f")
-        cls.negative = format(cls.negative, ".1f")
-        cls.neutral = format(cls.neutral, ".1f")
+    def getTextsAndUsers(cls, response) -> list:
+        texts, users = [], []
+        for user in response.includes["users"]:
+            for tweet in response.data:
+                if tweet["author_id"] == user["id"]:
+                    texts.append(tweet["text"])
+                    users.append(user["username"])
+        texts = [cls._cleanText(text) for text in texts]
+        return texts, users
 
     @classmethod
-    def _buildResponseGraph(cls, graphName: str) -> None:
-        labels = [
-            "Positive [" + str(cls.positive) + "%]",
-            "Neutral [" + str(cls.neutral) + "%]",
-            "Negative [" + str(cls.negative) + "%]",
-        ]
-        sizes = [cls.positive, cls.neutral, cls.negative]
-        colors = ["yellowgreen", "blue", "red"]
-        fig = plt.figure()
-        patches, texts = plt.pie(sizes, colors=colors, startangle=90)
-        plt.style.use("default")
-        plt.legend(labels)
-        plt.title(f"Sentiment Analysis Result for keyword: '{cls.query}'")
-        plt.axis("equal")
-        # plt.show()
-        cls._saveGraph(fig=fig, graphName=graphName, savePath=cls.path)
+    def getTextsAnalysis(cls, texts):
+        textsAnalysis = [TextBlob(text) for text in texts]
+        return textsAnalysis
+
+    @classmethod
+    def getPolarities(cls, textsAnalysis) -> list:
+        polarities = []
+        [polarities.append(obj.polarity) for obj in textsAnalysis]
+        return polarities
+
+    @classmethod
+    def getSentiments(cls, polarities: list) -> list:
+        sentiments = []
+        for polarity in polarities:
+            if polarity > 0:
+                sentiments.append("positive")
+            elif polarity < 0:
+                sentiments.append("negative")
+            else:
+                sentiments.append("neutral")
+        return sentiments
+
+    @classmethod
+    def getSentimentsCounters(cls, polarities: list) -> dict:
+        positiveCounter, neutralCounter, negativeCounter = 0, 0, 0
+        for polarity in polarities:
+            if polarity > 0:
+                positiveCounter += 1
+            elif polarity < 0:
+                negativeCounter += 1
+            else:
+                neutralCounter += 1
+        sentimentsCounter = {
+            "positiveCounter": positiveCounter,
+            "neutralCounter": neutralCounter,
+            "negativeCounter": negativeCounter,
+        }
+        return sentimentsCounter
+
+    @classmethod
+    def _getPercentage(cls, whole, part) -> float:
+        return (100 * float(part)) / float(whole)
+
+    @classmethod
+    def getPercentages(cls, sentimentsCounter: dict) -> dict:
+        totalCount = sum(sentimentsCounter.values())
+        percentages = {
+            "positivePercentage": cls._getPercentage(
+                totalCount, sentimentsCounter["positiveCounter"]
+            ),
+            "neutralPercentage": cls._getPercentage(
+                totalCount, sentimentsCounter["neutralCounter"]
+            ),
+            "negativePercentage": cls._getPercentage(
+                totalCount, sentimentsCounter["positiveCounter"]
+            ),
+        }
+        return percentages
 
     @classmethod
     def _saveGraph(cls, fig, graphName: str, savePath: str = "./") -> None:
         fig.savefig(savePath + graphName + ".svg")
 
     @classmethod
-    def _resetClassVars(cls):
-        cls.positive, cls.negative, cls.neutral, cls.polarity = 0, 0, 0, 0
-        vtweet_list, cls.neutral_list, cls.negative_list, cls.positive_list = (
-            [],
-            [],
-            [],
-            [],
+    def createCakeGraph(
+        cls,
+        sentimentsCounter: dict,
+        graphName: str,
+    ):
+        pieLabels = ["Positive", "Neutral", "Negative"]
+        populationShare = [
+            sentimentsCounter["positiveCounter"],
+            sentimentsCounter["neutralCounter"],
+            sentimentsCounter["negativeCounter"],
+        ]
+        figureObject, axesObject = plt.subplots()
+        axesObject.pie(
+            populationShare, labels=pieLabels, autopct="%1.2f", startangle=90
         )
+        axesObject.axis("equal")
+        cls._saveGraph(fig=figureObject, graphName=graphName, savePath=cls.path)
 
     @classmethod
-    def getSentimentalDatas(cls) -> dict:
-        sentimentalDatas = {
-            "analyzedTweets": len(cls.tweet_list),
-            "positiveTweets": len(cls.positive_list),
-            "negativeTweets": len(cls.negative_list),
-            "neutralTweets": len(cls.neutral_list),
+    def createWordCloud(cls, texts: list, graphName: str):
+        allWords = " ".join([text for text in texts])
+        wordcloud = WordCloud(
+            width=800, height=500, random_state=21, max_font_size=110
+        ).generate(allWords)
+        plt.figure(figsize=(10, 7))
+        plt.imshow(wordcloud, interpolation="bilinear")
+        plt.axis("off")
+        wordcloud = wordcloud.to_file(cls.path + graphName + ".png")
+
+    @classmethod
+    def getDataFrame(cls, users: list, texts: list, polarities: list, sentiments: list):
+        sentimentalAnalysisDatas = {
+            "User": users,
+            "Text": texts,
+            "Polarity": polarities,
+            "Sentiment": sentiments,
         }
-        return sentimentalDatas
+        dataFrame = pd.DataFrame(
+            data=sentimentalAnalysisDatas, columns=sentimentalAnalysisDatas.keys()
+        )
+        # print(dataFrame)
+        return dataFrame
 
     @classmethod
-    def SentimentalAnalysis(cls, response=None) -> dict:
-        cls._resetClassVars()
-        cls.response = response
-        cls._analyzeResponse()
-        cls._buildResponseGraph(graphName="cakeGraph")
-        return cls.getSentimentalDatas()
+    def SentimentalAnalysis(cls, response):
+        texts, users = cls.getTextsAndUsers(response=response)
+        textsAnalysis = cls.getTextsAnalysis(texts=texts)
+        polarities = cls.getPolarities(textsAnalysis=textsAnalysis)
+        sentiments = cls.getSentiments(polarities=polarities)
+        sentimentsCounter = cls.getSentimentsCounters(polarities=polarities)
+        cls.getDataFrame(
+            users=users, texts=texts, polarities=polarities, sentiments=sentiments
+        )
+        cls.createCakeGraph(
+            sentimentsCounter=sentimentsCounter,
+            graphName="cakeGraph",
+        )
+        cls.createWordCloud(texts=texts, graphName="wordCloud")
+

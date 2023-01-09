@@ -1,10 +1,4 @@
 <div class="container">
-    <div class="d-flex justify-content-center">
-        <img src="../../static/img/graphs/cakeGraph.svg" alt="sentimentalGraph" style="visibility: {{ filterDatas['SAGraphsVisibility'] }};">
-    </div>
-</div>
-
-<div class="container">
     <div class="d-flex align-items-baseline justify-content-around h-100 w-100">
         <div class="container h-100 pt-5 text-ligth">
             <div class="row d-flex justify-content-center mb-3">
@@ -29,5 +23,30 @@
                 {% endfor %}
             </div>
         </div>
+    </div>
+</div>
+
+<div class="container" style="visibility: {{ filterDatas['SAGraphsVisibility'] }};">
+    <h2 class="display-5 text-center"><b>Tweet sentimental analysis and word cloud</b></h2>
+    <div class="row py-3">
+        <div class="col-1"></div>
+        <div class="col">
+            <img src="../../static/img/graphs/cakeGraph.svg" alt="sentimentalGraph" class=" img-fluid rounded"
+                width="90%">
+        </div>
+        <div class="col">
+            <p>*Spiegazione dell'imagine*</p>
+        </div>
+        <div class="col-1"></div>
+    </div>
+    <div class="row">
+        <div class="col-1"></div>
+        <div class="col">
+            <img src="../../static/img/graphs/wordCloud.png" alt="wordCloud" class=" img-fluid rounded">
+        </div>
+        <div class="col py-3">
+            <p>*Spiegazione dell'imagine*</p>
+        </div>
+        <div class="col-1"></div>
     </div>
 </div>
