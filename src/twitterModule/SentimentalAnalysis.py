@@ -138,9 +138,9 @@ class SentimentalAnalysis(APIv2):
         return int((100 * float(part)) / float(total))
 
     @classmethod
-    def getAnalisysReport(cls, sentimentsCounter: dict) -> dict:
+    def getAnalysisReport(cls, sentimentsCounter: dict) -> dict:
         totalCount = sum(sentimentsCounter.values())
-        analisysDatas = {
+        analysisDatas = {
             "analyzedTweets": totalCount,
             "positivePercentage": cls._getPercentage(
                 total=totalCount, part=sentimentsCounter["positiveCounter"]
@@ -152,7 +152,7 @@ class SentimentalAnalysis(APIv2):
                 total=totalCount, part=sentimentsCounter["negativeCounter"]
             ),
         }
-        return analisysDatas
+        return analysisDatas
 
     @classmethod
     # Useful for degub
@@ -169,7 +169,7 @@ class SentimentalAnalysis(APIv2):
         cls.analysisDatas['polarities'] = cls.getPolarities(textsAnalysis=textsAnalysis)
         cls.analysisDatas['sentiments'] = cls.getSentiments(polarities=cls.analysisDatas['polarities'])
         sentimentsCounter = cls.getSentimentsCounters(polarities=cls.analysisDatas['polarities'])
-        cls.analysisReport = cls.getAnalisysReport(sentimentsCounter=sentimentsCounter)
+        cls.analysisReport = cls.getAnalysisReport(sentimentsCounter=sentimentsCounter)
 
         cls.createCakeGraph(
             sentimentsCounter=sentimentsCounter,
