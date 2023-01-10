@@ -10,7 +10,13 @@ from twitterModule.APIv2 import APIv2
 
 class SentimentalAnalysis(APIv2):
     path = "./"  # path to store created graphs
-    analysisDatas = {}  # Percentuali delle analisi
+    analysisReport = {}  # Percentuali delle analisi
+    analysisDatas = {
+        "users": [],
+        "texts": [],
+        "polarities": [],
+        "sentiments": [],
+    }  # Dati delle analisi
 
     @classmethod
     def __init__(cls, BEARER_TOKEN: str, path: str = "./") -> None:
@@ -47,7 +53,7 @@ class SentimentalAnalysis(APIv2):
                     texts.append(tweet["text"])
                     users.append(user["username"])
         texts = [cls._cleanText(text) for text in texts]
-        return texts, users
+        return users, texts
 
     @classmethod
     def getTextsAnalysis(cls, texts):
@@ -132,7 +138,7 @@ class SentimentalAnalysis(APIv2):
         return int((100 * float(part)) / float(total))
 
     @classmethod
-    def getAnalisysDatas(cls, sentimentsCounter: dict) -> dict:
+    def getAnalisysReport(cls, sentimentsCounter: dict) -> dict:
         totalCount = sum(sentimentsCounter.values())
         analisysDatas = {
             "analyzedTweets": totalCount,
@@ -148,36 +154,19 @@ class SentimentalAnalysis(APIv2):
         }
         return analisysDatas
 
-    @classmethod
-    def getDataFrame(cls, users: list, texts: list, polarities: list, sentiments: list):
-        sentimentalAnalysisDatas = {
-            "User": users,
-            "Text": texts,
-            "Polarity": polarities,
-            "Sentiment": sentiments,
-        }
-        dataFrame = pd.DataFrame(
-            data=sentimentalAnalysisDatas, columns=sentimentalAnalysisDatas.keys()
-        )
-        return dataFrame
-
     ##############################  ##############################
 
     @classmethod
-    def SentimentalAnalysis(cls, response):
-        texts, users = cls.getTextsAndUsers(response=response)
-        textsAnalysis = cls.getTextsAnalysis(texts=texts)
-        polarities = cls.getPolarities(textsAnalysis=textsAnalysis)
-        sentiments = cls.getSentiments(polarities=polarities)
-        sentimentsCounter = cls.getSentimentsCounters(polarities=polarities)
-        cls.analysisDatas = cls.getAnalisysDatas(sentimentsCounter=sentimentsCounter)
-        """
-        cls.getDataFrame(
-            users=users, texts=texts, polarities=polarities, sentiments=sentiments
-        )
-        """
+    def SentimentalAnalysis(cls, response) -> None:
+        cls.analysisDatas['users'], cls.analysisDatas['texts'] = cls.getTextsAndUsers(response=response)
+        textsAnalysis = cls.getTextsAnalysis(texts=cls.analysisDatas['texts'])
+        cls.analysisDatas['polarities'] = cls.getPolarities(textsAnalysis=textsAnalysis)
+        cls.analysisDatas['sentiments'] = cls.getSentiments(polarities=cls.analysisDatas['polarities'])
+        sentimentsCounter = cls.getSentimentsCounters(polarities=cls.analysisDatas['polarities'])
+        cls.analysisReport = cls.getAnalisysReport(sentimentsCounter=sentimentsCounter)
+
         cls.createCakeGraph(
             sentimentsCounter=sentimentsCounter,
             graphName="cakeGraph",
         )
-        cls.createWordCloud(texts=texts, graphName="wordCloud")
+        cls.createWordCloud(texts=cls.analysisDatas['texts'], graphName="wordCloud")
