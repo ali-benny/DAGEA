@@ -154,6 +154,12 @@ class SentimentalAnalysis(APIv2):
         }
         return analisysDatas
 
+    @classmethod
+    # Useful for degub
+    def _getDataFrame(cls):
+        df = pd.DataFrame(data=cls.analysisDatas, columns=cls.analysisDatas.keys())
+        print(df)
+        
     ##############################  ##############################
 
     @classmethod

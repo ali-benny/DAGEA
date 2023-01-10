@@ -57,14 +57,18 @@ def renderSubmit(request, pageToRender: str):
             end_time=filterDatas["dates"]["maxDateValue"],
         )
         tweetCards = loadResearch(researchMethod=filterDatas["currentResearchMethod"])
-        sentimentalAnalysisDatas = SentimentalAnalysis.analysisReport
+        sentimentalAnalysis = {"analysisReport": {}, "analysisDatas": {}}
+        sentimentalAnalysis.update(
+            {"analysisReport": SentimentalAnalysis.analysisReport}
+        )
+        sentimentalAnalysis.update({"analysisDatas": SentimentalAnalysis.analysisDatas})
     else:
         raise ValueError("ERROR: Unknown button")
     return render_template(
         pageToRender,
         tweetCards=tweetCards,
         filterDatas=filterDatas,
-        sentimentalAnalysisDatas=sentimentalAnalysisDatas
+        sentimentalAnalysis=sentimentalAnalysis,
     )
 
 
@@ -90,11 +94,16 @@ def homepage():
     if request.method == "POST":
         if "tweetResearchSubmit" in request.form:
             return renderSubmit(request=request, pageToRender="index.html")
+    sentimentalAnalysis = {"analysisReport": {}, "analysisDatas": {}}
+    sentimentalAnalysis.update(
+        {"analysisReport": SentimentalAnalysis.analysisReport}
+    )
+    sentimentalAnalysis.update({"analysisDatas": SentimentalAnalysis.analysisDatas})
     return render_template(
         "index.html",
         tweetCards=[],
         filterDatas=filterDatas,
-        sentimentalAnalysisDatas={}
+        sentimentalAnalysis=sentimentalAnalysis,
     )
 
 
@@ -114,12 +123,16 @@ def eredita():
         )
         tweetCards = loadResearch(researchMethod=filterDatas["currentResearchMethod"])
         filterDatas["SAGraphsVisibility"] = "visible"
-        sentimentalAnalysisDatas = SentimentalAnalysis.analysisReport
+        sentimentalAnalysis = {"analysisReport": {}, "analysisDatas": {}}
+        sentimentalAnalysis.update(
+            {"analysisReport": SentimentalAnalysis.analysisReport}
+        )
+        sentimentalAnalysis.update({"analysisDatas": SentimentalAnalysis.analysisDatas})
         return render_template(
             "eredita.html",
             tweetCards=tweetCards,
             filterDatas=filterDatas,
-            sentimentalAnalysisDatas=sentimentalAnalysisDatas
+            sentimentalAnalysis=sentimentalAnalysis,
         )
 
 
@@ -140,12 +153,16 @@ def reazioneacatena():
         )
         tweetCards = loadResearch(researchMethod=filterDatas["currentResearchMethod"])
         filterDatas["SAGraphsVisibility"] = "visible"
-        sentimentalAnalysisDatas = SentimentalAnalysis.analysisReport
+        sentimentalAnalysis = {"analysisReport": {}, "analysisDatas": {}}
+        sentimentalAnalysis.update(
+            {"analysisReport": SentimentalAnalysis.analysisReport}
+        )
+        sentimentalAnalysis.update({"analysisDatas": SentimentalAnalysis.analysisDatas})
         return render_template(
             "reazioneacatena.html",
             tweetCards=tweetCards,
             filterDatas=filterDatas,
-            sentimentalAnalysisDatas=sentimentalAnalysisDatas
+            sentimentalAnalysis=sentimentalAnalysis,
         )
 
 
