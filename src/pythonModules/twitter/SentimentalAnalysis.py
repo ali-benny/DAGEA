@@ -52,7 +52,8 @@ class SentimentalAnalysis(APIv2):
                 if tweet["author_id"] == user["id"]:
                     texts.append(tweet["text"])
                     users.append(user["username"])
-        texts = [cls._cleanText(text) for text in texts]
+        # Senza il sequente filtro le polarita' dei testi sono piu' variabili perche' tengono conto, ad esempio, delle emoji 
+        #texts = [cls._cleanText(text) for text in texts]
         return users, texts
 
     @classmethod
@@ -63,7 +64,13 @@ class SentimentalAnalysis(APIv2):
     @classmethod
     def getPolarities(cls, textsAnalysis) -> list:
         polarities = []
-        [polarities.append(obj.polarity) for obj in textsAnalysis]
+        #[polarities.append(obj.polarity) for obj in textsAnalysis]
+        # In questo modo di approssima il float alle prime approxLimit del float
+        approxLimit = 4
+        for obj in textsAnalysis:
+            myStr = str(obj.polarity)
+            myStr = myStr[:myStr.find('.')] + '.' + myStr.split(".")[1][:approxLimit]
+            polarities.append(float(myStr))
         return polarities
 
     @classmethod

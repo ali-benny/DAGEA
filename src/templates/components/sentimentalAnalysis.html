@@ -63,7 +63,15 @@
                                         <td>{{ user }}</td>
                                         <td>{{ text }}</td>
                                         <td>{{ polarity }}</td>
+                                        {% if sentiment == 'positive' %}
+                                        <td style="color:dodgerblue;">{{ sentiment }}</td>
+                                        {% elif sentiment == 'neutral' %}
+                                        <td style="color: coral;">{{ sentiment }}</td>
+                                        {% elif sentiment == 'negative' %}
+                                        <td style="color: green;">{{ sentiment }}</td>
+                                        {% else %}
                                         <td>{{ sentiment }}</td>
+                                        {% endif %}
                                     </tr>
                                     {% endfor %}
                                 </tbody>
