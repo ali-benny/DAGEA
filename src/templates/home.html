@@ -27,7 +27,11 @@
 	</a>
 </div>
 
-{% include "./components/cards.html" %}
-{% include "./components/sentimentalAnalysis.html" %}
+<div class="container">
+	<p>Take a look to: <a href="#wordCloud">Word Cloud</a> <a href="#sentimentalAnalysis">Sentimental analysis</a></p>
+
+	{% include "./components/cards.html" %}
+	{% include "./components/sentimentalAnalysis.html" %}
+</div>
 
 {% endblock %}

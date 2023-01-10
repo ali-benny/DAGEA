@@ -1,9 +1,9 @@
 <!-- Sentimental analysis and word cloud -->
 <div class="container" style="visibility: {{ filterDatas['SAGraphsVisibility'] }};">
-    <h2 class="display-5 text-center py-3"><b>Tweet sentimental analysis and word cloud</b></h2>
-    <!-- Word cloud -->
     <div class="container">
-        <div class="row py-3">
+        <!-- Word cloud -->
+        <h2 class="display-5 text-center py-3"><b>Word cloud</b></h2>
+        <div class="row py-3" id="wordCloud">
             <div class="col-1"></div>
             <div class="col">
                 <img src="../../static/img/graphs/wordCloud.png" alt="wordCloud" class=" img-fluid rounded">
@@ -15,7 +15,8 @@
         </div>
         <div class="container">
             <!-- Sentimental analysis image and stats -->
-            <div class="row">
+            <h2 class="display-5 text-center py-3"><b>Sentimental analysis</b></h2>
+            <div class="row" id="sentimentalAnalysis">
                 <div class="col-1"></div>
                 <div class="col">
                     <img src="../../static/img/graphs/cakeGraph.svg" alt="sentimentalGraph" class=" img-fluid rounded"
@@ -26,11 +27,11 @@
                     <h3 class="my-3 display-7">Stats</h3>
                     <p>On {{ sentimentalAnalysis['analysisReport']['analyzedTweets'] }} tweets analyzed:</p>
                     <ul>
-                        <li>{{ sentimentalAnalysis['analysisReport']['positivePercentage'] }}% of tweets speak <b><i
+                        <li><span style="color:dodgerblue;">{{ sentimentalAnalysis['analysisReport']['positivePercentage'] }}%</span> of tweets speak <b><i
                                     style="color:dodgerblue;">positively</i></b> about "{{ filterDatas['query'] }}"</li>
-                        <li>{{ sentimentalAnalysis['analysisReport']['neutralPercentage'] }}% of tweets speak <b><i
+                        <li><span style="color:coral;">{{ sentimentalAnalysis['analysisReport']['neutralPercentage'] }}%</span> of tweets speak <b><i
                                     style="color: coral;">neutral</i></b> about "{{ filterDatas['query'] }}"</li>
-                        <li>{{ sentimentalAnalysis['analysisReport']['negativePercentage'] }}% of tweets speak <b><i
+                        <li><span style="color:green;">{{ sentimentalAnalysis['analysisReport']['negativePercentage'] }}%</span> of tweets speak <b><i
                                     style="color: green;">negatively</i></b> about "{{ filterDatas['query'] }}"</li>
                     </ul>
                 </div>
@@ -39,7 +40,7 @@
             <!-- Sentimental analysis table -->
             <div class="container py-3">
                 <div class="row">
-                    <h3 class="my-3 text-center display-6">Sentimental analysis report</h3>
+                    <h3 class="my-3 text-center display-6">Table report</h3>
                     <div class="panel panel-default mt-1">
                         <div class="panel-body table-responsive">
                             <table class="table table-bordered border-primary text-white rounded">
