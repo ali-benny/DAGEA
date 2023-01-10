@@ -5,7 +5,7 @@ from wordcloud import WordCloud
 import pandas as pd
 import matplotlib.pyplot as plt
 
-from twitterModule.APIv2 import APIv2
+from pythonModules.twitter.APIv2 import APIv2
 
 
 class SentimentalAnalysis(APIv2):

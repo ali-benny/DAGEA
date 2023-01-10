@@ -1,7 +1,6 @@
-from . import Sheet
+from .Sheet import Sheet
 
-
-class Fantacitorio(Sheet.Sheet):
+class Fantacitorio(Sheet):
     # Fantacitorio parameters
     turns, turnsInTableFormat = (
         {},

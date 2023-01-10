@@ -1,8 +1,7 @@
 import matplotlib.pyplot as plt
 import pandas as pd
 
-from . import Fantacitorio
-
+from ..fantacitorio import Fantacitorio
 
 class FantacitorioAnalysis(Fantacitorio.Fantacitorio):
     graphsPath = ""

@@ -1,8 +1,8 @@
 import os
 import stream
-import utils.folders as folders
-import utils.filtersbar as filtersbar
-import map as m
+import pythonModules.utils.folders as folders
+import pythonModules.utils.filtersbar as filtersbar
+import pythonModules.map.map as m
 import time
 
 try:
@@ -14,10 +14,10 @@ except ModuleNotFoundError:
 
 from scacchi import scacchi_101
 from scacchi import scacchi_engine
-from Fantacitorio import FantacitorioAnalysis as FA
-from Fantacitorio import FantacitorioTeams as FT
-from twitterModule.TweetSearch import TweetSearch
-from twitterModule.SentimentalAnalysis import SentimentalAnalysis
+from pythonModules.fantacitorio import FantacitorioAnalysis as FA
+from pythonModules.fantacitorio import FantacitorioTeams as FT
+from pythonModules.twitter.TweetSearch import TweetSearch
+from pythonModules.twitter.SentimentalAnalysis import SentimentalAnalysis
 
 app = Flask(__name__)
 
@@ -32,7 +32,7 @@ SentimentalAnalysis.__init__(
     path="./static/img/graphs/",
 )
 print(f"Initialize FantacitorioAnalysis from app.py")
-FA.FantacitorioAnalysis.__init__(path="./Fantacitorio/punti.xlsx", numberOfTurns=7)
+FA.FantacitorioAnalysis.__init__(path="./pythonModules/fantacitorio/punti.xlsx", numberOfTurns=7)
 print(f"Initialize filtersbar from app.py")
 filterDatas = filtersbar.initFilterDatas()
 
