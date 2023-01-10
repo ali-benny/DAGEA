@@ -24,22 +24,20 @@ app = Flask(__name__)
 config = configparser.ConfigParser()
 config.read(os.path.abspath("../config.ini"))
 
-print(f"Initialize TweetSearch from app.py")
+print(f"Start app.py")
 TweetSearch.__init__(BEARER_TOKEN=config["twitter"]["bearer_token"])
-print(f"Initialize SentimentalAnalysis from app.py")
 SentimentalAnalysis.__init__(
     BEARER_TOKEN=config["twitter"]["bearer_token"],
     path="./static/img/graphs/",
 )
-print(f"Initialize FantacitorioAnalysis from app.py")
 FA.FantacitorioAnalysis.__init__(path="./pythonModules/fantacitorio/punti.xlsx", numberOfTurns=7)
-print(f"Initialize filtersbar from app.py")
 filterDatas = filtersbar.initFilterDatas()
 
 folders.deleteFolderFiles("./static/img/graphs/")
 
 
 def renderSubmit(request, pageToRender: str):
+    global filterDatas
     whatBtn = request.form["btnradio"]
     filterDatas["tweetsLimit"] = request.form["tweetsLimit"]
     filterDatas["query"] = request.form["keyword"]
@@ -71,8 +69,8 @@ def renderSubmit(request, pageToRender: str):
         sentimentalAnalysis=sentimentalAnalysis,
     )
 
-
 def loadResearch(researchMethod: str):
+    global filterDatas
     TweetSearch.researchDecree(researchType=researchMethod)
     SentimentalAnalysis.SentimentalAnalysis(TweetSearch.response)
     tweetCards = TweetSearch.createCard()
@@ -93,14 +91,14 @@ def homepage():
     filterDatas = filtersbar.initFilterDatas()
     if request.method == "POST":
         if "tweetResearchSubmit" in request.form:
-            return renderSubmit(request=request, pageToRender="index.html")
+            return renderSubmit(request=request, pageToRender="home.html")
     sentimentalAnalysis = {"analysisReport": {}, "analysisDatas": {}}
     sentimentalAnalysis.update(
         {"analysisReport": SentimentalAnalysis.analysisReport}
     )
     sentimentalAnalysis.update({"analysisDatas": SentimentalAnalysis.analysisDatas})
     return render_template(
-        "index.html",
+        "home.html",
         tweetCards=[],
         filterDatas=filterDatas,
         sentimentalAnalysis=sentimentalAnalysis,
@@ -112,6 +110,7 @@ def eredita():
     """
     The eredita function is used to display the tweetCards of '#leredita' research.
     """
+    global filterDatas
     filterDatas = filtersbar.initFilterDatas()
     filterDatas["query"] = "#leredita"
     filterDatas["currentResearchMethod"] = "researchByKeyword"
@@ -122,7 +121,6 @@ def eredita():
             query=filterDatas["query"], tweetsLimit=filterDatas["tweetsLimit"]
         )
         tweetCards = loadResearch(researchMethod=filterDatas["currentResearchMethod"])
-        filterDatas["SAGraphsVisibility"] = "visible"
         sentimentalAnalysis = {"analysisReport": {}, "analysisDatas": {}}
         sentimentalAnalysis.update(
             {"analysisReport": SentimentalAnalysis.analysisReport}
