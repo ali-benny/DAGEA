@@ -1,7 +1,7 @@
 '''Run all tests in test folder and generate coverage report
 
 HOW TO USE:
-run this file and see the results in the terminal
+run this file from ./dagea directory and see the results in the terminal
 '''
 
 import os

@@ -30,6 +30,8 @@ class MyStream(tweepy.StreamingClient):
 	tweets = ([])
 	def main(self, limit):
 		self.limit = limit
+		if limit >= 50:
+			self.limit = 50
 
 	def on_connect(self):
 		"""
@@ -76,6 +78,10 @@ class MyStream(tweepy.StreamingClient):
 			self.tweets = ([])
 			self.limit = 0
 		return all_tweets
+	
+	def on_exception(self, exception):
+		print("EXC: ",exception)
+		return super().on_exception(exception)
 
 def StreamByKeyword(keywords, tweetsLimit):
 	"""
