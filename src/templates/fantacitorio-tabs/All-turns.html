@@ -1,0 +1,95 @@
+<div class="tab-pane fade mx-3 p-2" id="nav-allTurns" role="tabpanel" aria-labelledby="nav-allTurns-tab">
+    <h3 class="my-3 display-6">All turns</h3>
+
+    <!-- All turns stats -->
+    <div class="container">
+        <h4 class="my-3 display-7"><b>Stats</b></h4>
+        <h5 class="my-3 display-8">Bests:</h5>
+        <ul>
+            <li><b>Best climber:</b> <i>{{ fantacitorioStats['allTurns']['bestClimber']['name'] }}</i> with {{
+                fantacitorioStats['allTurns']['bestClimber']['score'] }} points.</li>
+            <li><b>Best average:</b> <i>{{ fantacitorioStats['allTurns']['bestAverage']['name'] }}</i> with an
+                average of {{ fantacitorioStats['allTurns']['bestAverage']['score'] }} points per turn.</li>
+            <li><b>Best player:</b> <i>{{ fantacitorioStats['allTurns']['bestPlayer']['name'] }}</i> with a total of
+                {{ fantacitorioStats['allTurns']['bestPlayer']['totalScore'] }} points.</li>
+            <li><b>Best single score:</b> <i>{{ fantacitorioStats['allTurns']['bestSingleScore']['name'] }}</i> with
+                {{ fantacitorioStats['allTurns']['bestSingleScore']['score'] }} points earned at once.</li>
+            <li><b>Best Fantacitorio's turn (by points scored):</b> <i>{{
+                    fantacitorioStats['allTurns']['bestTurn']['turn'] }}</i> with {{
+                fantacitorioStats['allTurns']['bestTurn']['score'] }} scored points.</li>
+        </ul>
+        <h5 class="my-3 display-8">Worst:</h5>
+        <ul>
+            <li><b>Worst average:</b> <i>{{ fantacitorioStats['allTurns']['worstAverage']['name'] }}</i> with an
+                average of {{ fantacitorioStats['allTurns']['worstAverage']['score'] }} points per turn.</li>
+            <li><b>Worst player:</b> <i>{{ fantacitorioStats['allTurns']['worstPlayer']['name'] }}</i> with {{
+                fantacitorioStats['allTurns']['worstPlayer']['totalScore'] }} points.</li>
+            <li><b>Worst single score:</b> <i>{{ fantacitorioStats['allTurns']['worstSingleScore']['name']
+                    }}</i> with {{ fantacitorioStats['allTurns']['worstSingleScore']['score'] }} points.</li>
+            <li><b>Worst Fantacitorio's turn (by points scored):</b> <i>{{
+                    fantacitorioStats['allTurns']['worstTurn']['turn'] }}</i> with only {{
+                fantacitorioStats['allTurns']['worstTurn']['score'] }} scored points.</li>
+        </ul>
+    </div>
+
+    <!-- Fantacitorio standings -->
+    <div class="container">
+        <h4 class="my-3 display-7"><b>Current standings</b></h4>
+        <p><a href="#standingsUpdate">Update it!</a></p>
+        <div class="panel panel-default mt-1">
+            <div class="panel-body table-responsive">
+                <table class="table table-bordered border-primary text-white rounded">
+                    <caption>Standings of Fantacitorio turns</caption>
+                    <tbody>
+                        <tr>
+                            <td><b>Position</b></td>
+                            <th>Politician</th>
+                            <th>Total score</th>
+                            {% for key in fantacitorioStandings[0].keys() %}
+                            {% if key != 'name' and key != 'totalScore' %}
+                            <th>Turn {{ key[-1] }}</th>
+                            {% endif %}
+                            {% endfor %}
+                        </tr>
+
+                        {% for i, politician in enumerate(fantacitorioStandings) %}
+                        <tr>
+                            <td><b>{{ i + 1 }}</b></td>
+                            <td>{{ fantacitorioStandings[i]['name'] }}</td>
+                            <td>{{ fantacitorioStandings[i]['totalScore'] }}</td>
+                            {% for j in range(1, numberOfTurns) %}
+                            <td>{{ fantacitorioStandings[i]['turn' + str(j)] }}</td>
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Fantacitorio standings update-->
+    <div class="container">
+        <h4 class="my-3 display-7" id="standingsUpdate"><b>Politician score update</b></h4>
+        <form action="" method="post" id="politicianScoreUpdateForm">
+            <div class="row">
+                <div class="col-5">
+                    <p>You can update a politician's score, by adding positive values or subtract otherwise, to keep
+                        track of changes in the score that are not yet
+                        official or that you think can be assigned, or to handle some errors or oversights in the
+                        broadcast.</p>
+                </div>
+                <div class="col">
+                    <div class="input-group">
+                        <input required type="text" class="form-control" name="politicianName" aria-label="Politician"
+                            placeholder="Politician name">
+                        <input required type="number" class="form-control" name="politicianScoreUpdate"
+                            aria-label="politicianScoreUpdate" placeholder="Score update">
+                        <button type="submit" id="politicianScoreUpdateSubmit" name="politicianScoreUpdateSubmit"
+                            class="btn btn-primary">Update</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

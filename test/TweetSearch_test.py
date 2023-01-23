@@ -1,8 +1,8 @@
 import sys
 sys.path.append("..")
-import src.TweetSearch as ts
-import src.utils as utils
-import configparser
+import twitter.TweetSearch as ts
+import src.utils_filtersbar as filtersbar
+import config
 
 import unittest
 import tweepy
@@ -20,8 +20,8 @@ class TestTweetSearch(unittest.TestCase):
         #    cls.client = tweepy.Client(bearer_token=config.BEARER_TOKEN)
         cls.client = tweepy.Client(bearer_token=config.BEARER_TOKEN)
 
-        datesAPIFormat = utils.initializeDates('APIFormat')
-        datesHTMLFormat = utils.initializeDates('HTMLFormat')
+        datesAPIFormat = filtersbar.initializeDates('APIFormat')
+        datesHTMLFormat = filtersbar.initializeDates('HTMLFormat')
         cls.commonParameters = {
             'query' : '#IngSw2022',
             'username' : '_Bastia__',
@@ -98,7 +98,7 @@ class TestTweetSearch(unittest.TestCase):
 
         # Caso researchByKeyword
         self.setUpClass()
-        self.commonParameters['start_time']['APIFormat'] = utils.updateTime(self.commonParameters['start_time']['APIFormat'])
+        self.commonParameters['start_time']['APIFormat'] = filtersbar.updateTime(self.commonParameters['start_time']['APIFormat'])
         ts.APIv2.setDatas(query=self.commonParameters['query'], tweetsLimit=self.commonParameters['tweetsLimit'], start_time=self.commonParameters['start_time']['HTMLFormat'], end_time=self.commonParameters['end_time']['HTMLFormat'], expansions=self.commonParameters['expansions'], tweet_fields=self.commonParameters['tweet_fields'])
         ts.APIv2.researchDecree('researchByKeyword')
         tmpResponse = self.client.search_recent_tweets(query=self.commonParameters['query'], max_results=self.commonParameters['tweetsLimit'], expansions=self.commonParameters['expansions'], tweet_fields=self.commonParameters['tweet_fields'], start_time=self.commonParameters['start_time']['APIFormat'], end_time=self.commonParameters['end_time']['APIFormat'])

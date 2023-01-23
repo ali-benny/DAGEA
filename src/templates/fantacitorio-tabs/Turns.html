@@ -1,0 +1,60 @@
+{% for key, i in zip(turnsDataTable.keys(), range(1, numberOfTurns)) %}
+<div class="tab-pane fade mx-3 p-2" id="nav-turn{{ i }}" role="tabpanel" aria-labelledby="nav-turn{{ i }}-tab">
+    <h3 class="my-3 mb-2  display-6">Turn {{ i }}</h3>
+    <!-- Report tables -->
+    <h4 class="my-3 display-7"><b>Turn {{ i }} report</b></h4>
+    <div class="panel panel-default mt-1">
+        <div class="panel-body table-responsive">
+            <table class="table table-bordered border-primary text-white rounded">
+                <caption>Report of the turn {{ i }}</caption>
+                <tbody>
+                    <tr>
+                        <td><b>Politician</b></td>
+                        {% for name in turnsDataTable[key]['names'] %}
+                        <th>{{ name }}</th>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        <td><b>Motivation</b></td>
+                        {% for motivation in turnsDataTable[key]['motivations'] %}
+                        <td>
+                            <div style="width:100%; min-width: 125px;  max-height:175px; overflow:auto">
+                                {% if str(motivation) == 'nan' %}
+                                -
+                                {% else %}
+                                {{ motivation }}
+                                {% endif %}
+                            </div>
+                        </td>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        <td><b>Score</b></td>
+                        {% for score in turnsDataTable[key]['scores'] %}
+                        {% if score > 0 %}
+                        <td>+{{ score }}</td>
+                        {% elif score < 0 %} <td>-{{ score }}</td>
+                            {% endif %}
+                            {% endfor %}
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Stats -->
+    <h4 class="my-3 display-7"><b>Stats</b></h4>
+    <h5 class="my-3 display-8">Bests:</h5>
+    <ul>
+        <li><b>Best climber (of the turn):</b> <i>{{ fantacitorioStats[key]['bestClimber']['name'] }}</i>
+            with {{ fantacitorioStats[key]['bestClimber']['score'] }} points.</li>
+        <li><b>Best single score:</b> <i>{{ fantacitorioStats[key]['bestSingleScore']['name'] }}</i> with {{
+            fantacitorioStats[key]['bestSingleScore']['score'] }} points.</li>
+    </ul>
+    <h5 class="my-3 display-8">Worst:</h5>
+    <ul>
+        <li><b>Worst single score:</b> <i>{{ fantacitorioStats[key]['worstSingleScore']['name'] }}</i>
+            with only {{ fantacitorioStats[key]['worstSingleScore']['score'] }} points.</li>
+    </ul>
+</div>
+{% endfor %}

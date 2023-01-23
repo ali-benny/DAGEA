@@ -37,7 +37,7 @@ coverage report:
   when: always
   before_script:
     - 'pip install coverage'
-  script:
+    - 'coverage run -m unittest discover -p "*_test.py"'
     - 'coverage report --omit=test/__init__.py'
     - 'coverage xml'
   coverage: '/TOTAL.*\s+(\d+%)$/'

@@ -1,0 +1,14 @@
+<nav>
+    <div class="nav nav-tabs justify-content-center" id="nav-tab" role="tablist">
+        <a class="nav-link active border mx-1" id="nav-Info-tab" data-bs-toggle="tab" href="#nav-Info" role="tab"
+            aria-controls="nav-Info" aria-selected="true">Info</a>
+        <a class="nav-link border mx-1" id="nav-allTurns-tab" data-bs-toggle="tab" href="#nav-allTurns" role="tab"
+            aria-controls="nav-allTurns" aria-selected="false">All turns</a>
+        {% for i in range(1, numberOfTurns) %}
+        <a class="nav-link border mx-1" id="nav-turn{{ i }}-tab" data-bs-toggle="tab" href="#nav-turn{{ i }}" role="tab"
+            aria-controls="nav-turn{{ i }}" aria-selected="false">Turn {{ i }}</a>
+        {%endfor%}
+        <a class="nav-link border mx-1" id="nav-Graphs-tab" data-bs-toggle="tab" href="#nav-Graphs" role="tab"
+            aria-controls="nav-Graphs" aria-selected="false">Graphs</a>
+    </div>
+</nav>

@@ -1,52 +1,98 @@
-{% extends "base.html" %}
+{% extends "./components/base.html" %}
 
 {% block html_title %}Fantacitorio | DAGEA™{% endblock %}
 
 {% block main_content %}
-<h1 style="text-shadow:
+<h1 class="text-center display-3" style="text-shadow:
       0 0 2px #fff,
       0 0 10px var(--fantacitorio);">Fantacitorio</h1>
 
-<div class="row align-items-baseline justify-content-around h-100 w-100">
-    <div class="col d-flex">
-        <!-- Cards tweets -->
-        <div class="container d-flex h-100 pt-5 text-dark">
-            <div class="row justify-content-center mb-3">
-                {% for tweet in tweetCards %}
-                <div class="col-lg-4">
-                    <div class="card border-info" style="width: 90%; margin: 2%">
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col">
-                                    <h3 class="card-title">{{ tweet.username }}</h3>
-                                </div>
-                                <div class="col">
-                                    <small class="card-title">{{ tweet.createdAt }}</small>
-                                </div>
-                            </div>
-                            <p class="card-text">{{ tweet.text }}</p>
-                        </div>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-        </div>
-    </div>
+<div class="container pb-2">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW"
+        crossorigin="anonymous"></script>
 
-    {% for tweet in tweetCards %}
-    {% if tweet.coordinates != Null %}
-    <!-- Map -->
-    <div class="card col-3 d-flex bg-primary h-100" style="margin: 2pt">
-        <div class="card-body h-100">
-            <h2 class="card-title">Tweet by Location</h2>
-            <div class="map-container h-100" style="position: relative">
-                <div id="map"></div>
-                <script>var exports = {};</script>
-                <script src="../static/js/map.js"></script>
-            </div>
-        </div>
+    <h2 class="py-5 text-center display-5"><b>Analysis of Fantacitorio's turns</b></h2>
+    <!-- Tabs -->
+    <!-- Tabs navbar -->
+    {% include './fantacitorio-tabs/tabs_navbar.html' %}
+
+    <!-- Tabs contents -->
+    <div class="tab-content border rounded" id="nav-tabContent">
+        <!-- 'Info' tab -->
+        {% include './fantacitorio-tabs/Info.html' %}
+
+        <!-- 'All turns' tab -->
+        {% include './fantacitorio-tabs/All-turns.html' %}
+
+        <!-- 'Turn 1 .. Turn X' tabs -->
+        {% include './fantacitorio-tabs/Turns.html' %}
+
+        <!-- 'Graphs' tab -->
+        {% include './fantacitorio-tabs/Graphs.html' %}
     </div>
-    {% endif %}
-    {% endfor %}
 </div>
+
+<!-- Search team by twitter username -->
+<div class="container py-5">
+    <h2 class="my-3 display-5 py-2 pb-4 text-center"><b>Search teams by username</b></h2>
+    <p class="text-center pb-3">Enter a Twitter username and, if and only if the user has met the <a
+            href="https://www.la7.it/propagandalive/video/fantacitorio-16-02-2022-423442">standards of the
+            Fantacitorio</a>, the image of his team will be shown.</p>
+    <form action="" method="post">
+        <div class="row">
+            <div class="col-4"></div>
+            <div class="col">
+                <div class="d-flex justify-content-center">
+                    <input required type="text" class="form-control me-1" name="usernameTextInput"
+                        id="usernameTextInput" placeholder="Twitter username">
+                    <button type="submit" id="searchTeamByUserSubmit" name="searchTeamByUserSubmit"
+                        class="btn btn-primary bi-search"></button>
+                </div>
+            </div>
+            <div class="col-4"></div>
+        </div>
+    </form>
+    <div class="d-flex justify-content-center" width="80%" style="visibility:{{ userTeamResearch['imageVisibility'] }}">
+        <figure class="figure figure-img pt-5">
+            <img src="{{ userTeamResearch['imagePath'] }}" alt="searched user team"
+                class="figure-img img-fluid rounded-2">
+            <figcaption class="figure-caption">{{ userTeamResearch['username'] }}'s team of the Fantacitorio
+            </figcaption>
+        </figure>
+    </div>
+</div>
+
+<!-- Fantacitorio teams images -->
+<div class="container py-2 pb-5">
+    <h2 class="my-3 display-5 py-2 pb-4 text-center"><b>Fantacitorio teams</b></h2>
+    <div id="fantacitorioTeamsImages" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <div class="d-flex justify-content-center">
+                    <img src="{{ teamsImagesNames[0] }}" class="d-block img-fluid rounded" alt="..." width="80%">
+                </div>
+            </div>
+            {% for i in range(1, len(teamsImagesNames)) %}
+            <div class="carousel-item">
+                <div class="d-flex justify-content-center">
+                    <img src="{{ teamsImagesNames[i] }}" class="d-block img-fluid rounded"
+                        alt="Fantacitorio team image {{ teamsImagesNames[i] }}" width="80%">
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#fantacitorioTeamsImages"
+            data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#fantacitorioTeamsImages"
+            data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
+    </div>
+</div>
+
 {% endblock %}

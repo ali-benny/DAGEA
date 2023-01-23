@@ -1,8 +1,11 @@
-{% extends "base.html" %}
+{% extends "./components/base.html" %}
 
 {% block html_title %}Search Tweets | DAGEA™{% endblock %}
 
 {% block main_content %}
+
+{% include "./components/searchbar.html" %}
+
 <!-- Epics Box -->
 <div class="text-left">
 	<h1 class="display-6">Our best topics</h1>
@@ -23,4 +26,10 @@
 		<img class="card-image" src="https://www.zetanews.it/wp-content/uploads/2022/03/fantacitorio-logo.jpg" />
 	</a>
 </div>
+
+<div class="container">
+	{% include "./components/cards.html" %}
+	{% include "./components/sentimentalAnalysis.html" %}
+</div>
+
 {% endblock %}

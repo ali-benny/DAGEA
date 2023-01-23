@@ -1,233 +1,282 @@
-import TweetSearch as ts
 import os
 import stream
-import utils
-import map as m
+import pythonModules.utils.folders as folders
+import pythonModules.utils.filtersbar as filtersbar
+import pythonModules.map.map as m
+import time
+
 try:
-	from flask import Flask, render_template, request
+    from flask import Flask, render_template, request
+    import configparser  # Used for APIv1 initialization
 except ModuleNotFoundError:
-	os.system('pip install flask')
+    os.system("pip install flask")
+    os.system("pip install configparser")
 
 from scacchi import scacchi_101
 from scacchi import scacchi_engine
+from pythonModules.fantacitorio import FantacitorioAnalysis as FA
+from pythonModules.fantacitorio import FantacitorioTeams as FT
+from pythonModules.twitter.TweetSearch import TweetSearch
+from pythonModules.twitter.SentimentalAnalysis import SentimentalAnalysis
 
 app = Flask(__name__)
 
-ts.APIv2.__init__()
+config = configparser.ConfigParser()
+config.read(os.path.abspath("../config.ini"))
 
-researchMethods = utils.initializeResearchMethods()
-renderfilename = 'search.html'
-currentResearchMethod = ''
-query = ''
-tweetsLimit = 10
-dates = utils.initializeDates('HTMLFormat')
+print(f"Start app.py")
+TweetSearch.__init__(BEARER_TOKEN=config["twitter"]["bearer_token"])
+SentimentalAnalysis.__init__(
+    BEARER_TOKEN=config["twitter"]["bearer_token"],
+    path="./static/img/graphs/",
+)
+FA.FantacitorioAnalysis.__init__(path="./pythonModules/fantacitorio/punti.xlsx", numberOfTurns=7)
+filterDatas = filtersbar.initFilterDatas()
 
-def method_post(request):	
-	"""
-	The method_post function is an auxiliar function called when the user clicks on a button.
-	It will call the research method of APIv2 and create cards with results.
-	
-	Parameters
-	----------
-		request
-			Get the data from the form
-	
-	Returns
-	-------
-		The html code of the index
-	"""
-	global renderfilename, is_stream
-	tweets = []  # list of tweets
-	whatBtn = request.form['btnradio']
-	tweetsLimit = request.form['tweetsLimit']
-	query = request.form['keyword']
-	currentResearchMethod = request.form.get('researchBy')
-	dates['minDateValue']=request.form['minDate']
-	dates['maxDateValue']=request.form['maxDate']
-	map_vis = 'hidden'
-	if whatBtn == 'Stream':
-		is_stream = True
-		# getting stream tweets
-		stream.StreamByKeyword(query, (int)(tweetsLimit))
-		tweets = stream.MyStream.tweets
-	elif whatBtn == 'Search':
-		# getting tweets from twitter API
-		ts.APIv2.setDatas(query=query, tweetsLimit=tweetsLimit, start_time=dates['minDateValue'], end_time=dates['maxDateValue'])
-		ts.APIv2.researchDecree(researchType = currentResearchMethod)
-		tweets = ts.APIv2.createCard()
-		if request.form.get('isLocated') != None:	# ->see https://stackoverflow.com/questions/20941539/how-to-get-if-checkbox-is-checked-on-flask
-			m.Map.__init__()
-			m.Map.addMarkers(tweets)	# Vengono aggiunti i mark per ogni coordinata trovata
-			map_vis = 'visible'
-	else:
-		print('Error: unknown button')
-	# rendering flask template 'index.html'
-	return render_template(
-		renderfilename,
-		tweetCards=tweets,
-		tweetsLimit=ts.APIv2.tweetsLimit,
-		researchMethods=researchMethods,
-		currentResearchMethod=currentResearchMethod,
-		dates=dates,
-		mapVisibility = map_vis
-	)
+folders.deleteFolderFiles("./static/img/graphs/")
 
-@app.route('/', methods=('GET', 'POST'))
+
+def renderSubmit(request, pageToRender: str):
+    global filterDatas
+    whatBtn = request.form["btnradio"]
+    filterDatas["tweetsLimit"] = request.form["tweetsLimit"]
+    filterDatas["query"] = request.form["keyword"]
+    filterDatas["currentResearchMethod"] = request.form.get("researchBy")
+    filterDatas["dates"]["minDateValue"] = request.form["minDate"]
+    filterDatas["dates"]["maxDateValue"] = request.form["maxDate"]
+    if whatBtn == "Stream":
+        stream.StreamByKeyword(filterDatas["query"], (int)(filterDatas["tweetsLimit"]))
+        tweetCards = stream.MyStream.tweets
+    elif whatBtn == "Search":
+        TweetSearch.setDatas(
+            query=filterDatas["query"],
+            tweetsLimit=filterDatas["tweetsLimit"],
+            start_time=filterDatas["dates"]["minDateValue"],
+            end_time=filterDatas["dates"]["maxDateValue"],
+        )
+        tweetCards = loadResearch(researchMethod=filterDatas["currentResearchMethod"])
+        sentimentalAnalysis = {"analysisReport": {}, "analysisDatas": {}}
+        sentimentalAnalysis.update(
+            {"analysisReport": SentimentalAnalysis.analysisReport}
+        )
+        sentimentalAnalysis.update({"analysisDatas": SentimentalAnalysis.analysisDatas})
+    else:
+        raise ValueError("ERROR: Unknown button")
+    return render_template(
+        pageToRender,
+        tweetCards=tweetCards,
+        filterDatas=filterDatas,
+        sentimentalAnalysis=sentimentalAnalysis,
+    )
+
+def loadResearch(researchMethod: str):
+    global filterDatas
+    TweetSearch.researchDecree(researchType=researchMethod)
+    SentimentalAnalysis.SentimentalAnalysis(TweetSearch.response)
+    tweetCards = TweetSearch.createCard()
+    filterDatas["SAGraphsVisibility"] = "visible"
+    if TweetSearch.cardHaveCoordinates(tweetCards):
+        filterDatas["mapVisibility"] = "visible"
+        m.Map.__init__()
+        m.Map.addMarkers(
+            tweetCards
+        )  # Vengono aggiunti i mark per ogni coordinata trovata
+    else:
+        filterDatas["mapVisibility"] = "hidden"
+    return tweetCards
+
+
+@app.route("/", methods=("GET", "POST"))
 def homepage():
-	global currentResearchMethod, dates, query, tweetsLimit, start_time, end_time, renderfilename, whatBtn
-	if request.method == 'POST':
-		renderfilename = 'search.html'
-		method_post(request)
-	# rendering flask template
-	return render_template('home.html', 
-		researchMethods=researchMethods,
-		currentResearchMethod=currentResearchMethod,
-		dates=utils.initializeDates('HTMLFormat'), tweetsLimit=ts.APIv2.tweetsLimit)
+    filterDatas = filtersbar.initFilterDatas()
+    if request.method == "POST":
+        if "tweetResearchSubmit" in request.form:
+            return renderSubmit(request=request, pageToRender="home.html")
+    sentimentalAnalysis = {"analysisReport": {}, "analysisDatas": {}}
+    sentimentalAnalysis.update(
+        {"analysisReport": SentimentalAnalysis.analysisReport}
+    )
+    sentimentalAnalysis.update({"analysisDatas": SentimentalAnalysis.analysisDatas})
+    return render_template(
+        "home.html",
+        tweetCards=[],
+        filterDatas=filterDatas,
+        sentimentalAnalysis=sentimentalAnalysis,
+    )
 
-@app.route('/search', methods=('GET', 'POST'))
-def search():						# the currently chosen search method
-	global currentResearchMethod, dates, query, tweetsLimit, start_time, end_time, renderfilename, is_stream
-	is_stream = False
-	renderfilename = 'search.html'
-	if request.method == 'POST':	
-		method_post(request)			# set the current research method
-	
-	if is_stream:
-		# getting stream tweets
-		tweets = stream.MyStream.tweets
-	else:
-		# Reinizizalizzazione col fine di avere di avere un reset dei campi quanto si torna alla home
-		ts.APIv2._APIv2__init__response()
-		# tweets = ts.APIv2.createCard()
-		# m.Map.addMarkers(tweets)	# Vengono aggiunti i mark per ogni coordinata trovata
 
-	dates = utils.initializeDates('HTMLFormat')
-	return render_template(
-		renderfilename,
-		# tweetCards=tweets,
-		tweetsLimit=ts.APIv2.tweetsLimit,
-		researchMethods=researchMethods,
-		currentResearchMethod=currentResearchMethod,
-		dates=dates,
-		# mapVisibility = 'hidden'
-	)
-
-@app.route('/map')
-def mapInterface():
-	return render_template('mapInterface.html')
-
-@app.route('/eredita', methods=('GET', 'POST'))
+@app.route("/eredita", methods=("GET", "POST"))
 def eredita():
-	"""
-	The eredita function is used to display the tweets of '#leredita' research.
-	"""
-	tweets = []  # list of tweets
-	query = '#leredita'
-	currentResearchMethod = 'researchByKeyword'
-	global renderfilename, dates
-	renderfilename = 'eredita.html'
-	if request.method == 'POST':
-		method_post(request)
-		query = '' if request.form['keyword'] != '' else query
-	else:
-		# getting tweets from twitter API
-		ts.APIv2.setDatas(query = query, tweetsLimit=10)
-		ts.APIv2.researchDecree(researchType = currentResearchMethod)
-	tweets = ts.APIv2.createCard()
-	return render_template(renderfilename, 
-		tweetCards=tweets,
-		keyword = query,
-		tweetsLimit = 10,
-		researchMethods=researchMethods,
-		currentResearchMethod=currentResearchMethod,
-		dates=dates)
+    """
+    The eredita function is used to display the tweetCards of '#leredita' research.
+    """
+    global filterDatas
+    filterDatas = filtersbar.initFilterDatas()
+    filterDatas["query"] = "#leredita"
+    filterDatas["currentResearchMethod"] = "researchByKeyword"
+    if request.method == "POST":
+        return renderSubmit(request=request, pageToRender="eredita.html")
+    else:
+        TweetSearch.setDatas(
+            query=filterDatas["query"], tweetsLimit=filterDatas["tweetsLimit"]
+        )
+        tweetCards = loadResearch(researchMethod=filterDatas["currentResearchMethod"])
+        sentimentalAnalysis = {"analysisReport": {}, "analysisDatas": {}}
+        sentimentalAnalysis.update(
+            {"analysisReport": SentimentalAnalysis.analysisReport}
+        )
+        sentimentalAnalysis.update({"analysisDatas": SentimentalAnalysis.analysisDatas})
+        return render_template(
+            "eredita.html",
+            tweetCards=tweetCards,
+            filterDatas=filterDatas,
+            sentimentalAnalysis=sentimentalAnalysis,
+        )
 
-@app.route('/reazioneacatena', methods=('GET', 'POST'))
+
+@app.route("/reazioneacatena", methods=("GET", "POST"))
 def reazioneacatena():
-	"""
-	The reazioneacatena function is used to get the tweets from twitter API.
-	It returns a list of cards with the tweets and their information.
-	"""
-	tweets = []  # list of tweets
-	query = '#reazioneacatena'
-	currentResearchMethod = 'researchByKeyword'
-	if request.method == 'POST':
-		global renderfilename
-		renderfilename = 'reazioneacatena.html'
-		method_post(request)
-		query = '' if request.form['keyword'] != '' else query
-	else:
-		# getting tweets from twitter API
-		ts.APIv2.setDatas(query = query, tweetsLimit=10)
-		ts.APIv2.researchDecree(researchType = currentResearchMethod)
-	tweets = ts.APIv2.createCard()
-	return render_template('reazioneacatena.html', 
-		tweetCards=tweets,
-		keyword = query,
-		tweetsLimit = 10,
-		researchMethods=researchMethods,
-		currentResearchMethod=currentResearchMethod,
-		dates=dates)
+    """
+    The reazioneacatena function is used to get the tweets from twitter API.
+    It returns a list of cards with the tweets and their information.
+    """
+    filterDatas = filtersbar.initFilterDatas()
+    filterDatas["query"] = "#leredita"
+    filterDatas["currentResearchMethod"] = "researchByKeyword"
+    if request.method == "POST":
+        return renderSubmit(request=request, pageToRender="reazioneacatena.html")
+    else:
+        TweetSearch.setDatas(
+            query=filterDatas["query"], tweetsLimit=filterDatas["tweetsLimit"]
+        )
+        tweetCards = loadResearch(researchMethod=filterDatas["currentResearchMethod"])
+        filterDatas["SAGraphsVisibility"] = "visible"
+        sentimentalAnalysis = {"analysisReport": {}, "analysisDatas": {}}
+        sentimentalAnalysis.update(
+            {"analysisReport": SentimentalAnalysis.analysisReport}
+        )
+        sentimentalAnalysis.update({"analysisDatas": SentimentalAnalysis.analysisDatas})
+        return render_template(
+            "reazioneacatena.html",
+            tweetCards=tweetCards,
+            filterDatas=filterDatas,
+            sentimentalAnalysis=sentimentalAnalysis,
+        )
 
-@app.route('/fantacitorio', methods=('GET', 'POST'))
+
+@app.route("/fantacitorio", methods=("GET", "POST"))
 def fantacitorio():
-	tweets = []  # list of tweets
-	query = '#fantacitorio'
-	currentResearchMethod = 'researchByKeyword'
-	if request.method == 'POST':
-		global renderfilename
-		renderfilename = 'fantacitorio.html'
-		method_post(request)
-		query = '' if request.form['keyword'] != '' else query
-	else:
-		# getting tweets from twitter API
-		ts.APIv2.setDatas(query = query, tweetsLimit=10)
-		ts.APIv2.researchDecree(researchType = currentResearchMethod)
-	tweets = ts.APIv2.createCard()
-	return render_template('fantacitorio.html', 
-		tweetCards=tweets,
-		keyword = query,
-		tweetsLimit = 10,
-		researchMethods=researchMethods,
-		currentResearchMethod=currentResearchMethod,
-		dates=dates)
+    numberOfGraphs = folders.numberOfFolderFiles(
+        "./static/img/fantacitorio/politiciansGroups/"
+    )
+    folders.deleteFolderFiles(path="./static/img/fantacitorio/userTeam/")
+    userTeamResearch = {"username": "", "imagePath": "./", "imageVisibility": "hidden"}
+    if request.method == "POST":
+        if "searchTeamByUserSubmit" in request.form:
+            username = request.form["usernameTextInput"]
+            userTeamPath = "./static/img/fantacitorio/userTeam/"
+            imageHasBeenSaved = FT.saveUserTeamImage(user=username, path=userTeamPath)
+            userTeamResearch = {
+                "username": username,
+                "imagePath": folders.getFolderFilesNames(userTeamPath),
+                "imageVisibility": "visible" if imageHasBeenSaved else "hidden",
+            }
+            return render_template(
+                "fantacitorio.html",
+                numberOfTurns=FA.FantacitorioAnalysis.numberOfTurns,
+                numberOfGraphs=numberOfGraphs,
+                turnsDataTable=FA.FantacitorioAnalysis.turnsInTableFormat,
+                fantacitorioStats=FA.FantacitorioAnalysis.getStats(),
+                fantacitorioStandings=FA.FantacitorioAnalysis.getStandings(),
+                teamsImagesNames=folders.getFolderFilesNames(
+                    "./static/img/fantacitorio/teams/"
+                ),
+                userTeamResearch=userTeamResearch,
+            )
+        elif "politicianScoreUpdateSubmit" in request.form:
+            politicianName = request.form["politicianName"]
+            scoreToAdd = request.form["politicianScoreUpdate"]
+            for politician in FA.FantacitorioAnalysis.simpleReport:
+                if politicianName == politician["name"]:
+                    politician["totalScore"] += int(scoreToAdd)
+                    return render_template(
+                        "fantacitorio.html",
+                        numberOfTurns=FA.FantacitorioAnalysis.numberOfTurns,
+                        numberOfGraphs=numberOfGraphs,
+                        turnsDataTable=FA.FantacitorioAnalysis.turnsInTableFormat,
+                        fantacitorioStats=FA.FantacitorioAnalysis.getStats(),
+                        fantacitorioStandings=FA.FantacitorioAnalysis.getStandings(),
+                        teamsImagesNames=folders.getFolderFilesNames(
+                            "./static/img/fantacitorio/teams/"
+                        ),
+                        userTeamResearch=userTeamResearch,
+                    )
+    return render_template(
+        "fantacitorio.html",
+        numberOfTurns=FA.FantacitorioAnalysis.numberOfTurns,
+        numberOfGraphs=numberOfGraphs,
+        turnsDataTable=FA.FantacitorioAnalysis.turnsInTableFormat,
+        fantacitorioStats=FA.FantacitorioAnalysis.getStats(),
+        fantacitorioStandings=FA.FantacitorioAnalysis.getStandings(),
+        teamsImagesNames=folders.getFolderFilesNames(
+            "./static/img/fantacitorio/teams/"
+        ),
+        userTeamResearch=userTeamResearch,
+    )
 
-@app.route('/chess')
+
+@app.route("/chess")
 def chessPage():
-	return render_template('chess.html', 
-		researchMethods=researchMethods,
-		currentResearchMethod=currentResearchMethod,
-		dates=utils.initializeDates('HTMLFormat'), tweetsLimit=ts.APIv2.tweetsLimit)
+    return render_template("chess.html")
 
-@app.route('/explain', methods=('GET', 'POST'))
-def explainPage():
-	if request.method == 'POST':
-		global renderfilename
-		renderfilename = 'howItWorks.html'
-		method_post(request)
-	return render_template('howItWorks.html', 
-		tweetsLimit = 10,
-		researchMethods=researchMethods,
-		currentResearchMethod=currentResearchMethod,
-		dates=dates)
 
-@app.route('/startGame')
+@app.route("/startGame")
 def chessGame():
-	scacchi_101.__main__()
-	# Va in loop perche' non esce mai dalla funzione __main__()
-	return render_template('chess.html')
+    scacchi_101.__main__()
+    # Va in loop perche' non esce mai dalla funzione __main__()
+    return render_template("chess.html")
 
-@app.route('/credits', methods = ('GET', 'POST'))
+
+@app.route("/explain", methods=("GET", "POST"))
+def explainPage():
+    return render_template("howItWorks.html")
+
+
+@app.route("/map")
+def mapInterface():
+    return render_template("mapInterface.html")
+
+
+@app.route("/credits", methods=("GET", "POST"))
 def creditsPage():
-	if request.method == 'POST':
-		global renderfilename
-		renderfilename = 'credits.html'
-		method_post(request)
-	return render_template('credits.html',
-		tweetsLimit = 10,
-		researchMethods=researchMethods,
-		currentResearchMethod=currentResearchMethod,
-		dates=dates)
+    return render_template("credits.html")
+
+
+# zip(), str(), ... are not defined in jinja2 templates so we add them to global jinja2 template via Flask.template_global() function
+@app.template_global(name="zip")
+def _zip(*args, **kwargs):  # to not overwrite builtin zip in globals
+    return __builtins__.zip(*args, **kwargs)
+
+
+@app.template_global(name="str")
+def _str(*args, **kwargs):  # to not overwrite builtin str in globals
+    return __builtins__.str(*args, **kwargs)
+
+
+@app.template_global(name="type")
+def _type(*args, **kwargs):  # to not overwrite builtin type in globals
+    return __builtins__.type(*args, **kwargs)
+
+
+@app.template_global(name="len")
+def _len(*args, **kwargs):  # to not overwrite builtin len in globals
+    return __builtins__.len(*args, **kwargs)
+
+
+@app.template_global(name="enumerate")
+def _enumerate(*args, **kwargs):  # to not overwrite builtin enumerate in globals
+    return __builtins__.enumerate(*args, **kwargs)
+
 
 if __name__ == "__main__":
-	app.run(debug=True)
+    app.run(debug=True)

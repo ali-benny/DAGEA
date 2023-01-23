@@ -1,0 +1,64 @@
+<div class="tab-pane fade mx-3 p-2" id="nav-Graphs" role="tabpanel" aria-labelledby="nav-Graphs-tab">
+    <h3 class="my-3 display-6">Graphs</h3>
+
+    <h4 class="my-3 display-7"><b>About all turns</b></h4>
+    <figure class="figure">
+        <img src="../static/img/fantacitorio/graph_turns_allTurns.svg" class="figure-img img-fluid rounded"
+            alt="Graph of all turns">
+        <figcaption class="figure-caption">Points awarded at each turn</figcaption>
+    </figure>
+
+    <h4 class="my-3 display-7"><b>Politicians graph</b></h4>
+    <div id="politiciansGroupsImages" class="carousel slide pb-3 pt-2" data-bs-ride="carousel">
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <div class="row">
+                    <div class="col">
+                        <img src="../../static/img/fantacitorio/politiciansGroups/graph_politicians_0.svg"
+                            class="d-block rounded px-1 img-fluid w-100" alt="0" width="60%">
+                    </div>
+                    <div class="col">
+                        <img src="../../static/img/fantacitorio/politiciansGroups/graph_politicians_1.svg"
+                            class="d-block rounded px-1 img-fluid w-100" alt="1" width="60%">
+                    </div>
+                </div>
+            </div>
+            <!-- TODO: Generalizzare questo 14 -->
+            {% for i in range(2, numberOfGraphs, 2) %}
+            <div class="carousel-item">
+                {% if i == numberOfGraphs - 1%}
+                <div class="row">
+                    <div class="col">
+                        <img src="../../static/img/fantacitorio/politiciansGroups/graph_politicians_{{ i }}.svg"
+                            class="d-block rounded px-1 img-fluid w-100" alt="i-1" width="60%">
+                    </div>
+                    <div class="col">
+                    </div>
+                </div>
+                {% else %}
+                <div class="row">
+                    <div class="col">
+                        <img src="../../static/img/fantacitorio/politiciansGroups/graph_politicians_{{ i }}.svg"
+                            class="d-block rounded px-1 img-fluid w-100" alt="i-1" width="60%">
+                    </div>
+                    <div class="col">
+                        <img src="../../static/img/fantacitorio/politiciansGroups/graph_politicians_{{ i + 1 }}.svg"
+                            class="d-block rounded px-1 img-fluid w-100" alt="i" width="60%">
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#politiciansGroupsImages"
+            data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#politiciansGroupsImages"
+            data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
+    </div>
+</div>
