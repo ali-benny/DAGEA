@@ -3,16 +3,16 @@ import unittest
 from src import stream
 
 class TestStream(unittest.TestCase):
-	def test_stream_one_tweet(self):
+	def test_stream_1(self):	# test with 1 tweet
 		stream.StreamByKeyword('hello', 1)
 		self.assertEqual(len(stream.MyStream.tweets), 1)
 	
-	def test_stream_two_tweets(self):
+	def test_stream_2(self):	# test with 2 tweets
 		stream.StreamByKeyword('hola', 2)
 		self.assertEqual(len(stream.MyStream.tweets), 2)
 	
-	def test_stream_three_keyword(self):
-		stream.StreamByKeyword(['my', 'twitter', 'test'], 1)
+	def test_stream_3(self):	# test with 2 words
+		stream.StreamByKeyword(['twitter','test'], 1)
 		self.assertEqual(len(stream.MyStream.tweets), 1)
 	
 	def test_get_key(self):
