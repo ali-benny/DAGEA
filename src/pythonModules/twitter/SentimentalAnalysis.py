@@ -1,7 +1,13 @@
-from textblob import TextBlob
+import os
+try:
+    from textblob import TextBlob
+    from better_profanity import profanity
+    from wordcloud import WordCloud
+except ModuleNotFoundError:
+    os.system("pip install textblob")
+    os.system("pip install better_profanity")
+    os.system("pip install wordcloud")
 import re
-from better_profanity import profanity
-from wordcloud import WordCloud
 import pandas as pd
 import matplotlib.pyplot as plt
 

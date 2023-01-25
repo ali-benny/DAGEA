@@ -141,7 +141,7 @@ def reazioneacatena():
     It returns a list of cards with the tweets and their information.
     """
     filterDatas = filtersbar.initFilterDatas()
-    filterDatas["query"] = "#leredita"
+    filterDatas["query"] = "#reazioneacatena"
     filterDatas["currentResearchMethod"] = "researchByKeyword"
     if request.method == "POST":
         return renderSubmit(request=request, pageToRender="reazioneacatena.html")
