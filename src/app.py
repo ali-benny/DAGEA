@@ -18,6 +18,7 @@ from pythonModules.fantacitorio import FantacitorioAnalysis as FA
 from pythonModules.fantacitorio import FantacitorioTeams as FT
 from pythonModules.twitter.TweetSearch import TweetSearch
 from pythonModules.twitter.SentimentalAnalysis import SentimentalAnalysis
+import eredita
 
 app = Flask(__name__)
 
@@ -106,7 +107,7 @@ def homepage():
 
 
 @app.route("/eredita", methods=("GET", "POST"))
-def eredita():
+def leredita():
     """
     The eredita function is used to display the tweetCards of '#leredita' research.
     """
@@ -126,11 +127,15 @@ def eredita():
             {"analysisReport": SentimentalAnalysis.analysisReport}
         )
         sentimentalAnalysis.update({"analysisDatas": SentimentalAnalysis.analysisDatas})
+        parola = eredita.ghigliottina()
+        classifica = eredita.ereditiers(parola['vincente'])
         return render_template(
             "eredita.html",
             tweetCards=tweetCards,
             filterDatas=filterDatas,
             sentimentalAnalysis=sentimentalAnalysis,
+            users = classifica,
+            solution = parola    # soluzione ultima puntata
         )
 
 

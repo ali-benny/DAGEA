@@ -44,6 +44,7 @@ class TweetSearch(APIv2):
                         place_fields=cls.place_fields,
                         start_time=cls.start_time,
                         end_time=cls.end_time,
+                        media_fields=cls.media_fields,
                     )
                 except tweepy.errors.NotFound:
                     cls.response = None

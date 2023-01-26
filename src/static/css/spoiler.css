@@ -1,0 +1,28 @@
+
+.spoiler button{
+  background: #dae1e4;
+  border: none;
+  border-radius: 5px;
+  color: #1C5B84;
+  font-size: 24px;
+  width: 380px;
+  padding: 40px 0;
+  margin: -40px -20px;
+  outline: none;
+  cursor: pointer;
+  z-index:1;
+}
+.spoiler {
+  display:none;
+	background: #1C5B84;
+  width: 340px;
+  margin: 0 auto 20px;
+  border-radius: 5px;
+  padding: 40px 20px;
+  text-align: center;
+  font-size: 24px;
+}
+.spoiler span {
+  color: #dae1e4;
+  cursor:pointer;
+}

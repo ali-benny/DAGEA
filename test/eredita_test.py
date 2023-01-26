@@ -9,4 +9,4 @@ class TestEredita(unittest.TestCase):
 		self.assertEqual(result, my_result)
 	
 	def test_get_img_from_tweet(self):
-		
+		# controllare seritorna un URL

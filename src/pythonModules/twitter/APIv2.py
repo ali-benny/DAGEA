@@ -14,7 +14,7 @@ class APIv2:
     expansions = ["author_id","geo.place_id"]
     tweet_fields = ["created_at"]
     place_fields = ["geo"]
-
+    media_fields = None
     @classmethod
     def __init__(cls, BEARER_TOKEN: str) -> None:
         cls.client = tweepy.Client(bearer_token=BEARER_TOKEN)
@@ -28,6 +28,7 @@ class APIv2:
         end_time=None,
         expansions: list = None,
         tweet_fields: list = None,
+        media_fields:list = None
     ) -> None:
         if query is not None:
             cls.query = query
@@ -51,3 +52,5 @@ class APIv2:
             cls.expansions = expansions
         if tweet_fields is not None:
             cls.tweet_fields = tweet_fields
+        if media_fields is not None:
+            cls.media_fields = media_fields
