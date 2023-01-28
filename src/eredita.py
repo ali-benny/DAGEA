@@ -1,5 +1,8 @@
-from pythonModules.twitter.TweetSearch import TweetSearch
+import sys
 import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'src', 'pythonModules')))
+
+from pythonModules.twitter.TweetSearch import TweetSearch
 # *dipendenze necessarie per easyocr*
 import cv2
 from matplotlib import pyplot as plt
@@ -38,12 +41,12 @@ def ghigliottina():
 	# for img in images:
 	soluzioni = convert_img2text(images[0])	# converto l'immagine in testo e lo salvo
 	puntata['data'] = soluzioni[1]
-	puntata['indovina']= soluzioni[3:8]
+	puntata['indovina'] = soluzioni[3:8]
 	puntata['vincente'] = (str)(soluzioni[8])
 	return puntata
 
 def get_data(data):	
-	'''Convert a date string 'data' in the format "dd month year"  to "dd-mm-year"'''
+	'''Convert a date string 'data' in the format "dd month year" to "dd-mm-year"'''
 	date_object = parse(data)
 	formatted_date = date_object.strftime("%Y-%m-%d")
 	return formatted_date
@@ -55,18 +58,16 @@ def ereditiers(parola_vincente):
 	TweetSearch.setDatas(query=query, tweetsLimit=99)		
 	TweetSearch.researchDecree(researchType='researchByKeyword')
 	response = TweetSearch.response
-	data_ultima_puntata = get_data(puntata['data'])
-	for tweet in response.data:
-		if (data_ultima_puntata + ' 18:45') <= str(tweet.created_at)[0:16] <= (data_ultima_puntata + ' 20:00'): 	# controllo che il tweet sia stato pubblicato durante l'orario della puntata
-			total+=1
-			if parola_vincente.lower() in tweet.text.lower():	# controllo che il tweet contenga la parola vincente: converto tutto in minuscolo per evitare problemi con le maiuscole
-				winner+=1
-				# print('🏆', tweet.text)
-			# else:
-				# print('👎', tweet.text)
-		# else:
-		# 	print('🕒', tweet.text)
-	return [winner, total-winner]
+	if response is not None:
+		data_ultima_puntata = get_data(puntata['data'])
+		for tweet in response.data:
+			if (data_ultima_puntata + ' 18:45') <= tweet.created_at.strftime("%Y-%m-%d %H:%M") <= (data_ultima_puntata + ' 20:00'): 	# controllo che il tweet sia stato pubblicato durante l'orario della puntata
+				total+=1
+				if parola_vincente.lower() in tweet.text.lower():	# controllo che il tweet contenga la parola vincente: converto tutto in minuscolo per evitare problemi con le maiuscole
+					winner+=1
+		return [winner, total-winner]
+	else:
+		return None
 
 def get_tweet_soluzioni():
 	images = []		# array di immagini con le soluzioni della settimana
@@ -79,8 +80,11 @@ def get_tweet_soluzioni():
 		attachments = tweet.data['attachments']
 		media_keys = attachments['media_keys']
 		if media[media_keys[0]].url:
-				print('📸',media[media_keys[0]].url)
-				images.append(media[media_keys[0]].url)
+				# print('📸',media[media_keys[0]].url)		#DEBUG stampa l'url dell'immagine
+				try:
+					images.append(media[media_keys[0]].url)
+				except EasyOCRError as e:
+						print('🚫', e.message)
 	return images
 	
 def convert_img2text(img):
@@ -91,3 +95,14 @@ def convert_img2text(img):
 	reader = easyocr.Reader(['it'], gpu=False)
 	result = reader.readtext(img, detail = 0)	# img può essere anche un URL, usiamo detail = 0 per avere solo il testo identificato
 	return result
+
+
+"""
+* Errori EasyOCR *
+"Error 1": indica che non è stato specificato un modello OCR.
+"Error 2": indica che il modello OCR specificato non esiste.
+"Error 3": indica che l'immagine fornita non è valida o non è stata trovata.
+"Error 4": indica che c'è un problema di connessione con il server di riconoscimento OCR.
+"Error 5": indica un errore interno del server di riconoscimento OCR.
+"Error 6": indica un errore di licenza.
+"""
