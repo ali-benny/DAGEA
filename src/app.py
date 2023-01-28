@@ -128,14 +128,16 @@ def leredita():
         )
         sentimentalAnalysis.update({"analysisDatas": SentimentalAnalysis.analysisDatas})
         parola = eredita.ghigliottina()
-        classifica = eredita.ereditiers(parola['vincente'])
+        spettatori = eredita.ereditiers(parola['vincente'])
+        total = eredita.total()
         return render_template(
             "eredita.html",
             tweetCards=tweetCards,
             filterDatas=filterDatas,
             sentimentalAnalysis=sentimentalAnalysis,
-            users = classifica,
-            solution = parola    # soluzione ultima puntata
+            solution = parola,    # soluzione ultima puntata
+            users = spettatori,
+            total = total
         )
 
 
@@ -284,4 +286,4 @@ def _enumerate(*args, **kwargs):  # to not overwrite builtin enumerate in global
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, use_reloader=False)

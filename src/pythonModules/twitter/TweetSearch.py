@@ -36,7 +36,18 @@ class TweetSearch(APIv2):
                     cls.response = None
             case "researchByKeyword":
                 try:
-                    cls.response = cls.client.search_recent_tweets(
+                    if cls.tweepyCursor == True:        #INFO: https://docs.tweepy.org/en/v4.12.1/v2_pagination.html
+                        cls.response = tweepy.Paginator(cls.client.search_recent_tweets,
+                            query=cls.query,
+                            expansions=cls.expansions,
+                            tweet_fields=cls.tweet_fields,
+                            place_fields=cls.place_fields,
+                            start_time=cls.start_time,
+                            end_time=cls.end_time,
+                            media_fields=cls.media_fields,
+                            max_results=100, limit=6)
+                    else:
+                        cls.response = cls.client.search_recent_tweets(
                         query=cls.query,
                         max_results=cls.tweetsLimit,
                         expansions=cls.expansions,

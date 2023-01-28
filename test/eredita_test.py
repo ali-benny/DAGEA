@@ -4,6 +4,9 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'src', 'src/pythonModules')))
 from src import eredita
 class TestEredita(unittest.TestCase):
+	def test_total(self):
+		self.assertEqual(eredita.total(), 600 | 0)
+
 	#* test ghigliottina *#
 	def test_ghigliottina(self):
 		result = eredita.ghigliottina()

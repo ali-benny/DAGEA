@@ -19,7 +19,7 @@ except ModuleNotFoundError:
 		os.system("pip install dateparser")
 
 puntata = {'data': '', 'indovina': [], 'vincente': ''}
-
+tweet_an = 0
 def ghigliottina():
 	"""
 	* Caratteristiche immagini *
@@ -55,19 +55,25 @@ def ereditiers(parola_vincente):
 	query = '#ghigliottina OR #leredita OR #eredita'	#NOTA: le lettere accentate twitter le considera come lettere normali
 	total = 0
 	winner = 0
-	TweetSearch.setDatas(query=query, tweetsLimit=99)		
+	global tweet_an
+	tweet_an = 0
+	TweetSearch.setDatas(query=query, tweepyCursor=True)		
 	TweetSearch.researchDecree(researchType='researchByKeyword')
-	response = TweetSearch.response
-	if response is not None:
+	paginator = TweetSearch.response
+	if paginator is not None:
 		data_ultima_puntata = get_data(puntata['data'])
-		for tweet in response.data:
-			if (data_ultima_puntata + ' 18:45') <= tweet.created_at.strftime("%Y-%m-%d %H:%M") <= (data_ultima_puntata + ' 20:00'): 	# controllo che il tweet sia stato pubblicato durante l'orario della puntata
-				total+=1
-				if parola_vincente.lower() in tweet.text.lower():	# controllo che il tweet contenga la parola vincente: converto tutto in minuscolo per evitare problemi con le maiuscole
-					winner+=1
-		return [winner, total-winner]
-	else:
-		return None
+		for response in paginator:
+			for tweet in response.data:
+				tweet_an += 1
+				if (data_ultima_puntata + ' 18:45') <= tweet.created_at.strftime("%Y-%m-%d %H:%M") <= (data_ultima_puntata + ' 20:00'): 	# controllo che il tweet sia stato pubblicato durante l'orario della puntata
+					total+=1
+					if parola_vincente.lower() in tweet.text.lower():	# controllo che il tweet contenga la parola vincente: converto tutto in minuscolo per evitare problemi con le maiuscole
+						winner+=1
+	return [winner, total-winner]
+
+def total():
+	global tweet_an
+	return tweet_an
 
 def get_tweet_soluzioni():
 	images = []		# array di immagini con le soluzioni della settimana
