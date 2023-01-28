@@ -3,7 +3,7 @@
 {% block html_title %}L'Eredità | DAGEA™{% endblock %}
 
 {% block main_content %}
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 {% include "./components/searchbar.html" %}
 <h1 style="text-shadow:
 	  0 0 2px #fff,
@@ -19,9 +19,9 @@
 					type="button" role="tab" aria-controls="home" aria-selected="true">Ghigliottina</button>
 			</li>
 			<li class="nav-item" role="presentation">
-				<button class="nav-link bi-bar-chart-fill" id="sentiment-tab" data-bs-toggle="tab"
+				<button class="nav-link" id="sentiment-tab" data-bs-toggle="tab"
 					data-bs-target="#contact" type="button" role="tab" aria-controls="contact"
-					aria-selected="false"></button>
+					aria-selected="false"><span class="bi-bar-chart-fill"></span></button>
 			</li>
 		</ul>
 		<!-- Tab panes -->
@@ -30,48 +30,58 @@
 				<br>
 				<div class="text-center">
 					<h2>Ghigliottina</h2>
-					<p class="subtitle">{{ solution.data }}</p>
-					{% for sol in solution.indovina %}
-					{% for word in sol %}
+					<p class="subtitle fst-italic">{{ solution.data }}</p>
+					{% for word in solution.indovina %}
 					<p>{{ word }}</p>
 					{% endfor %}
-					{% endfor %}
-					<script>
-						//0. Shows the spoiler containers only when all scripts are loaded.
-						$('eredita.html').ready(function () {
-							$(".spoiler").show();
-						});
-
-						//1, Hide spoiler
-						$(".spoiler span").hide();
-						//2, Add a button
-						$(".spoiler").append("<button>La parola vincente è...</button>");
-						//3, When button pressed
-						$("button").click(function () {
-							//3.1, Show spoiler next to the button clicked
-							$(this).prev().fadeIn(1500);
-							//3.2, Hide button
-							$(this).hide();
-						});
-
-						//4. When the spoiler text is pressed
-						$("span").click(function () {
-							//4.1 Hide the spoiler text.
-							$(this).hide().fadeOut;
-							//4.2 Show the button
-							$(this).next().fadeIn();
-						});
-					</script>
-					<p class="spoiler">
+					<p class="myspoiler">
 						<span>{{ solution.vincente }}</span>
 					</p>
+					<script src="../static/js/spoiler.js"></script>
+					<hr>
 					<!-- Classifica -->
 					<h4>#ereditiers vincitori</h4>
 					<canvas id="ereditiers-chart"></canvas>
+					<!-- !importante tenere questo js all'interno del template per le variabili flask -->
+					<script>	
+$(document).ready(function () {
+
+	var myctx = document.getElementById('ereditiers-chart').getContext('2d');
+	
+	let mychart = new Chart(myctx, {
+		type: 'doughnut',
+		data: {
+			labels: ['Hanno indovinato', 'Non hanno indovinato'],
+			datasets: [{
+				data: {{ users|tojson }},
+			backgroundColor: ['rgb(255, 162, 23)', 'rgb(173, 181, 189)'],
+			}],
+		},
+		options: {
+			animation: {
+				animateScale: true
+			},
+			borderColor: '#222529',		// colore dark
+			responsive: true,
+			plugins: {
+				legend: {
+					borderColor: '#222529',		// colore dark
+					// color: '#dae1e4',
+					position: 'bottom',
+				},
+				title: {
+					display: true,
+					text: 'Quanti #ereditiers hanno indovinato durante la puntata?',
+					color: '#f3f3f3',
+				}
+			}
+		},
+	});
+});
+					</script>
 				</div>
 
 			</div>
-			<div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="word-cloud-tab"></div>
 			<div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="sentiment-tab">
 				{% include "./components/sentimentalAnalysis.html" %}
 			</div>
