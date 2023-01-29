@@ -3,90 +3,38 @@
 {% block html_title %}L'Eredità | DAGEA™{% endblock %}
 
 {% block main_content %}
-
 {% include "./components/searchbar.html" %}
 <h1 style="text-shadow:
 	  0 0 2px #fff,
 	  0 0 10px var(--eredita);">L'Eredità</h1>
 <div class="w-100 d-flex justify-content-between align-items-start">
-	<div class="d-flex"> {% include "./components/cards.html" %} </div>
-	<!-- Tab container -->
-	<div class="d-flex flex-column border-1">
-		<!-- Nav tabs -->
-		<ul class="nav nav-tabs" id="myTab" role="tablist">
-			<li class="nav-item" role="presentation">
-				<button class="nav-link active" id="leaderboard-tab" data-bs-toggle="tab" data-bs-target="#home"
-					type="button" role="tab" aria-controls="home" aria-selected="true">Ghigliottina</button>
-			</li>
-			<li class="nav-item" role="presentation">
-				<button class="nav-link" id="sentiment-tab" data-bs-toggle="tab"
-					data-bs-target="#contact" type="button" role="tab" aria-controls="contact"
-					aria-selected="false"><span class="bi-bar-chart-fill"></span></button>
-			</li>
-		</ul>
-		<!-- Tab panes -->
-		<div class="tab-content" id="myTabContent">
-			<div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="leaderboard-tab">
-				<br>
-				<div class="text-center">
-					<h2>Ghigliottina</h2>
-					<p class="subtitle fst-italic">{{ solution.data }}</p>
-					{% for word in solution.indovina %}
-					<p>{{ word }}</p>
-					{% endfor %}
-					<p class="myspoiler">
-						<span>{{ solution.vincente }}</span>
-					</p>
-					<script src="../static/js/spoiler.js"></script>
-					<hr>
-					<!-- Classifica -->
-					<h4>#ereditiers vincitori</h4>
-					<p>Tweet Analizzati: {{ total }}</p>
-					<canvas id="ereditiers-chart"></canvas>
-					<!-- !importante tenere questo js all'interno del template per le variabili flask -->
-					<script>	
-$(document).ready(function () {
-
-	var myctx = document.getElementById('ereditiers-chart').getContext('2d');
-	
-	let mychart = new Chart(myctx, {
-		type: 'doughnut',
-		data: {
-			labels: ['Hanno indovinato', 'Non hanno indovinato'],
-			datasets: [{
-				data: {{ users|tojson }},
-			backgroundColor: ['rgb(255, 162, 23)', 'rgb(173, 181, 189)'],
-			}],
-		},
-		options: {
-			animation: {
-				animateScale: true
-			},
-			borderColor: '#222529',		// colore dark
-			responsive: true,
-			plugins: {
-				legend: {
-					borderColor: '#222529',		// colore dark
-					// color: '#dae1e4',
-					position: 'bottom',
-				},
-				title: {
-					display: true,
-					text: 'Quanti #ereditiers hanno indovinato durante la puntata?',
-					color: '#f3f3f3',
-				}
-			}
-		},
-	});
-});
-					</script>
+	<div class="d-flex">
+		{% include "./components/cards.html" %}
+		<!-- Tab container -->
+		<div class="d-flex flex-column border-1">
+			<!-- Nav tabs -->
+			<ul class="nav nav-tabs" id="myTab" role="tablist">
+				<li class="nav-item" role="presentation">
+					<button class="nav-link active" id="leaderboard-tab" data-bs-toggle="tab" data-bs-target="#home"
+						type="button" role="tab" aria-controls="home" aria-selected="true">Ghigliottina</button>
+				</li>
+				<li class="nav-item" role="presentation">
+					<button class="nav-link" id="sentiment-tab" data-bs-toggle="tab" data-bs-target="#contact"
+						type="button" role="tab" aria-controls="contact" aria-selected="false"><span
+							class="bi-bar-chart-fill"></span></button>
+				</li>
+			</ul>
+			<!-- Tab panes -->
+			<div class="tab-content" id="myTabContent">
+				<div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="leaderboard-tab">
+					{% include "./ghigliottina.html" %}
 				</div>
-
-			</div>
-			<div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="sentiment-tab">
-				{% include "./components/sentimentalAnalysis.html" %}
+				<div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="sentiment-tab">
+					{% include "./components/sentimentalAnalysis.html" %}
+				</div>
 			</div>
 		</div>
 	</div>
+</div>
 </div>
 {% endblock %}

@@ -19,6 +19,8 @@ from pythonModules.fantacitorio import FantacitorioTeams as FT
 from pythonModules.twitter.TweetSearch import TweetSearch
 from pythonModules.twitter.SentimentalAnalysis import SentimentalAnalysis
 import eredita
+import time_chart
+import json 
 
 app = Flask(__name__)
 
@@ -39,6 +41,7 @@ folders.deleteFolderFiles("./static/img/graphs/")
 
 def renderSubmit(request, pageToRender: str):
     global filterDatas
+    global data_time_chart
     whatBtn = request.form["btnradio"]
     filterDatas["tweetsLimit"] = request.form["tweetsLimit"]
     filterDatas["query"] = request.form["keyword"]
@@ -68,13 +71,16 @@ def renderSubmit(request, pageToRender: str):
         tweetCards=tweetCards,
         filterDatas=filterDatas,
         sentimentalAnalysis=sentimentalAnalysis,
+        time_chart = data_time_chart
     )
 
 def loadResearch(researchMethod: str):
     global filterDatas
+    global data_time_chart
     TweetSearch.researchDecree(researchType=researchMethod)
     SentimentalAnalysis.SentimentalAnalysis(TweetSearch.response)
     tweetCards = TweetSearch.createCard()
+    data_time_chart = time_chart.time_chart(TweetSearch.response)
     filterDatas["SAGraphsVisibility"] = "visible"
     if TweetSearch.cardHaveCoordinates(tweetCards):
         filterDatas["mapVisibility"] = "visible"
@@ -112,6 +118,7 @@ def leredita():
     The eredita function is used to display the tweetCards of '#leredita' research.
     """
     global filterDatas
+    global data_time_chart
     filterDatas = filtersbar.initFilterDatas()
     filterDatas["query"] = "#leredita"
     filterDatas["currentResearchMethod"] = "researchByKeyword"
@@ -137,7 +144,8 @@ def leredita():
             sentimentalAnalysis=sentimentalAnalysis,
             solution = parola,    # soluzione ultima puntata
             users = spettatori,
-            total = total
+            total = total,
+            time_chart = data_time_chart
         )
 
 
@@ -147,6 +155,8 @@ def reazioneacatena():
     The reazioneacatena function is used to get the tweets from twitter API.
     It returns a list of cards with the tweets and their information.
     """
+    global filterDatas
+    global data_time_chart
     filterDatas = filtersbar.initFilterDatas()
     filterDatas["query"] = "#reazioneacatena"
     filterDatas["currentResearchMethod"] = "researchByKeyword"
@@ -168,6 +178,7 @@ def reazioneacatena():
             tweetCards=tweetCards,
             filterDatas=filterDatas,
             sentimentalAnalysis=sentimentalAnalysis,
+            time_chart = data_time_chart,
         )
 
 
@@ -286,4 +297,4 @@ def _enumerate(*args, **kwargs):  # to not overwrite builtin enumerate in global
 
 
 if __name__ == "__main__":
-    app.run(debug=True, use_reloader=False)
+    app.run(debug=True)
