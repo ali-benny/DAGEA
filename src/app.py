@@ -71,7 +71,8 @@ def renderSubmit(request, pageToRender: str):
         tweetCards=tweetCards,
         filterDatas=filterDatas,
         sentimentalAnalysis=sentimentalAnalysis,
-        time_chart = data_time_chart
+        time_chart = data_time_chart,
+        document = pageToRender
     )
 
 def loadResearch(researchMethod: str):
@@ -109,6 +110,7 @@ def homepage():
         tweetCards=[],
         filterDatas=filterDatas,
         sentimentalAnalysis=sentimentalAnalysis,
+        document = 'home.html'
     )
 
 
@@ -145,7 +147,8 @@ def leredita():
             solution = parola,    # soluzione ultima puntata
             users = spettatori,
             total = total,
-            time_chart = data_time_chart
+            time_chart = data_time_chart,
+            document = 'eredita.html'
         )
 
 
@@ -179,6 +182,7 @@ def reazioneacatena():
             filterDatas=filterDatas,
             sentimentalAnalysis=sentimentalAnalysis,
             time_chart = data_time_chart,
+            document = 'reazioneacatena.html'	
         )
 
 

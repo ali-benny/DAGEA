@@ -1,61 +1,6 @@
 <!-- Sentimental analysis and word cloud -->
 <div class="d-flex" style="visibility: {{ filterDatas['SAGraphsVisibility'] }};">
 	<div class="container">
-		<!-- Time chart -->
-		<h2 class="display-5 text-center py-3"><b>Time chart</b></h2>
-		<div class="row py-3">
-			<div class="col-1"></div>
-			<div class="col">
-				<canvas id="time-chart"></canvas>
-				<script>  //! importante tenere questo js all'interno del template per le variabili flask                 
-
-$(document).ready(function () {
-
-	var myctx = document.getElementById('time-chart').getContext('2d');
-	var data = [];
-	var label = [];
-	dataChart = {{time_chart|safe}};
-	console.log(dataChart);
-	for (var i = 0; (i <= 23); i++) {
-		if (dataChart[i].tweet != 0) {
-			label.push('h '+dataChart[i].hour);
-			data.push(dataChart[i].tweet);
-		}
-	};
-
-	let mychart = new Chart(myctx, {
-		type: 'bar',
-		data: {
-			labels: 'tweet in this hour',	// fasce orarie di time_chart
-			datasets: [{
-				label: label,
-				data: data,
-				backgroundColor: ['rgb(255, 162, 23)'],
-			}],
-		},
-		options: {
-			animation: {
-				animateScale: true
-			},
-			responsive: true,
-			plugins: {
-				legend: {
-					borderColor: '#222529',		// colore dark
-					labels: { color: '#f3f3f3',},
-					position: 'bottom',
-				},
-				title: {
-					display: true,
-					text: 'Distribuzione dei tweet trovati nel tempo',
-					color: '#f3f3f3',
-				}
-			},
-		},
-	});
-});
-				</script>
-			</div>
-			<div class="col-1"></div>
 		<!-- Word cloud -->
 		<h2 class="display-5 text-center py-3"><b>Word cloud</b></h2>
 		<div class="row py-3" id="wordCloud">
