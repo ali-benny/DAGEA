@@ -1,9 +1,9 @@
 import os
 import sys
 
-sys.path.append("..")
-import pythonModules.utils.filtersbar as filtersbar
-from pythonModules.twitter.APIv2 import APIv2
+# sys.path.append("..")
+from .utils import filtersbar 
+from .APIv2 import APIv2
 
 try:
     import tweepy

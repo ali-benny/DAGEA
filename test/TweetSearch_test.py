@@ -1,9 +1,8 @@
-import sys
-sys.path.append("..")
-import twitter.TweetSearch as ts
-import src.utils_filtersbar as filtersbar
-import config
-
+import os
+# sys.path.append("..")
+import src.pythonModules.twitter.TweetSearch as ts
+import src.pythonModules.twitter.utils.filtersbar as filtersbar
+import configparser
 import unittest
 import tweepy
 import datetime
@@ -17,8 +16,11 @@ class TestTweetSearch(unittest.TestCase):
         print('setupClass')
         ts.APIv2.__init__()
         #if needTweets:
-        #    cls.client = tweepy.Client(bearer_token=config.BEARER_TOKEN)
-        cls.client = tweepy.Client(bearer_token=config.BEARER_TOKEN)
+        #    cls.client = tweepy.Client(bearer_token=config.BEARER_TOKEN)     
+        config = configparser.ConfigParser()
+        my_path = os.path.abspath('config.ini')
+        config.read(my_path)
+        cls.client = tweepy.Client(bearer_token=config.get('twitter','bearer_token'))
 
         datesAPIFormat = filtersbar.initializeDates('APIFormat')
         datesHTMLFormat = filtersbar.initializeDates('HTMLFormat')

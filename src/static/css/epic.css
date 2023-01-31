@@ -5,6 +5,19 @@
 	--fantacitorio: #FAB234;
 }
 
+body {
+	/* The image used */
+	background-image: url("../img/logo/favicon-transparent.png");
+
+	/* Add the blur effect */
+	backdrop-filter: blur(5px);
+
+	/* Center and scale the image nicely */
+	background-position: left bottom;
+	background-repeat: no-repeat;
+	background-size: initial;
+}
+
 button a {
 	text-decoration: none;
 	color: white;
@@ -29,7 +42,7 @@ button a:hover {
 	display: flex;
 	align-items: center;
 	max-width: 22%;
-	max-height: 45%;
+	max-height: 35%;
 	overflow: hidden;
 	text-decoration: none;
 	box-shadow: 0px -1px 21px -1px #F7FBFF;

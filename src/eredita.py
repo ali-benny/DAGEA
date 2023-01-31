@@ -1,13 +1,9 @@
-import sys
 import os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'src', 'pythonModules')))
+try:
+	from pythonModules.twitter.TweetSearch import TweetSearch
+except (ModuleNotFoundError, ImportError):
+	from .pythonModules.twitter.TweetSearch import TweetSearch
 
-from pythonModules.twitter.TweetSearch import TweetSearch
-# *dipendenze necessarie per easyocr*
-import cv2
-from matplotlib import pyplot as plt
-import numpy as np
-# *fine dipendenze*
 try:
 	import easyocr
 except ModuleNotFoundError:
@@ -17,6 +13,12 @@ except ModuleNotFoundError:
 try:	from dateparser import parse
 except ModuleNotFoundError:
 		os.system("pip install dateparser")
+# *dipendenze necessarie per easyocr*
+import cv2
+from matplotlib import pyplot as plt
+import numpy as np
+# *fine dipendenze*
+from datetime import date
 
 puntata = {'data': '', 'indovina': [], 'vincente': ''}
 tweet_an = 0
@@ -48,14 +50,15 @@ def ghigliottina():
 def get_data(data):	
 	'''Convert a date string 'data' in the format "dd month year" to "dd-mm-year"'''
 	date_object = parse(data)
-	formatted_date = date_object.strftime("%Y-%m-%d")
-	return formatted_date
+	if date_object is None:
+		return date.today().strftime("%Y-%m-%d")
+	return date_object.strftime("%Y-%m-%d") 
 
 def ereditiers(parola_vincente):
 	query = '#ghigliottina OR #leredita OR #eredita'	#NOTA: le lettere accentate twitter le considera come lettere normali
 	total = 0
 	winner = 0
-	global tweet_an
+	global tweet_an		# numero di tweet analizzati
 	tweet_an = 0
 	TweetSearch.setDatas(query=query, tweepyCursor=True)		
 	TweetSearch.researchDecree(researchType='researchByKeyword')

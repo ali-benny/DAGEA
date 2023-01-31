@@ -1,8 +1,8 @@
-import sys
-sys.path.append("..")
-import pythonModules.utils.filtersbar as u
+# import sys
+# sys.path.append("..")
 import unittest
 import os
+import src.pythonModules.twitter.utils.filtersbar as u
 try:
     import datetime
     from datetime import timedelta, datetime

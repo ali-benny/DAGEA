@@ -1,7 +1,7 @@
 import os
 import stream
-import pythonModules.utils.folders as folders
-import pythonModules.utils.filtersbar as filtersbar
+import pythonModules.twitter.utils.folders as folders
+import pythonModules.twitter.utils.filtersbar as filtersbar
 import pythonModules.map.map as m
 import time
 
@@ -20,7 +20,6 @@ from pythonModules.twitter.TweetSearch import TweetSearch
 from pythonModules.twitter.SentimentalAnalysis import SentimentalAnalysis
 import eredita
 import time_chart
-import json 
 
 app = Flask(__name__)
 

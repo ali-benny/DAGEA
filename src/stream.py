@@ -71,7 +71,7 @@ class MyStream(tweepy.StreamingClient):
 		"""
 		tweet = response.data
 		username = response.includes['users'][0].username
-		self.tweets.append({"user": username, "text": tweet.text, "date": datetime.date.today()})
+		self.tweets.append({"username": username, "text": tweet.text, "createdAt": datetime.date.today()})
 		all_tweets = self.tweets
 		if len(self.tweets) == self.limit:		# have we find enough tweets?
 			self.disconnect()	# -- yes: need to disconnect stream --
@@ -98,13 +98,27 @@ def StreamByKeyword(keywords, tweetsLimit):
 	-------	
 		A list of tweets
 	"""	
-	global rule_id
-	stream_tweet = MyStream(get_key('twitter','bearer_token'))
-	stream_tweet.main(tweetsLimit)
-	# rule_id += 1
-	# stream_tweet.add_rules(tweepy.StreamRule(keywords, id=(str)(rule_id))) 	# add rules
-	stream_tweet.add_rules(tweepy.StreamRule(keywords)) 	# add rules
-	stream_tweet.filter(expansions=['author_id'])	# run the stream	
-	# rules = stream_tweet.get_rules()
-	# if rules != None and rule_id>=tweetsLimit:
-	# 	stream_tweet.delete_rules(ids=[rule.id for rule in rules.data])	
+	n_try = 0
+	for n_try in range(2):
+		try:
+			n_try += 1
+			global rule_id
+			stream_tweet = MyStream(get_key('twitter','bearer_token'))
+			stream_tweet.main(tweetsLimit)
+			# rule_id += 1
+			# stream_tweet.add_rules(tweepy.StreamRule(keywords, id=(str)(rule_id))) 	# add rules
+			stream_tweet.add_rules(tweepy.StreamRule(keywords)) 	# add rules
+			stream_tweet.filter(expansions=['author_id'])	# run the stream	
+			# rules = stream_tweet.get_rules()
+			# if rules != None and rule_id>=tweetsLimit:
+			# 	stream_tweet.delete_rules(ids=[rule.id for rule in rules.data])	
+			break
+		except Exception as e:
+			if e.status_code == 429:
+				# Handle error: too many connections
+				print("Stream encountered HTTP error: 429 Too Many Connections")
+			else:
+				# Handle other exceptions
+				print("Stream encountered an error:", e)
+			if n_try == 2:
+				stream_tweet.tweets.append({'username':'Hai cercato di avere lo stream di troppi tweet, riprova più tardi', 'text': ''})
