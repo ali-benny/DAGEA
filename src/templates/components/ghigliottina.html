@@ -1,0 +1,54 @@
+<br>
+<div class="text-center">
+	<h2>Ghigliottina</h2>
+	<p class="subtitle fst-italic">{{ solution.data }}</p>
+	{% for word in solution.indovina %}
+	<p>{{ word }}</p>
+	{% endfor %}
+	<p class="myspoiler">
+		<span>{{ solution.vincente }}</span>
+	</p>
+	<script src="../static/js/spoiler.js"></script>
+	<hr>
+	<!-- Classifica -->
+	<h4>#ereditiers vincitori</h4>
+	<p>Tweet Analizzati: {{ total }}</p>
+	<canvas id="ereditiers-chart"></canvas>
+	<!-- !importante tenere questo js all'interno del template per le variabili flask -->
+	<script>
+		$(document).ready(function () {
+
+			var myctx = document.getElementById('ereditiers-chart').getContext('2d');
+
+			let mychart = new Chart(myctx, {
+				type: 'doughnut',
+				data: {
+					labels: ['Hanno indovinato', 'Non hanno indovinato'],
+					datasets: [{
+						data: {{ users|tojson }},
+					backgroundColor: ['rgb(255, 162, 23)', 'rgb(173, 181, 189)'],
+				}],
+			},
+			options: {
+				animation: {
+					animateScale: true
+				},
+				borderColor: '#222529',		// colore dark
+				responsive: true,
+				plugins: {
+					legend: {
+						borderColor: '#222529',		// colore dark
+						labels: { color: '#f3f3f3',},
+						position: 'bottom',
+					},
+					title: {
+						display: true,
+						text: 'Quanti #ereditiers hanno indovinato durante la puntata?',
+						color: '#f3f3f3',
+					}
+				}
+			},	
+		});
+	});
+	</script>
+</div>

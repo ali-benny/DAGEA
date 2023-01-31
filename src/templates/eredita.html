@@ -3,14 +3,14 @@
 {% block html_title %}L'Eredità | DAGEA™{% endblock %}
 
 {% block main_content %}
-
 {% include "./components/searchbar.html" %}
-
 <h1 style="text-shadow:
-      0 0 2px #fff,
-      0 0 10px var(--eredita);">L'Eredità</h1>
-
-{% include "./components/cards.html" %}
-{% include "./components/sentimentalAnalysis.html" %}
-
+	  0 0 2px #fff,
+	  0 0 10px var(--eredita);">L'Eredità</h1>
+<div class="w-100 d-flex justify-content-between align-items-start">
+	<div class="d-flex">
+		{% include "./components/cards.html" %}
+		{% include "./components/nav-tab.html" %}
+	</div>
+</div>
 {% endblock %}

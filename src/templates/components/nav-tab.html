@@ -1,0 +1,94 @@
+<!-- Tab container -->
+<div class="d-flex flex-column border-1">
+	<!-- Nav tabs -->
+	<ul class="nav nav-tabs" id="myTab" role="tablist" style="visibility: {{ filterDatas['SAGraphsVisibility'] }};">
+		<li class="nav-item" role="presentation">
+			<button class="nav-link active" id="info-tab" data-bs-toggle="tab" data-bs-target="#info" type="button" role="tab" aria-controls="info" aria-selected="false">
+				<span class="bi-three-dots"></span></button>
+		</li>
+		<li class="nav-item" role="presentation">
+			<button class="nav-link" id="sentiment-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button"
+				role="tab" aria-controls="contact" aria-selected="false"><span
+					class="bi-bar-chart-fill"></span></button>
+		</li>
+	</ul>
+	<!-- Tab panes -->
+	<div class="tab-content" id="myTabContent">
+		<div class="tab-pane fade show active" id="info" role="tabpanel" aria-labelledby="info-tab">
+			<!-- Time Chart -->
+			<canvas id="time-chart"></canvas>
+			<script>  //! importante tenere questo js all'interno del template per le variabili flask                 
+
+				$(document).ready(function () {
+
+					var myctx = document.getElementById('time-chart').getContext('2d');
+					var data = [];
+					var label = [];
+					dataChart = {{ time_chart | safe }};
+				for (var i = 0; (i <= 23); i++) {
+					if (dataChart[i].tweet != 0) {
+						label.push('h ' + dataChart[i].hour);
+						data.push(dataChart[i].tweet);
+					}
+				};
+
+				let mychart = new Chart(myctx, {
+					type: 'bar',
+					data: {
+						labels: label,	// fasce orarie di time_chart
+						datasets: [{
+							label: 'tweet in this hour',
+							data: data,
+							backgroundColor: ['rgb(255, 162, 23)'],
+						}],
+					},
+					options: {
+						animation: {
+							animateScale: true
+						},
+						responsive: true,
+						plugins: {
+							legend: {
+								borderColor: '#222529',		// colore dark
+								labels: { color: '#f3f3f3' },
+								position: 'bottom',
+							},
+							title: {
+								display: true,
+								text: 'Distribuzione dei tweet trovati nel tempo',
+								color: '#f3f3f3',
+							}
+							},
+							scales: {
+								y: {
+									ticks:{
+										color: '#f3f3f3',
+									},
+									grid: {
+									color: 'rgb(173, 181, 189)'
+									}
+								},
+								x: {
+									ticks:{
+										color: '#f3f3f3',
+									},
+									grid: {
+									color: 'rgb(173, 181, 189)'
+									}
+								}
+							}
+					},
+				});
+});
+			</script>
+			{% if document == 'eredita.html' %}
+				{% include "./components/ghigliottina.html" %}
+			{% elif document == 'reazioneacatena.html' %}
+				<h4>Il programma non è attualmente in onda in questo periodo</h4>
+			{% endif %}
+	</div>
+	<div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="sentiment-tab">
+		{% include "./components/sentimentalAnalysis.html" %}
+	</div>
+</div>
+</div>

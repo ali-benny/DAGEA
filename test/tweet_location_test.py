@@ -1,5 +1,5 @@
 import unittest
-from src import twitter
+# from src import twitter
 from flask import request
 
 class TestTweetLocation(unittest.TestCase):

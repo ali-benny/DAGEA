@@ -18,6 +18,9 @@ from pythonModules.fantacitorio import FantacitorioAnalysis as FA
 from pythonModules.fantacitorio import FantacitorioTeams as FT
 from pythonModules.twitter.TweetSearch import TweetSearch
 from pythonModules.twitter.SentimentalAnalysis import SentimentalAnalysis
+import eredita
+import time_chart
+import json 
 
 app = Flask(__name__)
 
@@ -38,6 +41,7 @@ folders.deleteFolderFiles("./static/img/graphs/")
 
 def renderSubmit(request, pageToRender: str):
     global filterDatas
+    global data_time_chart
     whatBtn = request.form["btnradio"]
     filterDatas["tweetsLimit"] = request.form["tweetsLimit"]
     filterDatas["query"] = request.form["keyword"]
@@ -67,13 +71,17 @@ def renderSubmit(request, pageToRender: str):
         tweetCards=tweetCards,
         filterDatas=filterDatas,
         sentimentalAnalysis=sentimentalAnalysis,
+        time_chart = data_time_chart,
+        document = pageToRender
     )
 
 def loadResearch(researchMethod: str):
     global filterDatas
+    global data_time_chart
     TweetSearch.researchDecree(researchType=researchMethod)
     SentimentalAnalysis.SentimentalAnalysis(TweetSearch.response)
     tweetCards = TweetSearch.createCard()
+    data_time_chart = time_chart.time_chart(TweetSearch.response)
     filterDatas["SAGraphsVisibility"] = "visible"
     if TweetSearch.cardHaveCoordinates(tweetCards):
         filterDatas["mapVisibility"] = "visible"
@@ -102,15 +110,17 @@ def homepage():
         tweetCards=[],
         filterDatas=filterDatas,
         sentimentalAnalysis=sentimentalAnalysis,
+        document = 'home.html'
     )
 
 
 @app.route("/eredita", methods=("GET", "POST"))
-def eredita():
+def leredita():
     """
     The eredita function is used to display the tweetCards of '#leredita' research.
     """
     global filterDatas
+    global data_time_chart
     filterDatas = filtersbar.initFilterDatas()
     filterDatas["query"] = "#leredita"
     filterDatas["currentResearchMethod"] = "researchByKeyword"
@@ -126,11 +136,19 @@ def eredita():
             {"analysisReport": SentimentalAnalysis.analysisReport}
         )
         sentimentalAnalysis.update({"analysisDatas": SentimentalAnalysis.analysisDatas})
+        parola = eredita.ghigliottina()
+        spettatori = eredita.ereditiers(parola['vincente'])
+        total = eredita.total()
         return render_template(
             "eredita.html",
             tweetCards=tweetCards,
             filterDatas=filterDatas,
             sentimentalAnalysis=sentimentalAnalysis,
+            solution = parola,    # soluzione ultima puntata
+            users = spettatori,
+            total = total,
+            time_chart = data_time_chart,
+            document = 'eredita.html'
         )
 
 
@@ -140,8 +158,10 @@ def reazioneacatena():
     The reazioneacatena function is used to get the tweets from twitter API.
     It returns a list of cards with the tweets and their information.
     """
+    global filterDatas
+    global data_time_chart
     filterDatas = filtersbar.initFilterDatas()
-    filterDatas["query"] = "#leredita"
+    filterDatas["query"] = "#reazioneacatena"
     filterDatas["currentResearchMethod"] = "researchByKeyword"
     if request.method == "POST":
         return renderSubmit(request=request, pageToRender="reazioneacatena.html")
@@ -161,6 +181,8 @@ def reazioneacatena():
             tweetCards=tweetCards,
             filterDatas=filterDatas,
             sentimentalAnalysis=sentimentalAnalysis,
+            time_chart = data_time_chart,
+            document = 'reazioneacatena.html'	
         )
 
 

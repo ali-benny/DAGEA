@@ -1,9 +1,12 @@
 import configparser
 import tweepy
-import wget
 import shutil
 import os
 from os.path import exists
+try:
+    import wget
+except ModuleNotFoundError:
+    os.system("pip install wget")
 
 config = configparser.ConfigParser()
 config.read(os.path.abspath("../config.ini"))
