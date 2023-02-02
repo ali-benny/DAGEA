@@ -257,12 +257,6 @@ def chessGame():
     # Va in loop perche' non esce mai dalla funzione __main__()
     return render_template("chess.html")
 
-
-@app.route("/explain", methods=("GET", "POST"))
-def explainPage():
-    return render_template("howItWorks.html")
-
-
 @app.route("/map")
 def mapInterface():
     return render_template("mapInterface.html")
