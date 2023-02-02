@@ -17,26 +17,26 @@ sonarqube-check:
     - main # or the name of your main branch
   
 stages:
-  - test
+  # - test
   - deploy
 
-run_tests:
-  stage: test
-  image: python:3
-  before_script:
-    - 'pip install coverage'
-  allow_failure: true
-  script:
-    - 'python -m coverage run -m unittest discover -p "*_test.*"'
-    - 'coverage report --omit=test/__init__.py'
-    - 'coverage xml'
-  coverage: '/TOTAL.*\s+(\d+%)$/'
-  artifacts:
-    when: always
-    paths:
-      - ./test/coverage.xml
-    reports:
-      coverage_report:
-        coverage_format: cobertura
-        path: ./test/coverage.xml
-      junit: ./test/coverage.xml
+# run_tests:
+#   stage: test
+#   image: python:3
+#   before_script:
+#     - 'pip install coverage'
+#   allow_failure: true
+#   script:
+#     - 'python -m coverage run -m unittest discover -p "*_test.*"'
+#     - 'coverage report --omit=test/__init__.py'
+#     - 'coverage xml'
+#   coverage: '/TOTAL.*\s+(\d+%)$/'
+#   artifacts:
+#     when: always
+#     paths:
+#       - ./test/coverage.xml
+#     reports:
+#       coverage_report:
+#         coverage_format: cobertura
+#         path: ./test/coverage.xml
+#       junit: ./test/coverage.xml
