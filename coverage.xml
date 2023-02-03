@@ -4,7 +4,7 @@
 	<!-- Based on https://raw.githubusercontent.com/cobertura/web/master/htdocs/xml/coverage-04.dtd -->
 	<sources>
 		<!-- <source>C:\Users\alice\Documents\GitLab\dagea</source> -->
-		<source>.\<source>
+		<source>./</source>
 	</sources>
 	<packages>
 		<package name="src" line-rate="0.8582" branch-rate="0" complexity="0">
