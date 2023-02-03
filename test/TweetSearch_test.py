@@ -14,7 +14,7 @@ class TestTweetSearch(unittest.TestCase):
     #def setUpClass(cls, needTweets):
     def setUpClass(cls):
         print('setupClass')
-        ts.APIv2.__init__()
+        # ts.APIv2.__init__()       # ERROR: need agrument 'BEARER_TOKEN'
         #if needTweets:
         #    cls.client = tweepy.Client(bearer_token=config.BEARER_TOKEN)     
         config = configparser.ConfigParser()
