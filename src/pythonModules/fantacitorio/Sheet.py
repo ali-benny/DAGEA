@@ -4,7 +4,7 @@ import pandas as pd
 class Sheet:
     # Sheet parameters
     sheet_upperRow, sheet_lowerRow = 3, 7  # Range delle righe in
-    sheet_columnsLimits = [29, 17, 22, 24, 25, 18]
+    sheet_columnsLimits = [29, 17, 22, 24, 25, 18, 16, 14, 15]
     sheet_path = ""
     sheet_namesRow = 1
     sheet_motivationsRow = 2
@@ -26,7 +26,7 @@ class Sheet:
             )
         else:
             cls.sheet_path = path
-            cls.numberOfTurns = numberOfTurns
+            cls.numberOfTurns = numberOfTurns + 1
             cls.__init__ColumsLimit()
 
     @classmethod

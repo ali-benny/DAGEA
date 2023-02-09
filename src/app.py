@@ -30,9 +30,9 @@ print(f"Start app.py")
 TweetSearch.__init__(BEARER_TOKEN=config["twitter"]["bearer_token"])
 SentimentalAnalysis.__init__(
     BEARER_TOKEN=config["twitter"]["bearer_token"],
-    path="./static/img/graphs/",
+    path="./static/img/fantacitorio/",
 )
-FA.FantacitorioAnalysis.__init__(path="./pythonModules/fantacitorio/punti.xlsx", numberOfTurns=7)
+FA.FantacitorioAnalysis.__init__(path="./pythonModules/fantacitorio/punti.xlsx", numberOfTurns=9)
 filterDatas = filtersbar.initFilterDatas()
 
 folders.deleteFolderFiles("./static/img/graphs/")
