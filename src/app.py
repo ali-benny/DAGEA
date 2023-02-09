@@ -33,6 +33,7 @@ SentimentalAnalysis.__init__(
     path="./static/img/fantacitorio/",
 )
 FA.FantacitorioAnalysis.__init__(path="./pythonModules/fantacitorio/punti.xlsx", numberOfTurns=9)
+#FA.FantacitorioAnalysis.updateGraphs()     # Eseguire questa riga solo se bisogna aggiornare le immagini dei grafici del Fantacitorio
 filterDatas = filtersbar.initFilterDatas()
 
 folders.deleteFolderFiles("./static/img/graphs/")
