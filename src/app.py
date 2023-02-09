@@ -30,7 +30,7 @@ print(f"Start app.py")
 TweetSearch.__init__(BEARER_TOKEN=config["twitter"]["bearer_token"])
 SentimentalAnalysis.__init__(
     BEARER_TOKEN=config["twitter"]["bearer_token"],
-    path="./static/img/fantacitorio/",
+    path="./static/img/graphs/",
 )
 FA.FantacitorioAnalysis.__init__(path="./pythonModules/fantacitorio/punti.xlsx", numberOfTurns=9)
 #FA.FantacitorioAnalysis.updateGraphs()     # Eseguire questa riga solo se bisogna aggiornare le immagini dei grafici del Fantacitorio
