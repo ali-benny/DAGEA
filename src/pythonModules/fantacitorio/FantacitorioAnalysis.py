@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 from ..fantacitorio import Fantacitorio
+#import Fantacitorio
 
 class FantacitorioAnalysis(Fantacitorio.Fantacitorio):
     graphsPath = ""
@@ -30,6 +31,7 @@ class FantacitorioAnalysis(Fantacitorio.Fantacitorio):
         cls.graph_politicians()
         cls.graph_turns(cls.turns)
 
+    '''
     @classmethod
     # Funzione attualmente inutilizzata
     def graph_politician(cls, name: str) -> None:
@@ -44,6 +46,7 @@ class FantacitorioAnalysis(Fantacitorio.Fantacitorio):
             fileName="graph_politician_" + name.replace(" ", "-"),
             savePath=".static/img/fantacitorio/"
         )
+    '''
 
     @classmethod
     # Data  lista di nomi, mostra un grafico dell'andamento dello score di ogni nome passato alla funzione

@@ -12,7 +12,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 from pythonModules.twitter.APIv2 import APIv2
-
+#import APIv2
 
 class SentimentalAnalysis(APIv2):
     path = "./"  # path to store created graphs
@@ -33,7 +33,7 @@ class SentimentalAnalysis(APIv2):
 
     @classmethod
     def _cleanText(cls, text):
-        if type(text) == float():
+        if type(text) == float:
             return ""
         r = text.lower()
         r = profanity.censor(r)
