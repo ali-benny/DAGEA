@@ -101,9 +101,12 @@ def rulePage():
 
 @app.route('/game')
 def chessGame():
-	board = chess.Board("8/8/8/8/4N3/8/8/8 w - - 0 1")#si può fare creando un nuovo html
+	board = chess.Board()#si può fare creando un nuovo html
 	table = chess.svg.board(board)
-	return render_template('partita.html')
+	f = open('./static/img/board.svg', 'w')
+	f.write(table)
+	f.close()
+	return render_template('partita.html', table=table)
 
 @app.route('/give_move', methods=['GET', 'POST'])
 def WTurn():
@@ -111,16 +114,16 @@ def WTurn():
 	move=request.form['move'] #prendo la mossa in notazione algebrica
 	account=request.form['account'] #prendo il nome dell'account per poter prendere il primo tweet
 	sit = game.__main__(board,move,account)#
-	if(sit[2] == 'bianco'):
-		pass #redirect to white winning page
-	elif(sit[2] == 'nero'):
-		pass #redirect to black winning page
-	elif(sit[2] == 'none'):
-		pass #redirect to draw page
-	else:
+	# if(sit[2] == 'bianco'):
+	# 	pass #redirect to white winning page
+	# elif(sit[2] == 'nero'):
+	# 	pass #redirect to black winning page
+	# elif(sit[2] == 'none'):
+	# 	pass #redirect to draw page
+	# else:
 	#scrivere il codice per session storage usa flask-session
 	#quando si aggiorna il fen aggiungerlo al testo del tweet
-		return redirect('https://twitter.com/intent/tweet?text=#ingsw2022/2023%20La%20mia%20mossa%20in%20notazione%20algebrica:%20' + move + sit[1])
+	return redirect('https://twitter.com/intent/tweet?text=%23ingsw2022/2023%20La%20mia%20mossa%20in%20notazione%20algebrica:%20' + move)
 	#aggiungere #ingsw2022/23 o qualcosa del genere al teso del tweet
 
 #@app.route('get_move')

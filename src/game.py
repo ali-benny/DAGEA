@@ -12,20 +12,18 @@ def countdown(t):
         t -= 1
 
 def white_turn(move, board):
-    table = chess.Board(board)
+    table = board
     if(move in list(table.legal_moves)):
         table.push_san(move)
-        fen = table.fen
-
+        return (table, False)
     if(table.outcome() != None):
         winner =  table.outcome().winner
-    return (fen,winner)
+        return (table,winner)
 
 def black_turn(account):
     api = twitter.__init__()
     countdown(60)
     tweets = api.user_timeline(screen_name = account, count = 1)
-    tmp = []
     tweet_id = [tweet.id for tweet in tweets] #riceve l'id dell'ultimo post utilizzato per giocare
 
     replies=[]
@@ -37,13 +35,12 @@ def black_turn(account):
 
 
 def __main__(board,move,account):
-        
-    nboard = chess.Board(board)
+    # nboard = chess.Board(board)
     nmove = move
     naccount = account
     #inserire dentro status le variabili passate così in caso di tasto sbagliato non succede nulla
-    if(chess.Board(nboard).turn):
-            status = white_turn(nmove,nboard)
+    if(board.turn):
+            status = white_turn(nmove,board)
     else:
             status = black_turn(naccount)
 
