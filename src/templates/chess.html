@@ -3,6 +3,22 @@
 {% block html_title %}Play Chess{% endblock %}
 
 {% block main_content %}
+
+<!-- ricopiare il main e aggiungere il file css se non si trovano altre soluzioni-->
+
+<div class="text-center">
+    <h4>Per consultare le regole degli scacchi clicca il pulsante verde</h4>
+</div>
+<div class="d-grid gap-2 col-6 mx-auto">
+    <a href="/rules"><button type="button" class="btn btn-success">Regole</button></a>
+</div>
+<div class="text-center">
+    <h4>Per iniziare una nuova partita premere il taso rosso</h4>
+</div>
+<div class="d-grid gap-2 col-6 mx-auto">
+    <a href="/game"><button type="button" class="btn btn-danger">Nuova partita</button></a>
+</div>
+<!-- probabilmente da eliminare
 <div>
     <div class="text-center">
         <h2 class="pb-2">Per iniziare a giocare a scacchi premi il pulsante</h2>
@@ -16,4 +32,6 @@
         </div>
     </form>
 </div>
+-->
+
 {% endblock %}

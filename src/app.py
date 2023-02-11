@@ -1,6 +1,6 @@
 import os
 try:
-    from flask import Flask, render_template, request
+    from flask import Flask, render_template, request, redirect
     import getTweet
     import sqlite3
     import jinja2
@@ -10,8 +10,10 @@ except ModuleNotFoundError:
     os.system('pip install sqlite3')
     os.system('pip install jinja2')
 
-from scacchi import scacchi_101
-from scacchi import scacchi_engine
+
+import game
+import chess
+import chess.svg
 
 app = Flask(__name__)
 
@@ -84,18 +86,46 @@ def explainPage():
 def chessPage():
 	return render_template('chess.html')
 
-@app.route('/startGame')
-def chessGame():
-	print('PRIMA: scacchi_101.__main__()')
-	scacchi_101.__main__()
-	# Va in loop perche' non esce mai dalla funzione __main__()
-	return render_template('chess.html')
+#@app.route('/partita')
+#def chessStart():
+	#scacchi_101.__main__()
+#	return render_template('chess.html')
 
 @app.route('/credits')
 def creditsPage():
 	return render_template('credits.html')
 
+@app.route('/rules')
+def rulePage():
+	return render_template('chess_rules.html')
 
+@app.route('/game')
+def chessGame():
+	board = chess.Board("8/8/8/8/4N3/8/8/8 w - - 0 1")#si può fare creando un nuovo html
+	table = chess.svg.board(board)
+	return render_template('partita.html')
+
+@app.route('/give_move', methods=['GET', 'POST'])
+def WTurn():
+	board = chess.Board()
+	move=request.form['move'] #prendo la mossa in notazione algebrica
+	account=request.form['account'] #prendo il nome dell'account per poter prendere il primo tweet
+	sit = game.__main__(board,move,account)#
+	if(sit[2] == 'bianco'):
+		pass #redirect to white winning page
+	elif(sit[2] == 'nero'):
+		pass #redirect to black winning page
+	elif(sit[2] == 'none'):
+		pass #redirect to draw page
+	else:
+	#scrivere il codice per session storage usa flask-session
+	#quando si aggiorna il fen aggiungerlo al testo del tweet
+		return redirect('https://twitter.com/intent/tweet?text=#ingsw2022/2023%20La%20mia%20mossa%20in%20notazione%20algebrica:%20' + move + sit[1])
+	#aggiungere #ingsw2022/23 o qualcosa del genere al teso del tweet
+
+#@app.route('get_move')
+#def BTurn():
+	game.__main__()
 
 if __name__=="__main__":
     app.run(debug=True)
