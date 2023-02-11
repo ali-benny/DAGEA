@@ -38,7 +38,7 @@ export const piecesRender = {
         for(const piecePosition in gameSetup) {
             const pieceType = gameSetup[piecePosition]
             const pieceImageLocation = piecesImages[pieceType]
-            const imgElement = document.createElement('img')
+            const imgElement = document.createElement('imgmagini')
             imgElement.classList.add('piece')
             imgElement.setAttribute('piece-type', pieceType)
             imgElement.src = `${pieceImageLocation}`

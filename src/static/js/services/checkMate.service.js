@@ -1,4 +1,4 @@
-import {pieceDetermine} from "./piecesDetermine.service.js"
+import {piecesDetermine} from "./piecesDetermine.service.js"
 import {$, $$$, deepclone} from '../utils/utils.js'
 import {chessConfig} from "../config/chessConfig.config.js"
 import {playerTurn} from "./playerTurn.service.js"
@@ -30,7 +30,7 @@ export const checkMate = {
         piecesDetermine.determinations = newDeterminations
 
         delete piecesDetermine.determinations[pieceSelectedPosition]
-        pieceDetermine.determinations[pieceBoxPosition] = {}
+        piecesDetermine.determinations[pieceBoxPosition] = {}
 
         const pieceBoxPositionObject = Object.
             keys(piecesDetermine.determinations).
