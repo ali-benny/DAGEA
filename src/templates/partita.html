@@ -3,14 +3,15 @@
 {% block html_title %}Play Chess{% endblock %}
 
 {% block main_content %}
-    <form action="/give_move" method="POST" target="_blank">
-        Mossa:<input type="text" name="move">
-        Account twitter (senza @):<input type="text" name="account">
-        <input type="submit" value="Condividi mossa">
-    </form>
-    <div class="d-grid gap-2 col-6 mx-auto">
-        <a href="/get_move"><button type="button" class="btn btn-light">Ricevi mossa da Twitter</button></a>
+    <div class="conainer p-3">
+        <form action="/give_move" method="POST" target="_blank">
+            Mossa: <input type="text" name="move"><br><br>
+            Account twitter (senza @): <input type="text" name="account">
+            <input type="submit" value="Condividi mossa">
+        </form>
     </div>
-    <img src="../static/img/board.svg">
-    <!--<svg heigth="400" width="400" src="{{photo}}"></svg>-->
+    <div class="d-grid gap-2 col-6 mx-auto">
+        <a href="/get_move"><button type="button" class="btn btn-primary">Ricevi mossa da Twitter</button></a><br><br>
+    </div>
+    <img src="../static/img/board.svg" class="center" style="width:600px;height:600px;display:block;margin-left:auto;margin-right:auto;">
     {% endblock %}

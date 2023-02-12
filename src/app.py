@@ -1,6 +1,6 @@
 import os
 try:
-    from flask import Flask, render_template, request, redirect
+    from flask import Flask, render_template, request, redirect, session
     import getTweet
     import sqlite3
     import jinja2
@@ -14,8 +14,12 @@ except ModuleNotFoundError:
 import game
 import chess
 import chess.svg
+from flask_session import Session
 
 app = Flask(__name__)
+app.config["SESSION_PERMANENT"] = False
+app.config["SESSION_TYPE"] = "filesystem"
+Session(app)
 
 startTweetLimit = 6
 researchMethods = [
@@ -101,30 +105,43 @@ def rulePage():
 
 @app.route('/game')
 def chessGame():
-	board = chess.Board()#si può fare creando un nuovo html
+	#board = chess.Board()#si può fare creando un nuovo html
+	if not session.get("scacchiera"):
+		board = chess.Board()
+	else:
+		board = session["scacchiera"]
+	
 	table = chess.svg.board(board)
+
 	f = open('./static/img/board.svg', 'w')
 	f.write(table)
 	f.close()
+
 	return render_template('partita.html', table=table)
 
 @app.route('/give_move', methods=['GET', 'POST'])
 def WTurn():
-	board = chess.Board()
+	if not session.get("scacchiera"):
+		board = chess.Board() #creo la scacchiera nel session storage se non è presente
+	else:
+		board = session["scacchiera"] #prendo la scacchira nel session storage se presente
+	
 	move=request.form['move'] #prendo la mossa in notazione algebrica
 	account=request.form['account'] #prendo il nome dell'account per poter prendere il primo tweet
-	sit = game.__main__(board,move,account)#
-	# if(sit[2] == 'bianco'):
-	# 	pass #redirect to white winning page
-	# elif(sit[2] == 'nero'):
-	# 	pass #redirect to black winning page
-	# elif(sit[2] == 'none'):
-	# 	pass #redirect to draw page
-	# else:
-	#scrivere il codice per session storage usa flask-session
-	#quando si aggiorna il fen aggiungerlo al testo del tweet
-	return redirect('https://twitter.com/intent/tweet?text=%23ingsw2022/2023%20La%20mia%20mossa%20in%20notazione%20algebrica:%20' + move)
-	#aggiungere #ingsw2022/23 o qualcosa del genere al teso del tweet
+
+	sit = game.__main__(board,move,account)
+
+	session["scacchiera"] = sit
+
+	if(sit.outcome() != None):
+		if(sit.outcome().winner == None):
+			pass#draw
+		elif(sit.outcome().winner):
+			pass#white
+		else:
+			pass#black
+	return redirect('https://twitter.com/intent/tweet?text=La%20mia%20mossa%20in%20notazione%20algebrica:%20'+move+"%0AIl%20mio%20fen:%20"+sit+"%0A%23ingsw2223")
+	#se la mossa non esiste reindirizzare dove conviene
 
 #@app.route('get_move')
 #def BTurn():

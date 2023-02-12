@@ -15,12 +15,9 @@ def white_turn(move, board):
     table = board
     if(move in list(table.legal_moves)):
         table.push_san(move)
-        return (table, False)
-    if(table.outcome() != None):
-        winner =  table.outcome().winner
-        return (table,winner)
+        return table
 
-def black_turn(account):
+def black_turn(account, board):
     api = twitter.__init__()
     countdown(60)
     tweets = api.user_timeline(screen_name = account, count = 1)
@@ -30,23 +27,30 @@ def black_turn(account):
     for tweet in tweepy.Cursor(api.search,q='to:'+account, result_type='recent', timeout=999999).items(100):
         if hasattr(tweet, 'in_reply_to_status_id_str'):
             if (tweet.in_reply_to_status_id_str==tweet_id):#prende le risposte dell'ultimo tweet
-                replies.append(tweet)
+                replies.append(tweet.text)
     
+    if(len(replies) == 0):
+         pass#ritorna il fatto che non ci sono riaposte e quindi il bianco vince, posso passare una stringa
+
+    c = Counter(replies)
+    for i in range(c):
+        if(c.most_common(i + 1) in list(board.legal_moves)):
+              board.push_san(c.most_common(i + 1))
+              return board
+
+    #return bianco vince   
+        
 
 
 def __main__(board,move,account):
-    # nboard = chess.Board(board)
-    nmove = move
-    naccount = account
+        
     #inserire dentro status le variabili passate così in caso di tasto sbagliato non succede nulla
     if(board.turn):
-            status = white_turn(nmove,board)
+            status = white_turn(move,board)
     else:
-            status = black_turn(naccount)
+            status = black_turn(account,board)
 
     return status
-    #dopo aver ottenuto le mosse dalle risposte faccio c=counter(lista_mosse)
-    #board.push_san(c.first) inoltre controllare che la mossa con più voti sia fattibile
     #da fare anche i test per questo python
 
 if __name__ == '__main__':
