@@ -15,7 +15,11 @@ def white_turn(move, board):
     table = board
     if(move in list(table.legal_moves)):
         table.push_san(move)
-        return table
+    if(table.outcome() != None):
+        winner = table.outcome().winner
+        return winner
+    
+    return table
 
 def black_turn(account, board):
     api = twitter.__init__()
@@ -42,13 +46,13 @@ def black_turn(account, board):
         
 
 
-def __main__(board,move,account):
+def __main__(board,x):
         
     #inserire dentro status le variabili passate così in caso di tasto sbagliato non succede nulla
     if(board.turn):
-            status = white_turn(move,board)
+        status = white_turn(x,board)
     else:
-            status = black_turn(account,board)
+        status = black_turn(x,board)
 
     return status
     #da fare anche i test per questo python

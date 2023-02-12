@@ -108,6 +108,7 @@ def chessGame():
 	#board = chess.Board()#si può fare creando un nuovo html
 	if not session.get("scacchiera"):
 		board = chess.Board()
+		session["scacchiera"] = board
 	else:
 		board = session["scacchiera"]
 	
@@ -123,16 +124,44 @@ def chessGame():
 def WTurn():
 	if not session.get("scacchiera"):
 		board = chess.Board() #creo la scacchiera nel session storage se non è presente
+		session["scacchiera"] = board
 	else:
 		board = session["scacchiera"] #prendo la scacchira nel session storage se presente
 	
 	move=request.form['move'] #prendo la mossa in notazione algebrica
+
+	#if( not board.turn):
+	#sit = game.__main__(board,move)#mettere tutto dentro questo if e poi aggiornare la scacchiera
+	#if(move in list(board.legal_moves)):
+		#board.push_san("d4")
+	s = chess.Move.from_uci(move)
+	if(s in board.legal_moves):
+		board.push(s)
+	
+	session["scacchiera"] = board
+	
+	#if(sit == True or sit == False or sit == None):
+	#	if(sit == None):
+	#		pass#draw
+	#	elif(sit == True):
+	#		pass#white
+	#	else:
+	#		pass#black
+	return redirect('https://twitter.com/intent/tweet?text=La%20mia%20mossa%20in%20notazione%20algebrica:%20'+move+"%0AIl%20mio%20fen:%0A"+str(board)+ "%0AInserire%20casella%20di%20partenza%20e%20casella%20di%20arrivo%20per%20giocare" +"%0A%23ingsw2223")
+	#se la mossa non esiste reindirizzare dove conviene
+
+@app.route('/get_move', methods=['GET', 'POST'])
+def BTurn():
+	if not session.get("scacchiera"):
+		board = chess.Board() #creo la scacchiera nel session storage se non è presente
+	else:
+		board = session["scacchiera"] #prendo la scacchira nel session storage se presente
+
 	account=request.form['account'] #prendo il nome dell'account per poter prendere il primo tweet
 
-	sit = game.__main__(board,move,account)
-
+	if(not board.turn):
+		sit = game.__main__(board, account)#stessa cosa da fare anche in questo if
 	session["scacchiera"] = sit
-
 	if(sit.outcome() != None):
 		if(sit.outcome().winner == None):
 			pass#draw
@@ -140,12 +169,6 @@ def WTurn():
 			pass#white
 		else:
 			pass#black
-	return redirect('https://twitter.com/intent/tweet?text=La%20mia%20mossa%20in%20notazione%20algebrica:%20'+move+"%0AIl%20mio%20fen:%20"+sit+"%0A%23ingsw2223")
-	#se la mossa non esiste reindirizzare dove conviene
-
-#@app.route('get_move')
-#def BTurn():
-	game.__main__()
 
 if __name__=="__main__":
     app.run(debug=True)
