@@ -137,17 +137,18 @@ def leredita():
         sentimentalAnalysis.update({"analysisDatas": SentimentalAnalysis.analysisDatas})
         parola = eredita.ghigliottina()
         spettatori = eredita.ereditiers(parola['vincente'])
+        print('🌈spettatori=', spettatori)
         total = eredita.total()
         return render_template(
             "eredita.html",
             tweetCards=tweetCards,
             filterDatas=filterDatas,
             sentimentalAnalysis=sentimentalAnalysis,
+            document = 'eredita.html',
             solution = parola,    # soluzione ultima puntata
             users = spettatori,
             total = total,
             time_chart = data_time_chart,
-            document = 'eredita.html'
         )
 
 

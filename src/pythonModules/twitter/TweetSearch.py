@@ -1,6 +1,6 @@
 import os
-import sys
-
+# import sys
+import random
 # sys.path.append("..")
 from .utils import filtersbar 
 from .APIv2 import APIv2
@@ -45,7 +45,7 @@ class TweetSearch(APIv2):
                             start_time=cls.start_time,
                             end_time=cls.end_time,
                             media_fields=cls.media_fields,
-                            max_results=100, limit=6)
+                            max_results=100, limit=random.randint(2, 8))
                     else:
                         cls.response = cls.client.search_recent_tweets(
                         query=cls.query,

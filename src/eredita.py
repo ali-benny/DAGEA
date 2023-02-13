@@ -18,7 +18,8 @@ import cv2
 from matplotlib import pyplot as plt
 import numpy as np
 # *fine dipendenze*
-from datetime import date
+from datetime import date, datetime
+from datetime import timedelta
 
 puntata = {'data': '', 'indovina': [], 'vincente': ''}
 tweet_an = 0
@@ -59,12 +60,16 @@ def ereditiers(parola_vincente):
 	total = 0
 	winner = 0
 	global tweet_an		# numero di tweet analizzati
+	global puntata
 	tweet_an = 0
-	TweetSearch.setDatas(query=query, tweepyCursor=True)		
+	end_time = None
+	data_ultima_puntata = get_data(puntata['data'])
+	if datetime.strptime(data_ultima_puntata, "%Y-%m-%d") >= date.today() - timedelta(days = 1):	# se la puntata non è stata trasmessa ieri
+		end_time = "{}T20:10".format(data_ultima_puntata)	# cerco fino alle 20:10 del giorno della puntata
+	TweetSearch.setDatas(query=query, tweepyCursor=True, end_time=end_time)		
 	TweetSearch.researchDecree(researchType='researchByKeyword')
 	paginator = TweetSearch.response
 	if paginator is not None:
-		data_ultima_puntata = get_data(puntata['data'])
 		for response in paginator:
 			for tweet in response.data:
 				tweet_an += 1
