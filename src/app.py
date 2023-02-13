@@ -139,7 +139,7 @@ def WTurn():
 				else:
 					return render_template('black.html')
 			#invio il tweet con la mossa fatta
-			return redirect('https://twitter.com/intent/tweet?text=La%20mia%20mossa%20in%20notazione%20algebrica:%20'+move+"%0AIl%20mio%20fen:%0A"+str(board)+ "%0AInserire%20casella%20di%20partenza%20e%20casella%20di%20arrivo%20per%20giocare" +"%0A%23ingsw2223")
+			return redirect('https://twitter.com/intent/tweet?text=La%20mia%20mossa%20in%20notazione%20algebrica:%20'+move+"%0AIl%20mio%20fen:%0A"+str(board)+ "%0AInserire%20casella%20di%20partenza%20e%20casella%20di%20arrivo%20per%20giocare" +"%0A%23Ingsw2022")
 	
 	return render_template('partita.html')
 
