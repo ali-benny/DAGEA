@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block html_title %}Play Chess{% endblock %}
+
+{% block main_content %}
+<div>
+    <div class="text-center">
+        <h3>Elenco dei pezzi della scacchiera e loro movimenti</h3>
+        <h5>La notazione utilizzata tra parentesi viene definita notazione algebrica</h5>
+    </div>
+</div>
+<div>
+    <ul>
+        <li>Re (K): Il re è il pezzo fondamentale, la sua caduta determinerà la perdita della partita. Si può
+        muovere solamente a distanza di una casella in qualsiasi direzione a patto che non vada sotto scacco.
+        Per esempio si può spostare dalla casella e1 alla casella f1/e2 ecc...</li>
+        <li>Regina (Q): Il secondo pezzo più importante in quanto molto versatile e dotata di incredible mobilità,
+         infatti si può muovere di tutte le caselle che vuole in ogni direzione. Per esempio dalla casella d1 
+         alla casella d8</li>
+        <li>Torre (R): Due a disposizione per ogni giocatore, si trovano ai lati della scacchiera e si possono 
+         muovere solamente a croce quante caselle vogliono. Ad esempio dalla casella a1 alla casella g1</li>
+        <li>Alfiere (B): Due a disposizione per ogni giocatore, si trovano vicino a re e regina e si possono muovere 
+        solamente in diagonale quante caselle vogliono. Ad esempio dalla casella c1 alla casella f4</li>
+        <li>Cavallo (N): Due a disposizione per ogni giocatore, si trovano tra torri e alfieri, si possono muovere 
+        in modo strano rispetto agli atri pezzi, cioè ad L di quattro caselle, contando anche quella di partenza. 
+        Ad esempio dalla casella b1 alla casella c3 </li>
+        <li>Pedone (p): Otto a disposizione per ogni giocatori, possono essere considerati come deboli ma in realtà 
+        tornano molto utili quando riescono a raggiungere il fondo della scacchiera. I pedoni si possono muovere solamente 
+        di una casella in avanti tranne che per la prima volte dove possono muoversi di due caselle. Il pedone può 
+        catturare i pezzi avversari solamente ad una casella di distanza solamente in diagonale avanti.
+        Ad esempio dalla casella a2 alla casella a3/a4</li>
+    </ul>
+</div>
+<div>
+    <h3>Elenco delle regole principali</h3>
+</div>
+<div>
+    <ul>
+        <li>Promozione: Quando un pedone riesce a raggiungere il fondo della scacchiera questo si può promuovere
+        diventando cavallo,alfiere,cavallo o regina in base alle necessità del giocatore, quasi sempre si tratta della regina 
+        a meno di possibili matti/stalli</li>
+        <li>Arrocco: Consiste nel muovere il re di due caselle a destra o a sinistra in direzione di una delle due torri e 
+        successivamente muovere la torre nella casa compresa tra quelle di partenza e di arrivo del re.
+        L'arrocco può avvenire solamente se nè il re nè la torre sono stati mossi, se lo spazio tra re e torre 
+        è vuoto e se il re non si trova sotto scacco in seguito all'arrocco</li>
+        <li>En-passant: La presa en passant è una mossa che coinvolge esclusivamente i pedoni e può essere eseguita da 
+        ciascun pedone che si trovi nelle condizioni adatte. L'en passant è legato alla caratteristica del pedone di spostarsi 
+        di due case quando abbandona la sua posizione di partenza. Quando un pedone, muovendosi di due passi, finisce esattamente accanto 
+        ad un pedone avversario, nella mossa successiva quest'ultimo può catturarlo come se si fosse mosso di un passo solo. 
+        È importante notare che, quando un pedone ha la possibilità di effettuare una presa en passant nei confronti di 
+        un pedone avversario, deve realizzarla subito, al verificarsi della posizione, altrimenti perde il diritto a farlo.</li>
+        <li>Scacco e Scacco matto: Lo scacco avviene qundo il re si trova sotto attacco nemico ma può evitare di essere 
+        catturato mentre con lo  scacco matto il re non può essere prottetto e questo comparta la perdita della sfida</li>
+        <li>Patta: Patta è il termine con cui nel gioco degli scacchi si indica una partita terminata in parità.</li>
+        <li>Stallo: Lo stallo avviene qunado non è più possibile eseguire mosse e quindi la partita si conclude in pareggio</li>
+    </ul>
+</div>
+{% endblock %}
