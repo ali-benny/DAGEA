@@ -1,20 +1,23 @@
 import os
 try:
     from flask import Flask, render_template, request, redirect, session
+    from flask_session import Session
     import getTweet
     import sqlite3
+    import chess
     import jinja2
 except ModuleNotFoundError:
     os.system('pip install flask')
+    os.system('pip install flask_session')
     os.system('pip install getTweet')
     os.system('pip install sqlite3')
+    os.system('pip install chess')
     os.system('pip install jinja2')
 
-
-import game
-import chess
 import chess.svg
-from flask_session import Session
+import game
+
+
 
 app = Flask(__name__)
 app.config["SESSION_PERMANENT"] = False
@@ -90,11 +93,6 @@ def explainPage():
 def chessPage():
 	return render_template('chess.html')
 
-#@app.route('/partita')
-#def chessStart():
-	#scacchi_101.__main__()
-#	return render_template('chess.html')
-
 @app.route('/credits')
 def creditsPage():
 	return render_template('credits.html')
@@ -105,7 +103,6 @@ def rulePage():
 
 @app.route('/game')
 def chessGame():
-	#board = chess.Board()#si può fare creando un nuovo html
 	if not session.get("scacchiera"):
 		board = chess.Board()
 		session["scacchiera"] = board
@@ -129,26 +126,23 @@ def WTurn():
 		board = session["scacchiera"] #prendo la scacchira nel session storage se presente
 	
 	move=request.form['move'] #prendo la mossa in notazione algebrica
+	if(board.turn):
+		s = chess.Move.from_uci(move) #Prendo la mossa in input
+		if(s in board.legal_moves): #Controllo che possa essere eseguita e che sia il turno del bianco
+			board.push(s)
+			session["scacchiera"] = board #la eseguo, aggiorno la scacchiera e controllo se la partita è terminata
+			if(board.outcome() != None):
+				if(board.outcome().winner == None):
+					return render_template('draw.html')
+				elif(board.outcome().winner):
+					return render_template('white.html')
+				else:
+					return render_template('black.html')
+			#invio il tweet con la mossa fatta
+			return redirect('https://twitter.com/intent/tweet?text=La%20mia%20mossa%20in%20notazione%20algebrica:%20'+move+"%0AIl%20mio%20fen:%0A"+str(board)+ "%0AInserire%20casella%20di%20partenza%20e%20casella%20di%20arrivo%20per%20giocare" +"%0A%23ingsw2223")
+	
+	return render_template('partita.html')
 
-	#if( not board.turn):
-	#sit = game.__main__(board,move)#mettere tutto dentro questo if e poi aggiornare la scacchiera
-	#if(move in list(board.legal_moves)):
-		#board.push_san("d4")
-	s = chess.Move.from_uci(move)
-	if(s in board.legal_moves):
-		board.push(s)
-	
-	session["scacchiera"] = board
-	
-	#if(sit == True or sit == False or sit == None):
-	#	if(sit == None):
-	#		pass#draw
-	#	elif(sit == True):
-	#		pass#white
-	#	else:
-	#		pass#black
-	return redirect('https://twitter.com/intent/tweet?text=La%20mia%20mossa%20in%20notazione%20algebrica:%20'+move+"%0AIl%20mio%20fen:%0A"+str(board)+ "%0AInserire%20casella%20di%20partenza%20e%20casella%20di%20arrivo%20per%20giocare" +"%0A%23ingsw2223")
-	#se la mossa non esiste reindirizzare dove conviene
 
 @app.route('/get_move', methods=['GET', 'POST'])
 def BTurn():
@@ -159,16 +153,21 @@ def BTurn():
 
 	account=request.form['account'] #prendo il nome dell'account per poter prendere il primo tweet
 
-	if(not board.turn):
-		sit = game.__main__(board, account)#stessa cosa da fare anche in questo if
-	session["scacchiera"] = sit
-	if(sit.outcome() != None):
-		if(sit.outcome().winner == None):
-			pass#draw
-		elif(sit.outcome().winner):
-			pass#white
+	if(board.turn):  #controllo che sia il turno del nero
+		return render_template('partita.html')
+	else:
+		sit = game.__main__(board, account) #prendo la mossa più votata in risposta all'ultimo tweet e controllo se la partita è terminata
+		if(sit == "Bianco"):
+			return render_template("white.html")
+		session["scacchiera"] = sit
+	if(board.outcome() != None):
+		if(board.outcome().winner == None):
+			return render_template('draw.html')
+		elif(board.outcome().winner):
+			return render_template('white.html')
 		else:
-			pass#black
+			return render_template('black.html')
+
 
 if __name__=="__main__":
     app.run(debug=True)

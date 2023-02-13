@@ -37,20 +37,22 @@
 <div>
     <ul>
         <li>Promozione: Quando un pedone riesce a raggiungere il fondo della scacchiera questo si può promuovere
-        diventando cavallo,alfiere,cavallo o regina in base alle necessità del giocatore (sempre regina a parte specifiche
-        occasioni)</li>
-        <li>Arrocco: L'arrocco consiste nello scambiare il re e la torre permettendo la nostro re di essere al 
-        sicuro. Esistono due tipi di arrocco quello normale e quello lungo. Quello normale avviene tra il re e la torre 
-        vicina (quella che si trova alla destra del giocatore), mentre quello lungo tr il re e la torre lontana (quella 
-        che si trova alla sinistra del giocatore). L'arrocco può avvenire solamete se non si è mosso il proprio re</li>
-        <li>En-passant: Avviene quando un pedone appena mosso affianca un pedone nemico, in questo caso il pedone avversario
-        può mangiare il pedone appena mosso anche se non in ina posizione consona</li>
+        diventando cavallo,alfiere,cavallo o regina in base alle necessità del giocatore, quasi sempre si tratta della regina 
+        a meno di possibili matti/stalli</li>
+        <li>Arrocco: Consiste nel muovere il re di due caselle a destra o a sinistra in direzione di una delle due torri e 
+        successivamente muovere la torre nella casa compresa tra quelle di partenza e di arrivo del re.
+        L'arrocco può avvenire solamente se nè il re nè la torre sono stati mossi, se lo spazio tra re e torre 
+        è vuoto e se il re non si trova sotto scacco in seguito all'arrocco</li>
+        <li>En-passant: La presa en passant è una mossa che coinvolge esclusivamente i pedoni e può essere eseguita da 
+        ciascun pedone che si trovi nelle condizioni adatte. L'en passant è legato alla caratteristica del pedone di spostarsi 
+        di due case quando abbandona la sua posizione di partenza. Quando un pedone, muovendosi di due passi, finisce esattamente accanto 
+        ad un pedone avversario, nella mossa successiva quest'ultimo può catturarlo come se si fosse mosso di un passo solo. 
+        È importante notare che, quando un pedone ha la possibilità di effettuare una presa en passant nei confronti di 
+        un pedone avversario, deve realizzarla subito, al verificarsi della posizione, altrimenti perde il diritto a farlo.</li>
         <li>Scacco e Scacco matto: Lo scacco avviene qundo il re si trova sotto attacco nemico ma può evitare di essere 
         catturato mentre con lo  scacco matto il re non può essere prottetto e questo comparta la perdita della sfida</li>
-        <li>Patta: In alcuni casi la partita si può concludere con il re non sotto scacco ma comunque non può muoversi 
-        in nessuna casella, in questo caso la partita termina in pareggio. Altri motivi per cui la partita può 
-        terminare in patta è quando le stesse mosse vengono ripetute 5 volte consecutive oppure quando vengono eseguite 
-        un numero numero di mosse senza catture.</li>
+        <li>Patta: Patta è il termine con cui nel gioco degli scacchi si indica una partita terminata in parità.</li>
+        <li>Stallo: Lo stallo avviene qunado non è più possibile eseguire mosse e quindi la partita si conclude in pareggio</li>
     </ul>
 </div>
 {% endblock %}
