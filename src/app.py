@@ -6,15 +6,18 @@ import pythonModules.map.map as m
 import time
 
 try:
-    from flask import Flask, render_template, request, session
-    from flask_session import Session 
+    from flask import Flask, render_template, request, session, redirect
+    from flask_session import Session
+    import chess
     import configparser  # Used for APIv1 initialization
 except ModuleNotFoundError:
     os.system("pip install flask")
     os.system("pip install flask_session")
+    os.system("pip install chess")
     os.system("pip install configparser")
 
 import game
+import chess.svg
 from pythonModules.fantacitorio import FantacitorioAnalysis as FA
 from pythonModules.fantacitorio import FantacitorioTeams as FT
 from pythonModules.twitter.TweetSearch import TweetSearch
