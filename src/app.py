@@ -32,7 +32,8 @@ SentimentalAnalysis.__init__(
     BEARER_TOKEN=config["twitter"]["bearer_token"],
     path="./static/img/graphs/",
 )
-FA.FantacitorioAnalysis.__init__(path="./pythonModules/fantacitorio/punti.xlsx", numberOfTurns=7)
+FA.FantacitorioAnalysis.__init__(path="./pythonModules/fantacitorio/punti.xlsx", numberOfTurns=9)
+#FA.FantacitorioAnalysis.updateGraphs()     # Eseguire questa riga solo se bisogna aggiornare le immagini dei grafici del Fantacitorio
 filterDatas = filtersbar.initFilterDatas()
 
 folders.deleteFolderFiles("./static/img/graphs/")

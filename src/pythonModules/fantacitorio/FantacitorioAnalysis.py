@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 from ..fantacitorio import Fantacitorio
+#import Fantacitorio
 
 class FantacitorioAnalysis(Fantacitorio.Fantacitorio):
     graphsPath = ""
@@ -26,6 +27,12 @@ class FantacitorioAnalysis(Fantacitorio.Fantacitorio):
     ############################## GRAPHS METHODS ##############################
 
     @classmethod
+    def updateGraphs(cls):
+        cls.graph_politicians()
+        cls.graph_turns(cls.turns)
+
+    '''
+    @classmethod
     # Funzione attualmente inutilizzata
     def graph_politician(cls, name: str) -> None:
         fig = plt.figure()
@@ -37,7 +44,9 @@ class FantacitorioAnalysis(Fantacitorio.Fantacitorio):
             yLabel="score",
             xLabel="turns",
             fileName="graph_politician_" + name.replace(" ", "-"),
+            savePath=".static/img/fantacitorio/"
         )
+    '''
 
     @classmethod
     # Data  lista di nomi, mostra un grafico dell'andamento dello score di ogni nome passato alla funzione
@@ -61,6 +70,7 @@ class FantacitorioAnalysis(Fantacitorio.Fantacitorio):
                 yLabel="score",
                 xLabel="turns",
                 fileName="graph_politicians_" + str(int(graphIndex / plotsPerGraph)),
+                savePath="./static/img/fantacitorio/politiciansGroups/"
             )
             plt.clf()
             graphIndex += plotsPerGraph
@@ -86,7 +96,7 @@ class FantacitorioAnalysis(Fantacitorio.Fantacitorio):
                     turnScores.append(accumulativeScore)
             plt.plot(range(0, len(turnScores)), turnScores, label=turn, marker="o")
         cls._saveGraph(
-            fig, yLabel="score", xLabel="times", fileName="graph_turns_allTurns"
+            fig, yLabel="score", xLabel="times", fileName="graph_turns_allTurns", savePath="./static/img/fantacitorio/"
         )
 
     @classmethod
