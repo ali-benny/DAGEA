@@ -1,9 +1,13 @@
 import chess
 import chess.svg
 from collections import Counter
-import twitter
 import tweepy
 import time
+try:
+	from pythonModules.twitter.TweetSearch import TweetSearch
+except (ModuleNotFoundError, ImportError):
+	from .pythonModules.twitter.TweetSearch import TweetSearch
+
 
 def countdown(t):
     while t:
@@ -12,7 +16,7 @@ def countdown(t):
 
 
 def black_turn(account, board):
-    api = twitter.__init__()
+    api = TweetSearch.__init__()
     bianco = "Bianco"
     countdown(60)
     tweets = api.user_timeline(screen_name = account, count = 1)

@@ -259,6 +259,10 @@ def fantacitorio():
 def chessPage():
     return render_template("chess.html")
 
+@app.route('/rules')
+def chessRules():
+      return render_template("chess_rules.html")
+
 @app.route('/game')
 def chessGame():
 	if not session.get("scacchiera"):
@@ -269,7 +273,7 @@ def chessGame():
 	
 	table = chess.svg.board(board)
 
-	f = open('./static/img/board.svg', 'w')
+	f = open('./static/board.svg', 'w')
 	f.write(table)
 	f.close()
 
@@ -288,16 +292,16 @@ def WTurn():
 		s = chess.Move.from_uci(move) #Prendo la mossa in input
 		if(s in board.legal_moves): #Controllo che possa essere eseguita e che sia il turno del bianco
 			board.push(s)
-			session["scacchiera"] = board #la eseguo, aggiorno la scacchiera e controllo se la partita è terminata
-			if(board.outcome() != None):
-				if(board.outcome().winner == None):
-					return render_template('draw.html')
-				elif(board.outcome().winner):
-					return render_template('white.html')
-				else:
-					return render_template('black.html')
+		session["scacchiera"] = board #la eseguo, aggiorno la scacchiera e controllo se la partita è terminata
+		if(board.outcome() != None):
+			if(board.outcome().winner == None):
+				return render_template('draw.html')
+			elif(board.outcome().winner):
+				return render_template('white.html')
+			else:
+				return render_template('black.html')
 			#invio il tweet con la mossa fatta
-			return redirect('https://twitter.com/intent/tweet?text=La%20mia%20mossa%20in%20notazione%20algebrica:%20'+move+"%0AIl%20mio%20fen:%0A"+str(board)+ "%0AInserire%20casella%20di%20partenza%20e%20casella%20di%20arrivo%20per%20giocare" +"%0A%23Ingsw2022")
+		return redirect('https://twitter.com/intent/tweet?text=La%20mia%20mossa%20in%20notazione%20algebrica:%20'+move+"%0AIl%20mio%20fen:%0A"+str(board)+ "%0AInserire%20casella%20di%20partenza%20e%20casella%20di%20arrivo%20per%20giocare" +"%0A%23Ingsw2022")
 	
 	return render_template('partita.html')
 
