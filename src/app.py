@@ -6,14 +6,15 @@ import pythonModules.map.map as m
 import time
 
 try:
-    from flask import Flask, render_template, request
+    from flask import Flask, render_template, request, session
+    from flask_session import Session 
     import configparser  # Used for APIv1 initialization
 except ModuleNotFoundError:
     os.system("pip install flask")
+    os.system("pip install flask_session")
     os.system("pip install configparser")
 
-from scacchi import scacchi_101
-from scacchi import scacchi_engine
+import game
 from pythonModules.fantacitorio import FantacitorioAnalysis as FA
 from pythonModules.fantacitorio import FantacitorioTeams as FT
 from pythonModules.twitter.TweetSearch import TweetSearch
@@ -22,6 +23,9 @@ import eredita
 import time_chart
 
 app = Flask(__name__)
+app.config["SESSION_PERMANENT"] = False
+app.config["SESSION_TYPE"] = "filesystem"
+Session(app)
 
 config = configparser.ConfigParser()
 config.read(os.path.abspath("../config.ini"))
@@ -252,12 +256,72 @@ def fantacitorio():
 def chessPage():
     return render_template("chess.html")
 
-
-@app.route("/startGame")
+@app.route('/game')
 def chessGame():
-    scacchi_101.__main__()
-    # Va in loop perche' non esce mai dalla funzione __main__()
-    return render_template("chess.html")
+	if not session.get("scacchiera"):
+		board = chess.Board()
+		session["scacchiera"] = board
+	else:
+		board = session["scacchiera"]
+	
+	table = chess.svg.board(board)
+
+	f = open('./static/img/board.svg', 'w')
+	f.write(table)
+	f.close()
+
+	return render_template('partita.html', table=table)
+
+@app.route('/give_move', methods=['GET', 'POST'])
+def WTurn():
+	if not session.get("scacchiera"):
+		board = chess.Board() #creo la scacchiera nel session storage se non è presente
+		session["scacchiera"] = board
+	else:
+		board = session["scacchiera"] #prendo la scacchira nel session storage se presente
+	
+	move=request.form['move'] #prendo la mossa in notazione algebrica
+	if(board.turn):
+		s = chess.Move.from_uci(move) #Prendo la mossa in input
+		if(s in board.legal_moves): #Controllo che possa essere eseguita e che sia il turno del bianco
+			board.push(s)
+			session["scacchiera"] = board #la eseguo, aggiorno la scacchiera e controllo se la partita è terminata
+			if(board.outcome() != None):
+				if(board.outcome().winner == None):
+					return render_template('draw.html')
+				elif(board.outcome().winner):
+					return render_template('white.html')
+				else:
+					return render_template('black.html')
+			#invio il tweet con la mossa fatta
+			return redirect('https://twitter.com/intent/tweet?text=La%20mia%20mossa%20in%20notazione%20algebrica:%20'+move+"%0AIl%20mio%20fen:%0A"+str(board)+ "%0AInserire%20casella%20di%20partenza%20e%20casella%20di%20arrivo%20per%20giocare" +"%0A%23Ingsw2022")
+	
+	return render_template('partita.html')
+
+
+@app.route('/get_move', methods=['GET', 'POST'])
+def BTurn():
+	if not session.get("scacchiera"):
+		board = chess.Board() #creo la scacchiera nel session storage se non è presente
+	else:
+		board = session["scacchiera"] #prendo la scacchira nel session storage se presente
+
+	account=request.form['account'] #prendo il nome dell'account per poter prendere il primo tweet
+
+	if(board.turn):  #controllo che sia il turno del nero
+		return render_template('partita.html')
+	else:
+		sit = game.__main__(board, account) #prendo la mossa più votata in risposta all'ultimo tweet e controllo se la partita è terminata
+		if(sit == "Bianco"):
+			return render_template("white.html")
+		session["scacchiera"] = sit
+	if(board.outcome() != None):
+		if(board.outcome().winner == None):
+			return render_template('draw.html')
+		elif(board.outcome().winner):
+			return render_template('white.html')
+		else:
+			return render_template('black.html')
 
 @app.route("/map")
 def mapInterface():
