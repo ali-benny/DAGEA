@@ -1,6 +1,7 @@
 import chess
 import chess.svg
 from collections import Counter
+import configparser
 import tweepy
 import time
 try:
@@ -16,7 +17,11 @@ def countdown(t):
 
 
 def black_turn(account, board):
-    api = TweetSearch.__init__()
+	config = configparser.ConfigParser()
+	my_path = os.path.abspath('config.ini')
+	config.read(my_path)	
+    api = TweetSearch.__init__(config.get('twitter', 'bearer_token'))
+
     bianco = "Bianco"
     countdown(60)
     tweets = api.user_timeline(screen_name = account, count = 1)
