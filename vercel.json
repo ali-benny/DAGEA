@@ -7,5 +7,10 @@
   ],
   "routes": [
     { "src": "/(.*)", "dest": "src/app.py" }
-  ]
+  ],
+  "functions": {
+    "src/*.py": {
+      "excludeFiles": "**/*.py"
+    }
+  }
 }
