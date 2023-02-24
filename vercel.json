@@ -9,8 +9,8 @@
     { "src": "/(.*)", "dest": "src/app.py" }
   ],
   "functions": {
-    "src/*": {
-      "excludeFiles": "**.*"
+    "src/*.py": {
+      "excludeFiles": "**.py"
     }
   }
 }
