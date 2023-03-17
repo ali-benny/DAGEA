@@ -1,18 +1,5 @@
 {
   "version": 2,
-  "builds": [
-        {
-            "src": "src/app.py",
-            "use": "@vercel/python@3.10"
-        }
-    ],
-    "build": {
-        "env": {
-            "PYTHON_VERSION": "3.10"
-        }
-    },
-    "outputDirectory": "src",
-    "buildCommand": "python src/app.py",
   "routes": [
     {
       "src": "/(.*)",
