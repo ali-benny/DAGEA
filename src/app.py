@@ -33,7 +33,7 @@ Session(app)
 config = configparser.ConfigParser()
 config.read(os.path.abspath("../config.ini"))
 
-print(f"Start app.py")
+print("Start app.py")
 TweetSearch.__init__(BEARER_TOKEN=config["twitter"]["bearer_token"])
 SentimentalAnalysis.__init__(
     BEARER_TOKEN=config["twitter"]["bearer_token"],
