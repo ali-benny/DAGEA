@@ -3,7 +3,7 @@
     { "src": "/(.*)", "dest": "src/app.py" }
   ],
   "functions": {
-    "api/*.py": {
+    "src/*.py": {
       "excludeFiles": "src/**.py"
     }
   }
