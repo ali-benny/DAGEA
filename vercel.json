@@ -3,8 +3,9 @@
     { "src": "/(.*)", "dest": "src/app.py" }
   ],
   "functions": {
-    "src/*.py": {
-      "excludeFiles": "src/**.py"
+    "app": {
+      "handler": "src/app.handler",
+      "runtime": "python3.10"
     }
   }
 }
